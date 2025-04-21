@@ -1,0 +1,131 @@
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * DILLO EXTRA LARGE - DILLOXL
+ * (C) 2024 Copyright by Michele Iacobellis
+ * A project for students...
+ * 
+ * This file is part of DILLOXL.
+ *
+ * DILLOXL is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DILLOXL is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with DILLOXL. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+#ifndef dilloxl_
+#define dilloxl_
+
+#include <cstdio>
+#include <cstdint>
+#include <cstring>
+#include <string>
+#include <thread>
+#include <chrono>
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * MACROS
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+#define DILLOXL_IF_SYMBOL                                      "userprogram"
+#define DILLOXL_IF_SOURCEFILENAME                          "userprogram.cpp"
+#if defined(WIN32)
+# define DILLOXL_IF_DLLNAME                                         "up.dll"
+#else
+# define DILLOXL_IF_DLLNAME                                          "up.so"
+#endif
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * MACROS FOR USER PROGRAM
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+#define dilloxl_do(what,arg) pctx->what arg
+#define dilloxlprint(s) dilloxl_do(print_message,(s));
+#define programma_inizio \
+  extern "C" void userprogram(UserProgramContext* pctx) {
+#define programma_fine }
+#define numero_intero_positivo size_t
+#define numero_con_la_virgola float
+#define bandierina_vero_falso bool
+#define falso false
+#define vero true
+#define crea_oggetto_da_astrazione(tipo) tipo
+#define dando_nome(nome) nome;
+#define messaggia_oggetto(nome,msg,arg) \
+  nome.msg arg;\
+  dilloxlprint("dico a " #nome ": " #msg #arg);
+#define fine_questo }
+#define per_sempre_fai_questo \
+  dilloxlprint("per_sempre_fai_questo:"); \
+  for(;;){
+#define fai_questo_per_volte(a) \
+  dilloxlprint("fai_questo_per_volte " #a ":"); \
+  for (size_t passo_corrente = 0; passo_corrente < a; ++passo_corrente) {
+#define fai_questo_finche_e_vero_che(a) \
+  dilloxlprint("fai_questo_finche_e_vero_che " #a ":"); \
+  while (a) {
+#define fai_questo \
+  dilloxlprint("fai_questo:"); \
+  do {
+#define e_rifallo_finche_e_vero_che(a) \
+  dilloxlprint("e_rifallo_finche_e_vero_che " #a " ..."); \
+  } while (a);
+#define se_e_vero_che(a)      if (a)
+#define allora_fai_questo     {
+#define altrimenti_fai_questo } else {
+#define fai_dormire_il_processo_per_millisecondi(x) \
+  dilloxlprint("fai_dormire_il_processo_per_millisecondi %u ...",x); \
+  std::this_thread::sleep_for(std::chrono::milliseconds(x));
+#define chiedi_informazione_a(a) a.lastStatus().u.status
+#define chiedi_a(a,m,c) a.m c;
+#define cosa(a) .a;
+#define e_anche &&
+#define TELLO pctx
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * STRUCTS
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+struct UserProgramContext {
+  static UserProgramContext* Get();
+  void (*print_message)(const char*);
+  void (*drone_move_left)(float);
+  void (*drone_move_right)(float);
+  void (*drone_move_up)(float);
+  void (*drone_move_down)(float);
+  void (*drone_rotate_cw)(float);
+  void (*drone_rotate_cc)(float);
+  void (*drone_forward)(float);
+  void (*drone_backward)(float);
+  void (*drone_takeoff)(float);
+  void (*drone_land)(float);
+  void (*drone_stop)(float);
+  void (*drone_video)(bool);
+  void* pOpaque;
+};
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * STRUCTS
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+struct Drone {
+  Drone();
+  void            vai_a_sinistra_cm(float v);
+  void              vai_a_destra_cm(float v);
+  void                    vai_su_cm(float v);
+  void                   vai_giu_cm(float v);
+  void     ruota_senso_orario_gradi(float v);
+  void ruota_senso_antiorario_gradi(float v);
+  void                vai_avanti_cm(float v);
+  void              vai_indietro_cm(float v);
+  void                      decolla(float v);
+  void                      atterra(float v);
+  void                         stop(float v);
+  void                        video( bool v);
+private:;
+  UserProgramContext* m_pctx;
+};
+
+#endif // dilloxl_
