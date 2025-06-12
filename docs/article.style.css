@@ -115,3 +115,7 @@ p.article {
 a {
   text-decoration: none;
 }
+
+a.sottolinea {
+  text-decoration: underline;
+}
