@@ -32,6 +32,7 @@ find_package(SFML COMPONENTS Graphics Window System Audio Network)
 find_package(ImGui-SFML)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(FFMPEG libavcodec libavformat libavutil libswscale libswresample)
+message("FFMPEG_INCLUDE_DIRS=${FFMPEG_INCLUDE_DIRS}")
 set(SRC 
     src/dilloxl_main.cpp 
     src/dilloxl_system.cpp 

@@ -185,17 +185,18 @@ void dilloxl::GuiControl::Impl::draw()
   if (ImGui::Begin("Comandi & Stato")) {
     if (ImGui::Button("Connetti")) { drone.com().tryLink(); }
     ImGui::SameLine();
-    if (!drone.com().isLinkAlive()) { ImGui::BeginDisabled(); }
+    bool bLinkAlive = drone.com().isLinkAlive();
+    if (!bLinkAlive) { ImGui::BeginDisabled(); }
     if (ImGui::Button( "Decolla")) { m_bShowTakeoff = true; }
     ImGui::SameLine();
     if (ImGui::Button( "Atterra")) { drone.land(); }
-    if (!drone.com().isLinkAlive()) { ImGui::EndDisabled(); }
+    if (!bLinkAlive) { ImGui::EndDisabled(); }
     ImGui::SameLine();
     if (ImGui::Button(   "Reset")) { drone.reset(); }
     ImGui::Separator();
     ImGui::Text("STATO: %-16s | ", drone.com().lastStatus().c_str());
     ImGui::SameLine();
-    if (drone.com().isLinkAlive()) {
+    if (bLinkAlive) {
       ImGui::TextColored(ImVec4{ 0, 1.0, 0, 1.0 }
         , "%8s", "CONNESSO");
         m_szNStatusPktsLast = drone.com().nStatusPkts();
@@ -216,7 +217,7 @@ void dilloxl::GuiControl::Impl::draw()
     ImGui::Text("        N. Pacchetti Video: %zu"
       , drone.com().nVideoPkts());
     ImGui::Separator();
-    if (drone.com().isLinkAlive()) {
+    if (bLinkAlive) {
       ImGui::Text("%s", drone.com().isWaitingForResponse()
         ? "In attesa di risposta..." : "Risposta ricevuta.");
     } else {

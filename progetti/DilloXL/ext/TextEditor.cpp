@@ -1132,7 +1132,9 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 	if (mHandleKeyboardInputs)
 	{
 		HandleKeyboardInputs();
+#if 0		
 		ImGui::PushAllowKeyboardFocus(true);
+#endif		
 	}
 
 	if (mHandleMouseInputs)
@@ -1141,8 +1143,10 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 	ColorizeInternal();
 	Render();
 
+#if 0
 	if (mHandleKeyboardInputs)
 		ImGui::PopAllowKeyboardFocus();
+#endif		
 
 	if (!mIgnoreImGuiChild)
 		ImGui::EndChild();
