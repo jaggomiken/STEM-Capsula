@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 {
   const char* pTitle = 
     "DILLO XL Versione 2.1.0 - "
-    "By Prof. Michele Iacobellis (COLAMONICO-CHIARULLI)";
+    "By Prof. Michele Iacobellis";
   std::fprintf(stderr, "[DILLOXL]: %s\n", pTitle);
   std::fprintf(stderr, "[DILLOXL]: argv[1] = valore scala display.\n");
   std::fprintf(stderr, "[DILLOXL]: argv[2] = limite framerate.\n");
