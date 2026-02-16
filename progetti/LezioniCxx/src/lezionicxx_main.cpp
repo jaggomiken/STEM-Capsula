@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 {
   const char* pTitle = 
     "LEZIONI CXX Versione 0.0.0 - "
-    "By Prof. Michele Iacobellis (COLAMONICO-CHIARULLI)";
+    "By Prof. Michele Iacobellis";
   std::fprintf(stderr, "[LEZIONICXX]: %s\n", pTitle);
   std::fprintf(stderr, "[LEZIONICXX]: argv[1] = valore scala display.\n");
   std::fprintf(stderr, "[LEZIONICXX]: argv[2] = limite framerate.\n");
