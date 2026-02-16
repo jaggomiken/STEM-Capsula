@@ -150,6 +150,8 @@ void stemcapsulax::GUI::Impl::draw()
     if (ImGui::Checkbox("Main Wave playing", &bAudioPlaying)) {
       am.playMainWave(bAudioPlaying);
     }
+    ImGui::Text("                          Total Samples: %-9u"
+      , dt.sdAudioManager.uNTotalFrames);
     ImGui::Text("                 Samples Sent to Device: %-9u"
       , dt.sdAudioManager.uNStreamedSamples);
     ImGui::Text("          Frequency Analysis Queue Size: %-9u"

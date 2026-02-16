@@ -36,6 +36,7 @@ namespace stemcapsulax {
   class AudioManager {
   public:
     struct StatusData {
+      u32 uNTotalFrames;         // numero totale di frame
       u32 uNStreamedSamples;     // numero di campioni trasferiti al device
       u32 uFTQueueSizeInSamples; // numero campioni accodati per Fourier
       u32 uNFTDequeuedSamples;   // numero di campioni rimossi dalla coda FFT

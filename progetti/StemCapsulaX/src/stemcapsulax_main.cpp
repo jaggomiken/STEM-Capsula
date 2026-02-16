@@ -32,6 +32,8 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #define APP_VERSION                                                  "1.0.1"
 #define APP_NAME                                              "STEMCAPSULAX"
+#define APP_WAIT_FOR_SYNC                                                  0
+#define APP_FULLSCREEN                                                     0
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * ENTRY POINT
@@ -54,10 +56,16 @@ i32 main(i32 argc, char* argv[])
 /* --------------------------------------------------------------------------
  * INIT DI RAYLIB (detection dello schermo, costruzione finestra e font)
  * -------------------------------------------------------------------------- */
-  i32 ww = 0, wh = 0, fps = 60; // se fps altissimo, si abbasserà nel loop
-  SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
+  i32 ww = 1080, wh = 1920, fps = 600; // se fps altissimo, si abbasserà nel loop
+  SetConfigFlags(FLAG_MSAA_4X_HINT 
+#if APP_WAIT_FOR_SYNC == 1  
+    | FLAG_VSYNC_HINT
+#endif    
+  );
   InitWindow(ww, wh, strTitle.c_str()); // 0x0 produce auto-detect
+#if APP_FULLSCREEN == 1  
   ToggleFullscreen();
+#endif  
   SetTargetFPS(fps);
   ww = GetScreenWidth();
   wh = GetScreenHeight();
@@ -105,7 +113,7 @@ i32 main(i32 argc, char* argv[])
   auto& cnv = stemcapsulax::Conv::GetInstance();
   cnv.fScreenWidth  = float(ww);
   cnv.fScreenHeight = float(wh);
-  cnv.fWorldWidth   =  50.0f; // metri (da scegliere)
+  cnv.fWorldWidth   = 20.0f; // metri (da scegliere)
   cnv.fWorldHeight  = cnv.fWorldWidth * float(wh) / float(ww);
   std::printf("[" APP_NAME "]: Box2D, Screen %.1fx%.1f World %.1fx%.1f.\n"
     , cnv.fScreenWidth, cnv.fScreenHeight, cnv.fWorldWidth, cnv.fWorldHeight);

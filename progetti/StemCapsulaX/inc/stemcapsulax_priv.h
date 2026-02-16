@@ -40,7 +40,7 @@
 #if defined(WIN32)
 # define STEM_FILESEP "\\"
 #else
-# define STEP_FILESEP "/"
+# define STEM_FILESEP "/"
 #endif
 
 using i08 =   int8_t;

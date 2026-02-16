@@ -86,8 +86,10 @@ bool stemcapsulax::Box2DBodyFromImage::bodyCreate(b2WorldId wid
       w = m_pImpl->m_image.width
     , h = m_pImpl->m_image.height;
 
-  f32 wx = offx, wy = offy, ww = .2f, wh = .2f, spx = .01f, spy = .01f;
+  f32 ww = .05f, wh = .05f, spx = .1f, spy = .1f;
   f32 density = .1f;
+  f32 wx_ini = offx - ((ww + spx) * w) / 2.0f, wx = wx_ini
+    , wy = offy - (wh * h) / 2.0f;
 
   for (size_t y = 0;y < h;++y) {
     for (size_t x = 0;x < w;++x) {
@@ -96,7 +98,7 @@ bool stemcapsulax::Box2DBodyFromImage::bodyCreate(b2WorldId wid
       wx += (ww + spx);
     }
     wy += (wh + spy);
-    wx  = offx;
+    wx  = wx_ini;
   }
 
   return true;
@@ -117,8 +119,8 @@ void stemcapsulax::Box2DBodyFromImage::Impl::m_CreateBody(Color shapecolor
     b2BodyId     bodyId = b2CreateBody(wid, &bodyDef);
    b2Polygon dynamicBox = b2MakeBox(bodyw / 2.0f, bodyh / 2.0f);
   b2ShapeDef   shapeDef = b2DefaultShapeDef();
-  shapeDef.enableContactEvents = true;
-  shapeDef.enableHitEvents = true;
+  shapeDef.enableContactEvents = false;
+  shapeDef.enableHitEvents = false;
   shapeDef.density = density;
   shapeDef.material.restitution = 0.0f;
   shapeDef.material.friction = 1.0f;

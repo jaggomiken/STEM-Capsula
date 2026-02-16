@@ -71,7 +71,7 @@ void stemcapsulax::dump_data(const std::string& title
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 std::string stemcapsulax::fontpath(const std::string& in)
 {
-  return std::string{"resources"}+STEP_FILESEP+"fonts"+STEP_FILESEP+in;
+  return std::string{"resources"}+STEM_FILESEP+"fonts"+STEM_FILESEP+in;
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -79,7 +79,7 @@ std::string stemcapsulax::fontpath(const std::string& in)
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 std::string stemcapsulax::shaderpath(const std::string& in)
 {
-  return std::string{"resources"}+STEP_FILESEP+"shaders"+STEP_FILESEP+in;
+  return std::string{"resources"}+STEM_FILESEP+"shaders"+STEM_FILESEP+in;
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -87,7 +87,15 @@ std::string stemcapsulax::shaderpath(const std::string& in)
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 std::string stemcapsulax::imagepath(const std::string& in)
 {
-  return std::string{"resources"}+STEP_FILESEP+"images"+STEP_FILESEP+in;
+  return std::string{"resources"}+STEM_FILESEP+"images"+STEM_FILESEP+in;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * FUNCTION
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+std::string stemcapsulax::soundpath(const std::string& in)
+{
+  return std::string{"resources"}+STEM_FILESEP+"sounds"+STEM_FILESEP+in;
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

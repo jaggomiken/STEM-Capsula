@@ -116,6 +116,7 @@ namespace stemcapsulax {
   std::string fontpath(const std::string&);
   std::string shaderpath(const std::string&);
   std::string imagepath(const std::string&);
+  std::string soundpath(const std::string&);
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

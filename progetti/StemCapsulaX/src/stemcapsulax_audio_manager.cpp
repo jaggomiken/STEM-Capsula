@@ -116,7 +116,7 @@ void stemcapsulax::AudioManager::reset()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::AudioManager::update()
 {
-  m_pImpl->m_data.uNStreamedSamples = u32(gASCS.iAudioWindowCursor);
+  m_pImpl->m_data.uNStreamedSamples     = u32(gASCS.iAudioWindowCursor);
   m_pImpl->m_data.uFTQueueSizeInSamples = u32(gASCS.qdata.size());
 }
 
@@ -168,11 +168,14 @@ bool stemcapsulax::AudioManager::loadMainWave(const std::string& filename)
     , m_pImpl->m_fMainWaveSampleMin
     , m_pImpl->m_fMainWaveSampleMax
     , m_pImpl->m_fMainWaveSampleAvg);
+  
+  // imposta lo stato iniziale
+  m_pImpl->m_data.uNTotalFrames = u32(m_pImpl->m_waveMain.frameCount);
 
   // Configura la struttura localmente globale gASCS
   gASCS.pAudioSamples      = reinterpret_cast<float*>(m_pImpl->m_waveMain.data);
-  gASCS.iAudioWindowCursor = 0;
-  gASCS.iFramesCount       = m_pImpl->m_waveMain.frameCount;
+  gASCS.iAudioWindowCursor = 0; // questo lavora su x2 (stereo)
+  gASCS.iFramesCount       = m_pImpl->m_waveMain.frameCount * 2; // stereo
   gASCS.iAudioBufferSize   = STEMCAPSULAX_AUDIOMANAGER_BUFSZ;
   return true; // Gestire meglio l'errore in questa funzione
 }
