@@ -33,11 +33,10 @@
 struct stemcapsulax::Box2DBodyFromImage::Impl {
   Impl() : m_pColors{ nullptr } {}
 
-     Image m_image;
-    Color* m_pColors;
-  b2BodyId m_bodyid;
+  Image m_image;
+  Color* m_pColors;
 
-  void m_CreateBody(Color shapecolor, f32 density
+  b2BodyId m_CreateBody(Color shapecolor, f32 density
     , f32 x, f32 y, f32 w, f32 h, b2WorldId);
 };
 
@@ -77,7 +76,7 @@ bool stemcapsulax::Box2DBodyFromImage::loadImage(const std::string& filename)
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 bool stemcapsulax::Box2DBodyFromImage::bodyCreate(b2WorldId wid
-  , f32 offx, f32 offy)
+  , f32 offx, f32 offy, std::vector<b2BodyId>& vout)
 {
   if (!IsImageValid(m_pImpl->m_image)) { return false; }
   if (nullptr == m_pImpl->m_pColors) { return false; }
@@ -86,7 +85,7 @@ bool stemcapsulax::Box2DBodyFromImage::bodyCreate(b2WorldId wid
       w = m_pImpl->m_image.width
     , h = m_pImpl->m_image.height;
 
-  f32 ww = .05f, wh = .05f, spx = .1f, spy = .1f;
+  f32 ww = 1.f, wh = 1.f, spx = .1f, spy = .1f;
   f32 density = .1f;
   f32 wx_ini = offx - ((ww + spx) * w) / 2.0f, wx = wx_ini
     , wy = offy - (wh * h) / 2.0f;
@@ -94,7 +93,8 @@ bool stemcapsulax::Box2DBodyFromImage::bodyCreate(b2WorldId wid
   for (size_t y = 0;y < h;++y) {
     for (size_t x = 0;x < w;++x) {
       Color c = *(m_pImpl->m_pColors + (w * y) + x);
-      m_pImpl->m_CreateBody(c, density, wx, wy, ww, wh, wid);
+      auto bid = m_pImpl->m_CreateBody(c, density, wx, wy, ww, wh, wid);
+      vout.push_back(bid);
       wx += (ww + spx);
     }
     wy += (wh + spy);
@@ -107,7 +107,7 @@ bool stemcapsulax::Box2DBodyFromImage::bodyCreate(b2WorldId wid
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::Box2DBodyFromImage::Impl::m_CreateBody(Color shapecolor
+b2BodyId stemcapsulax::Box2DBodyFromImage::Impl::m_CreateBody(Color shapecolor
   , f32 density, f32 x, f32 y, f32 w, f32 h, b2WorldId wid)
 {
   f32 bodyw = w, bodyh = h;
@@ -125,9 +125,10 @@ void stemcapsulax::Box2DBodyFromImage::Impl::m_CreateBody(Color shapecolor
   shapeDef.material.restitution = 0.0f;
   shapeDef.material.friction = 1.0f;
   shapeDef.material.customColor =
-      shapecolor.r << 24
-    | shapecolor.g << 16
-    | shapecolor.b <<  8
-    | shapecolor.a;
+      u32(shapecolor.a) << 24
+    | u32(shapecolor.r) << 16
+    | u32(shapecolor.g) <<  8
+    | u32(shapecolor.b);
   b2CreatePolygonShape(bodyId, &shapeDef, &dynamicBox);
+  return bodyId;
 }

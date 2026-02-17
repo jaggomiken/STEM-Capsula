@@ -30,9 +30,9 @@
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * MACROS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#define APP_VERSION                                                  "1.0.1"
+#define APP_VERSION                                                  "1.1.0"
 #define APP_NAME                                              "STEMCAPSULAX"
-#define APP_WAIT_FOR_SYNC                                                  0
+#define APP_WAIT_FOR_SYNC                                                  1
 #define APP_FULLSCREEN                                                     0
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -113,7 +113,7 @@ i32 main(i32 argc, char* argv[])
   auto& cnv = stemcapsulax::Conv::GetInstance();
   cnv.fScreenWidth  = float(ww);
   cnv.fScreenHeight = float(wh);
-  cnv.fWorldWidth   = 20.0f; // metri (da scegliere)
+  cnv.fWorldWidth   = 100.0f; // metri (da scegliere)
   cnv.fWorldHeight  = cnv.fWorldWidth * float(wh) / float(ww);
   std::printf("[" APP_NAME "]: Box2D, Screen %.1fx%.1f World %.1fx%.1f.\n"
     , cnv.fScreenWidth, cnv.fScreenHeight, cnv.fWorldWidth, cnv.fWorldHeight);

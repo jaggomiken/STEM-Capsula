@@ -36,7 +36,8 @@ public:
   TextEditor m_teVrtxShader;
   TextEditor m_teFragShader;
   bool m_bShowVSEditor;
-  bool m_bShowFSEditor;;
+  bool m_bShowFSEditor;
+  i32 m_iNumSceneTrig;
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -93,6 +94,7 @@ void stemcapsulax::GUI::draw(const SystemInfo&)
 stemcapsulax::GUI::Impl::Impl()
 : m_bShowVSEditor{ false }
 , m_bShowFSEditor{ false }
+, m_iNumSceneTrig{     0 }
 {
 
 }
@@ -124,9 +126,12 @@ void stemcapsulax::GUI::Impl::draw()
     ImGui::TextUnformatted("Current Scene");
     ImGui::Separator();
     ImGui::Checkbox("Debug Draw Enabled", &dt.bDrawDebugEnabled);
+    ImGui::PushItemWidth(120.0f);
+    ImGui::InputInt("##NumSceneTrig", &m_iNumSceneTrig,1,10);
+    ImGui::SameLine();
     if (ImGui::Button("TRIGGER")) {
       if (sm.hasCurrentScene()) {
-        sm.currentScene().trigger(0);
+        sm.currentScene().trigger(m_iNumSceneTrig);
       }
     }
     ImGui::SameLine();
@@ -135,12 +140,14 @@ void stemcapsulax::GUI::Impl::draw()
         sm.currentScene().clear();
       }
     }
+    ImGui::SameLine();
     if (ImGui::Button(m_bShowVSEditor
-      ? "Hide   Vertex Shader Editor" : "Show   Vertex Shader Editor")) {
+      ? "Hide VSE" : "Show VSE")) {
       m_bShowVSEditor = !m_bShowVSEditor;
     }
+    ImGui::SameLine();
     if (ImGui::Button(m_bShowFSEditor
-      ? "Hide Fragment Shader Editor" : "Show Fragment Shader Editor")) {
+      ? "Hide FSE" : "Show FSE")) {
       m_bShowFSEditor = !m_bShowFSEditor;
     }
     ImGui::Separator();

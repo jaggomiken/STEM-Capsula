@@ -26,6 +26,11 @@
 #include "stemcapsulax_b2ddebugdraw.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * MACROS
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+#define STEMCAPSULAX_SCENEB2_ENABLE_TRIGGER_TEST                           0
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * SPECIAL PURPOSE INCLUDE
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #define RLIGHTS_IMPLEMENTATION
@@ -86,8 +91,9 @@ void stemcapsulax::SceneBox2D::clear()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::SceneBox2D::trigger(uint32_t)
+void stemcapsulax::SceneBox2D::trigger(uint32_t what)
 {
+#if STEMCAPSULAX_SCENEB2_ENABLE_TRIGGER_TEST == 1  
   f32 ra = 1.5f * (f32(rand()) / f32(RAND_MAX)); // anche 0 !
   f32 x0 = m_pImpl->m_proxy.width() * (f32(rand()) / f32(RAND_MAX));
   m_pImpl->m_proxy.createBodyCircle(x0, 0, ra);
@@ -102,6 +108,11 @@ void stemcapsulax::SceneBox2D::trigger(uint32_t)
   };
   m_pImpl->m_proxy.createBodyPolygon(x3, 0
     , vpoly, STEMCAPSULAX_ARRAY_SIZE(vpoly));
+#else
+  char fn[128];
+  std::snprintf(fn, sizeof(fn), "%02u.png", what);
+  m_pImpl->m_proxy.createBodyFromImage(imagepath(fn));
+#endif    
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -109,8 +120,7 @@ void stemcapsulax::SceneBox2D::trigger(uint32_t)
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::SceneBox2D::show()
 {
-  m_pImpl->m_proxy.createBodyTestGround();
-  m_pImpl->m_proxy.createBodyFromImage(imagepath("body.png"));
+
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -239,6 +249,9 @@ void stemcapsulax::SceneBox2D::update()
   m_pImpl->m_light.enabled = true;
   m_pImpl->m_light.position = { mp.x, mp.y, 15.0f * cosf(2 * M_PI * ft) };
   UpdateLightValues(m_pImpl->m_shaderCur, m_pImpl->m_light);
+
+  // cleanup bodies
+  m_pImpl->m_proxy.removeBodiesYGreaterThan(200.0f);
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

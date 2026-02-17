@@ -93,6 +93,9 @@ namespace stemcapsulax {
     void createBodyCapsule(f32 x, f32 y, const b2Vec2& p0, const b2Vec2& p1, f32 r);
     void createExplosion(f32 x, f32 y, f32 energy);
     void createBodyFromImage(const std::string&);
+    void removeBodiesOutsideRect(f32 x0, f32 y0, f32 x1, f32 y1);
+    void removeBodiesYGreaterThan(f32 y);
+    void removeBodiesXGreaterThan(f32 y);
 
   protected:
     Box2DProxy(const Box2DProxy&)            = delete;

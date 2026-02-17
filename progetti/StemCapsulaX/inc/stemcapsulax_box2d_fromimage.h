@@ -37,7 +37,7 @@ namespace stemcapsulax {
    ~Box2DBodyFromImage();
 
     bool loadImage(const std::string&);
-    bool bodyCreate(b2WorldId, f32 offx, f32 offy);
+    bool bodyCreate(b2WorldId, f32 offx, f32 offy, std::vector<b2BodyId>& vout);
 
   private:
     struct Impl; Impl* m_pImpl;

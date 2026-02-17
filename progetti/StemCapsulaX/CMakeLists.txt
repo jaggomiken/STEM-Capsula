@@ -81,6 +81,9 @@ set(EXT
   ext/TextEditor.h
   ext/TextEditor.cpp
   ext/rlights.h
+  ext/TaskScheduler.h
+  ext/TaskScheduler.cpp
+  ext/LockLessMultiReadPipe.h
 )
             add_executable(${TARGET} ${SRC} ${INC} ${EXT})
 target_include_directories(${TARGET} PUBLIC inc ext ext/extras)

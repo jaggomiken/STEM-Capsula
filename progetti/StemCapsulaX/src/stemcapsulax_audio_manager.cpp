@@ -141,13 +141,14 @@ bool stemcapsulax::AudioManager::loadMainWave(const std::string& filename)
     , m_pImpl->m_waveMain.sampleSize
     , m_pImpl->m_waveMain.channels);
   SetAudioStreamCallback(m_pImpl->m_streamMainWave, AudioStreamCallback48x2);
-  std::printf(
-      "[AUDIOMANAGER]: Filename %s\n"
-      "  (SampleRate %u, SampleSize %u, NChannels %u)\n", filename.c_str()
-    , m_pImpl->m_waveMain.sampleRate
-    , m_pImpl->m_waveMain.sampleSize
-    , m_pImpl->m_waveMain.channels);
-
+  if (!filename.empty()) {
+    std::printf(
+        "[AUDIOMANAGER]: Filename %s\n"
+        "  (SampleRate %u, SampleSize %u, NChannels %u)\n", filename.c_str()
+      , m_pImpl->m_waveMain.sampleRate
+      , m_pImpl->m_waveMain.sampleSize
+      , m_pImpl->m_waveMain.channels);
+  }
   // Calcola informazioni sui campioni (max, min, ecc.)
   m_pImpl->m_fMainWaveSampleMax = .0f;
   m_pImpl->m_fMainWaveSampleMin = std::numeric_limits<f32>::max();
@@ -161,13 +162,18 @@ bool stemcapsulax::AudioManager::loadMainWave(const std::string& filename)
         m_pImpl->m_fMainWaveSampleMin, s);
     faccum += f64(s);
   }
-  m_pImpl->m_fMainWaveSampleAvg =
-    f32(faccum / f64(m_pImpl->m_waveMain.frameCount));
-  std::printf("[AUDIOMANAGER]:  NFrames %u Min %.6f Max %.6f Avg %.6f\n"
-    , m_pImpl->m_waveMain.frameCount
-    , m_pImpl->m_fMainWaveSampleMin
-    , m_pImpl->m_fMainWaveSampleMax
-    , m_pImpl->m_fMainWaveSampleAvg);
+  if (0 != m_pImpl->m_waveMain.frameCount) {
+    m_pImpl->m_fMainWaveSampleAvg =
+      f32(faccum / f64(m_pImpl->m_waveMain.frameCount));
+    std::printf("[AUDIOMANAGER]:  NFrames %u Min %.6f Max %.6f Avg %.6f\n"
+      , m_pImpl->m_waveMain.frameCount
+      , m_pImpl->m_fMainWaveSampleMin
+      , m_pImpl->m_fMainWaveSampleMax
+      , m_pImpl->m_fMainWaveSampleAvg);
+  }
+  else {
+    std::printf("[AUDIOMANAGER]:  NO AUDIO FILE LOADED.\n");
+  }
   
   // imposta lo stato iniziale
   m_pImpl->m_data.uNTotalFrames = u32(m_pImpl->m_waveMain.frameCount);

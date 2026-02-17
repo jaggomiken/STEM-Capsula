@@ -22,11 +22,17 @@
 #include "stemcapsulax_box2d_proxy.h"
 #include "stemcapsulax_box2d_fromimage.h"
 #include "stemcapsulax_system.h"
+#include "TaskScheduler.h"
 #include <map>
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * MACROS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+#define STEMCAPSULAX_TASKEXEC_MAX_TASKS                                  256
+#define STEMCAPSULAX_SYSTEM_THREADS_NUM                                    2
+#define STEMCAPSULAX_MAX_THREADS_NUM   \
+  (std::thread::hardware_concurrency() \
+     - (STEMCAPSULAX_SYSTEM_THREADS_NUM))
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * CLASS/STRUCT DECLARATION
@@ -35,6 +41,43 @@ namespace stemcapsulax {
   struct BodyInfo {
     b2BodyId bodyid;
     bool bIsGround;
+  };
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * CLASS/STRUCT DECLARATION
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+class TaskForB2 : public enki::ITaskSet
+{
+public:
+	void ExecuteRange(enki::TaskSetPartition range
+    , uint32_t threadIndex) override {
+		m_task(range.start, range.end, threadIndex, m_taskContext);
+	}
+
+	b2TaskCallback* m_task = nullptr;
+	void* m_taskContext = nullptr;
+};
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * CLASS/STRUCT DECLARATION
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+namespace stemcapsulax {
+  struct TaskExecutionContext {
+    enki::TaskScheduler scheduler;
+    TaskForB2 aTasks[STEMCAPSULAX_TASKEXEC_MAX_TASKS];
+    u32 uCurrentTaskNum;
+
+    TaskExecutionContext() 
+      : uCurrentTaskNum { 0 } 
+    {
+      std::printf("[BOX2DPROXY]: TaskExecutionContext constructor.\n");
+      scheduler.Initialize(STEMCAPSULAX_MAX_THREADS_NUM);
+    }
+
+    ~TaskExecutionContext() {
+      std::printf("[BOX2DPROXY]: TaskExecutionContext destructor.\n");
+    }
   };
 }
 
@@ -52,6 +95,7 @@ public:
   uint32_t m_uUserCommand;
   std::map<u64,BodyInfo> m_mapBodies;
   Box2DBodyFromImage m_bfromimg;
+  TaskExecutionContext m_ctxTaskExec;
 
   void m_HandleStartTouching(b2ShapeId, b2ShapeId);
   void   m_HandleEndTouching(b2ShapeId, b2ShapeId);
@@ -64,6 +108,13 @@ public:
 static u64 B2TOU64(b2BodyId b) {
   return *reinterpret_cast<const u64*>(&b);
 }
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * FUNCTIONS (for task scheduler)
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+static void* b2CallbackEnqueueTask(b2TaskCallback* task
+  , int32_t itemCount, int32_t minRange, void* pTaskCtx, void* pUserCtx);
+static void  b2CallbackFinishTask(void* pTask, void* pUserCtx);
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
@@ -156,6 +207,7 @@ void stemcapsulax::Box2DProxy::update()
 {
   // dai il controllo a Box2D per simulare il mondo fisico
   b2World_Step(m_pImpl->m_wid, 0.0167 /* 60FPS */, 4);
+  m_pImpl->m_ctxTaskExec.uCurrentTaskNum = 0; // reset contatore task
 
   // rileva le collisioni e dà il controllo al metodo (begin)
   const auto& ce = b2World_GetContactEvents(worldId());
@@ -227,18 +279,19 @@ void stemcapsulax::Box2DProxy::createBodyTestGround()
   groundShapeDef.enableHitEvents = true;
   b2CreatePolygonShape(groundId, &groundShapeDef, &groundBox);
   b2Polygon leftwall = b2MakeOffsetBox(
-      .5f, 6.0f
-    , { - (width() / 2.0f) + .0f, -1.0f }, b2MakeRot(.0f));
+      .5f, 80.0f
+    , { - (width() / 2.0f) + .5f, -80.0f }, b2MakeRot(.0f));
   b2CreatePolygonShape(groundId, &groundShapeDef, &leftwall);
   b2Polygon rightwall = b2MakeOffsetBox(
-      .5f, 6.0f
-    , { + (width() / 2.0f) - .0f, -1.0f }, b2MakeRot(.0f));
+      .5f, 80.0f
+    , { + (width() / 2.0f) - .5f, -80.0f }, b2MakeRot(.0f));
   b2CreatePolygonShape(groundId, &groundShapeDef, &rightwall);
+#if 0
   b2Polygon platformup = b2MakeOffsetBox(
       2.0f, .5f
     , { -8.0f, -7.5f }, b2MakeRot(.0f));
   b2CreatePolygonShape(groundId, &groundShapeDef, &platformup);
-
+#endif
   std::printf("[BOX2DPROXY]: <TESTGROUND>: Put shape @ %.2f,%.2f\n"
     , groundBodyDef.position.x, groundBodyDef.position.y);
   m_pImpl->m_mapBodies.insert({ B2TOU64(groundId), { groundId, true }});
@@ -394,12 +447,51 @@ void stemcapsulax::Box2DProxy::createBodyFromImage(const std::string& fn)
   auto xh = cnv.fWorldWidth / 2.0f;
   auto yh = .0f;
 
+  std::vector<b2BodyId> vBodies;
   if (m_pImpl->m_bfromimg.loadImage(fn)) {
-    if (!m_pImpl->m_bfromimg.bodyCreate(worldId(), xh, yh)) {
+    if (!m_pImpl->m_bfromimg.bodyCreate(worldId(), xh, yh, vBodies)) {
       std::fprintf(stderr, "[BOX2DPROXY]: Failed to create body from image\n");
+    } else {
+      for (const auto& b : vBodies) {
+        m_pImpl->m_mapBodies.insert({ B2TOU64(b), { b, false }});
+      }
     }
   }
 }
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::Box2DProxy::removeBodiesOutsideRect(
+  f32 x0, f32 y0, f32 x1, f32 y1)
+{
+
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::Box2DProxy::removeBodiesYGreaterThan(f32 y)
+{
+  std::vector<b2BodyId> vtoremove;
+  for (auto& b : m_pImpl->m_mapBodies) {
+    auto pos = b2Body_GetPosition(b.second.bodyid);
+    if (pos.y > y) { vtoremove.push_back(b.second.bodyid); }
+  }
+  for (auto& b : vtoremove) {
+    b2DestroyBody(b);
+    m_pImpl->m_mapBodies.erase(B2TOU64(b));
+  }
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::Box2DProxy::removeBodiesXGreaterThan(f32 x)
+{
+
+}
+
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
@@ -420,10 +512,19 @@ stemcapsulax::Box2DProxy::Impl::Impl()
 	b2SetLengthUnitsPerMeter(fPixelPerMeter);
   m_fPixelPerMeter = fPixelPerMeter;
 
+  /*
+   * Box2D 3.x supporta il multithreading ma si affida al software in cui
+   * deve integrarsi per schedulare i task di volta in volta. Questo viene
+   * fatto mediante delle callback che vanno configurate nel world.
+   */
       b2Vec2  gravity = {0.0f, 9.8f * fPixelPerMeter};
   b2WorldDef worldDef = b2DefaultWorldDef();
-
-  worldDef.gravity = gravity;
+  worldDef.gravity         = gravity;
+  worldDef.enableSleep     = true;
+  worldDef.enqueueTask     = b2CallbackEnqueueTask;
+  worldDef.finishTask      = b2CallbackFinishTask;
+  worldDef.workerCount     = STEMCAPSULAX_MAX_THREADS_NUM;
+  worldDef.userTaskContext = &m_ctxTaskExec;
   m_wid = b2CreateWorld(&worldDef);
 }
 
@@ -462,4 +563,39 @@ void stemcapsulax::Box2DProxy::Impl::m_handleHit(b2ShapeId sa, b2ShapeId sb)
 stemcapsulax::Conv& stemcapsulax::Conv::GetInstance()
 {
   static Conv c; return c;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * STATIC FUNCTION DEF
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+static void* b2CallbackEnqueueTask(b2TaskCallback* pTaskCb
+  , int32_t itemCount, int32_t minRange, void* pTaskCtx, void* pUserCtx)
+{
+  auto* pCtx = static_cast<stemcapsulax::TaskExecutionContext*>(pUserCtx);
+  if (pCtx->uCurrentTaskNum < STEMCAPSULAX_TASKEXEC_MAX_TASKS) {
+    auto& t = pCtx->aTasks[pCtx->uCurrentTaskNum];
+    t.m_SetSize     = itemCount;
+    t.m_MinRange    = minRange;
+    t.m_task        = pTaskCb;
+    t.m_taskContext = pTaskCtx;
+    pCtx->scheduler.AddTaskSetToPipe(&t);
+    pCtx->uCurrentTaskNum++;
+    return &t;
+  }
+  else {
+    pTaskCb(0, itemCount, 0, pTaskCtx);
+    return nullptr;
+  }
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * STATIC FUNCTION DEF
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+static void b2CallbackFinishTask(void* pTask, void* pUserCtx)
+{
+	if (nullptr != pTask)	{
+		auto* pT = static_cast<TaskForB2*>(pTask);
+		auto* pCtx = static_cast<stemcapsulax::TaskExecutionContext*>(pUserCtx);
+		pCtx->scheduler.WaitforTask(pT);
+	}
 }
