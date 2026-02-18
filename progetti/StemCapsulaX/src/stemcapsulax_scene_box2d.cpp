@@ -250,8 +250,11 @@ void stemcapsulax::SceneBox2D::update()
   m_pImpl->m_light.position = { mp.x, mp.y, 15.0f * cosf(2 * M_PI * ft) };
   UpdateLightValues(m_pImpl->m_shaderCur, m_pImpl->m_light);
 
-  // cleanup bodies
-  m_pImpl->m_proxy.removeBodiesYGreaterThan(200.0f);
+  /*
+   * Cancella da Box2D tutti i body che non sono più visibili, con il fine
+   * di ridurre la quantità di calcoli e migliorare il framerate.
+   */
+  m_pImpl->m_proxy.removeBodiesOutsideRect(0, -300, 100, 500);
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

@@ -54,18 +54,25 @@ i32 main(i32 argc, char* argv[])
   const char* pfont = strfontpath.c_str();
 
 /* --------------------------------------------------------------------------
- * INIT DI RAYLIB (detection dello schermo, costruzione finestra e font)
+ * INIT DI RAYLIB (detect del monitor, costruzione finestra e font)
  * -------------------------------------------------------------------------- */
   i32 ww = 1080, wh = 1920, fps = 600; // se fps altissimo, si abbasserà nel loop
-  SetConfigFlags(FLAG_MSAA_4X_HINT 
+  SetConfigFlags(FLAG_MSAA_4X_HINT
 #if APP_WAIT_FOR_SYNC == 1  
     | FLAG_VSYNC_HINT
 #endif    
   );
-  InitWindow(ww, wh, strTitle.c_str()); // 0x0 produce auto-detect
-#if APP_FULLSCREEN == 1  
+  InitWindow(ww, wh, strTitle.c_str());
+  i32 cur_m = GetCurrentMonitor()
+    , dis_w = GetMonitorWidth(cur_m)
+    , dis_h = GetMonitorHeight(cur_m);
+#if APP_FULLSCREEN == 1
   ToggleFullscreen();
-#endif  
+#else
+  SetWindowSize(ww > dis_w ? dis_w : ww, wh > dis_h ? dis_h : wh);
+  std::printf("[" APP_NAME "]: Window size %dx%d, Monitor size %dx%d\n"
+    , ww, wh, dis_w, dis_h);
+#endif
   SetTargetFPS(fps);
   ww = GetScreenWidth();
   wh = GetScreenHeight();

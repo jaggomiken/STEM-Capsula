@@ -465,7 +465,21 @@ void stemcapsulax::Box2DProxy::createBodyFromImage(const std::string& fn)
 void stemcapsulax::Box2DProxy::removeBodiesOutsideRect(
   f32 x0, f32 y0, f32 x1, f32 y1)
 {
-
+  std::vector<b2BodyId> vtoremove;
+  for (auto& b : m_pImpl->m_mapBodies) {
+    auto pos = b2Body_GetPosition(b.second.bodyid);
+    if ((pos.x < x0) || (pos.x > x1) || (pos.y < y0) || (pos.y > y1)) {
+      vtoremove.push_back(b.second.bodyid);
+    }
+  }
+  for (auto& b : vtoremove) {
+    b2DestroyBody(b);
+    m_pImpl->m_mapBodies.erase(B2TOU64(b));
+  }
+  if (!vtoremove.empty()) {
+    std::fprintf(stdout
+      , "[BOX2DPROXY]: Body destroyed %zu\n",vtoremove.size());
+  }
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -481,6 +495,10 @@ void stemcapsulax::Box2DProxy::removeBodiesYGreaterThan(f32 y)
   for (auto& b : vtoremove) {
     b2DestroyBody(b);
     m_pImpl->m_mapBodies.erase(B2TOU64(b));
+  }
+  if (!vtoremove.empty()) {
+    std::fprintf(stdout
+      , "[BOX2DPROXY]: Body destroyed %zu\n",vtoremove.size());
   }
 }
 
