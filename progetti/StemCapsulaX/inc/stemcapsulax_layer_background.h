@@ -37,6 +37,9 @@ namespace stemcapsulax {
     LayerBackground& operator=(LayerBackground&&)        = delete;
     virtual ~LayerBackground();
 
+    void setImagePath(const std::string&);
+    std::string imagePath() const;
+
     void clear() override;
     void show() override;
     void hide() override;

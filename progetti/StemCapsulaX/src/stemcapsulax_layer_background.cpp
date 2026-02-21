@@ -20,6 +20,7 @@
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #include "stemcapsulax_layer_background.h"
+#include "stemcapsulax_status.h"
 #include "stemcapsulax_system.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -29,6 +30,10 @@ class stemcapsulax::LayerBackground::Impl {
 public:
   Impl();
  ~Impl();
+
+  std::string m_strImagePath;
+  Image m_image;
+  Texture m_texture;
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -56,6 +61,25 @@ stemcapsulax::LayerBackground::~LayerBackground()
 stemcapsulax::Layer::TypeID stemcapsulax::LayerBackground::type() const
 {
   return Layer::TypeID(LayerType::kBACKGROUND);
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::LayerBackground::setImagePath(const std::string& fn)
+{
+  m_pImpl->m_image = LoadImage(fn.c_str());
+  m_pImpl->m_strImagePath = fn;
+  m_pImpl->m_texture = LoadTextureFromImage(m_pImpl->m_image);
+  UnloadImage(m_pImpl->m_image);
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+std::string stemcapsulax::LayerBackground::imagePath() const
+{
+  return m_pImpl->m_strImagePath;
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -98,6 +122,12 @@ void stemcapsulax::LayerBackground::update()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayerBackground::draw(RenderTexture2D& rtex)
 {
+  auto& st = Status::GetInstance();
+  auto& dt = st.data();
+  DrawTexture(m_pImpl->m_texture
+    , (dt.sysinf.iWindowWidth  / 2) - (m_pImpl->m_texture.width  / 2)
+    , (dt.sysinf.iWindowHeight / 2) - (m_pImpl->m_texture.height / 2)
+    , WHITE);
   auto& tr = runner();
   tr.enumerate([=, &tr, &rtex](TaskRunner::Task& task) {
     if (task.draw) { task.draw(tr, task, rtex); }

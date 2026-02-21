@@ -23,6 +23,9 @@
 #include "stemcapsulax_audio_manager.h"
 #include "stemcapsulax_scene_layered.h"
 #include "stemcapsulax_scene_manager.h"
+#include "stemcapsulax_layer_background.h"
+#include "stemcapsulax_layer_3d.h"
+#include "stemcapsulax_layer_box2d.h"
 #include "stemcapsulax_task_crosshair.h"
 #include "stemcapsulax_task_growing_circle.h"
 #include "stemcapsulax_task_energy_circle.h"
@@ -42,7 +45,22 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
 {
+  /////////////////////////////////////////////////////////////////////////////
+  // In questo esempio, il director configura esternamente i layer della scena
+  // inserendo un background e poi un layer box2d.
+  /////////////////////////////////////////////////////////////////////////////
   static LayeredScene scene;
+  static LayerBackground laback;
+  static Layer3D la3d;
+  static LayerBox2D lab2d;
+  // inizializza i layer
+  laback.setImagePath(imagepath("backdemo.png"));
+
+  // configura i layer di scena
+  scene.layerAdd(&laback); // disegnato per primo
+  scene.layerAdd(&la3d);   // disegnato per secondo
+  scene.layerAdd(&lab2d);  // disegnato per ultimo (in primo piano)
+  // configura i task di scena
   auto& tr = scene.runner();
   tr.taskAdd(CreateTask_CrossHair());
   tr.taskAdd(CreateTask_GrowingCircle());
