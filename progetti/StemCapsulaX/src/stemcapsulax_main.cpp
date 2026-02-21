@@ -47,7 +47,7 @@ i32 main(i32 argc, char* argv[])
     APP_NAME " " APP_VERSION " by prof. <Michele Iacobellis>"
   };
   std::string strMessg {
-    "(press ESC to exit)"
+    "(press ESC to exit, F3 show/hide HUD, F5 show/hide GUI)"
   };
 
   auto strfontpath = stemcapsulax::fontpath("NovaMono-Regular.ttf");
@@ -138,7 +138,7 @@ i32 main(i32 argc, char* argv[])
   auto rtexForHUD   = LoadRenderTexture(ww, wh); // texture per lo HUD
 
 /* --------------------------------------------------------------------------
- * REGISTERSCENES (registrazione scene nello scene manager)
+ * REGISTER SCENES (registrazione scene nello scene manager)
  * -------------------------------------------------------------------------- */
   static stemcapsulax::SceneBox2D scene; // questa scena usa Conv configurato
   sm.addScene(&scene);
@@ -149,8 +149,9 @@ i32 main(i32 argc, char* argv[])
  * STATUS INIT (prepara lo stato globale del sistema)
  * -------------------------------------------------------------------------- */
   auto& sta = stemcapsulax::Status::GetInstance();
-  sta.data().bAppPaused        = false;
+  sta.data().bSimulationPaused = false;
   sta.data().bDrawDebugEnabled = true;
+  sta.data().sysinf            = sysinf; // scrivi sysinf iniziale
 
 /* --------------------------------------------------------------------------
  * AUDIO START (prepara l'audio principale, se disponibile)
@@ -158,9 +159,10 @@ i32 main(i32 argc, char* argv[])
   aum.loadMainWave((nullptr != argv[1]) ? argv[1] : "");
 
 /* --------------------------------------------------------------------------
- * Variabili di controllo dei ciclo principale (main loop o event loop)
+ * Variabili di controllo del ciclo principale (main loop o event loop)
  * -------------------------------------------------------------------------- */
   bool bExitLoop = false, bShowExitDialog = false;
+  bool bShowHUD  = true, bShowGUI = true;
   
 /* --------------------------------------------------------------------------
  * MAINLOOP (gestione degli eventi e disegno della finestra)
@@ -170,13 +172,18 @@ i32 main(i32 argc, char* argv[])
      | GETINPUTS (prende tastiera, mouse, joypad, ecc...)
      * ---------------------------------------------------------------------- */
     if (IsKeyPressed(KEY_ESCAPE)) { bShowExitDialog = true; }
+    if (IsKeyPressed(KEY_F3)) { bShowHUD = !bShowHUD; }
+    if (IsKeyPressed(KEY_F5)) { bShowGUI = !bShowGUI; }
 
     /* ----------------------------------------------------------------------
-     | GETRAYLIBINFO (prende informazioni da RAYLIB)
+     | GETRAYLIBINFO (prende informazioni da RAYLIB e aggiorna stato)
      * ---------------------------------------------------------------------- */
     sysinf.iFPS = GetFPS(); // prende gli FPS effettivi
     sysinf.uSecondsElapsed += GetFrameTime();
-    sta.data().sysinf = sysinf; // aggiorna sysinf nello stato
+    sta.data().sysinf.iFPS = sysinf.iFPS;
+    sta.data().sysinf.uSecondsElapsed = sysinf.uSecondsElapsed;
+    sta.data().bShowGUI = bShowGUI;
+    sta.data().bShowHUD = bShowHUD;
 
     /* ----------------------------------------------------------------------
      | UPDATESTATUS (aggiorna lo stato degli oggetti dell'applicazione)
@@ -189,8 +196,8 @@ i32 main(i32 argc, char* argv[])
     /* ----------------------------------------------------------------------
      | DRAW (disegna gli oggetti nelle relative render texture, off screen)
      * ---------------------------------------------------------------------- */
-    if (sm.hasCurrentScene()) { sm.currentScene().draw(rtexForScene, sysinf); }
-    hud.draw(rtexForHUD, sysinf);
+    if (sm.hasCurrentScene()) { sm.currentScene().draw(rtexForScene); }
+    hud.draw(rtexForHUD); // va sempre disegnata indipendentemente dal flag
 
     /* ----------------------------------------------------------------------
      | DRAWSCREEN (disegna gli oggetti sulla finestra: scena, hud e gui)
@@ -210,8 +217,9 @@ i32 main(i32 argc, char* argv[])
         , { .0f, .0f, tw, th }
         , { .0f, .0f }, 0.0f, Fade(WHITE, 1.0f));
     rlImGuiBegin();
-      gui.draw(sysinf);
+      if (bShowGUI) { gui.draw(sysinf); }
       bExitLoop = stemcapsulax::HandleSystemExit(bShowExitDialog);
+      bShowHUD  = sta.data().bShowHUD; // aggiorna a causa GUI
     rlImGuiEnd();
     EndDrawing();
   }

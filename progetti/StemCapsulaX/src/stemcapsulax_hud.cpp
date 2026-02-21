@@ -87,24 +87,25 @@ void stemcapsulax::HUD::setCurrentFont(Font& font)
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::HUD::update()
 {
-  auto& st = Status::GetInstance();
-  if (!st.data().bAppPaused) {
-    m_pImpl->m_uFrameCounter++;
-  }
+  m_pImpl->m_uFrameCounter++;
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::HUD::draw(RenderTexture2D& rtex, const SystemInfo& si)
+void stemcapsulax::HUD::draw(RenderTexture2D& rtex)
 {
+  const auto& dt = Status::GetInstance().data();
+  const auto& si = dt.sysinf;
   BeginTextureMode(rtex);
     ClearBackground(Fade(BLACK, .0f));
-    DrawTextEx(si.font, si.strWindowTitle.c_str(), {10, 10}, 40, 1.0f, LIGHTGRAY);
-    DrawTextEx(si.font,  si.strTopMessage.c_str(), {10, 50}, 24, 1.0f, LIGHTGRAY);
-    DrawText(TextFormat("This string is drawn by the HUD - FPS: %d N_Frames: %u"
-        , si.iFPS, m_pImpl->m_uFrameCounter)
-      , 10, si.iWindowHeight - 30, 24, Fade(WHITE, 1.0));
+    if (dt.bShowHUD) {
+      DrawTextEx(si.font, si.strWindowTitle.c_str(), {10, 10}, 40, 1.0f, LIGHTGRAY);
+      DrawTextEx(si.font,  si.strTopMessage.c_str(), {10, 50}, 24, 1.0f, LIGHTGRAY);
+      DrawText(TextFormat("FPS: %d Frames: %u"
+          , si.iFPS, m_pImpl->m_uFrameCounter)
+        , 10, si.iWindowHeight - 30, 24, Fade(WHITE, 1.0));
+    }
   EndTextureMode();
 }
 

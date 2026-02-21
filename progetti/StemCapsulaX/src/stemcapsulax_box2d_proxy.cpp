@@ -256,6 +256,50 @@ void stemcapsulax::Box2DProxy::destroyInactiveBodies()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::Box2DProxy::createBodyConcaveGround()
+{
+  f32 ffractionofground = 8.0f, foffright = .0f;
+  f32 fgroundsizw =
+    (width() - 0.03f) * (ffractionofground / 8.0f);
+  f32 fgroundsizh = 0.5f;
+  f32 fgroundposy = height() - fgroundsizh;
+  
+  b2BodyDef groundBodyDef = b2DefaultBodyDef();
+  groundBodyDef.rotation = b2MakeRot(0.0f * (B2_PI / 180.0f));
+  groundBodyDef.position = b2Vec2{
+      fgroundsizw / 2.0f + foffright
+    , fgroundposy };
+
+  // l'estensione di una forma box2d da specificare è metà dell'effettiva
+    b2BodyId groundId = b2CreateBody(worldId(), &groundBodyDef);
+  b2ShapeDef groundShapeDef = b2DefaultShapeDef();
+  groundShapeDef.density = 1000.0f;
+  groundShapeDef.enableContactEvents = true;
+  groundShapeDef.enableHitEvents = true;
+  b2Polygon dnleft = b2MakeOffsetBox(
+      .5f, 20.0f
+    , { -20.5f, 0.0f }, b2MakeRot(45.0f * DEG2RAD));
+  b2CreatePolygonShape(groundId, &groundShapeDef, &dnleft);
+  b2Polygon dnrght = b2MakeOffsetBox(
+      .5f, 20.0f
+    , {  +20.5f, 0.0f }, b2MakeRot(-45.0f * DEG2RAD));
+  b2CreatePolygonShape(groundId, &groundShapeDef, &dnrght);
+  b2Polygon leftwall = b2MakeOffsetBox(
+      .5f, 80.0f
+    , { - (width() / 2.0f) - 20.5f, -80.0f }, b2MakeRot(-45.0f * DEG2RAD));
+  b2CreatePolygonShape(groundId, &groundShapeDef, &leftwall);
+  b2Polygon rightwall = b2MakeOffsetBox(
+      .5f, 80.0f
+    , { + (width() / 2.0f) + 20.5f, -80.0f }, b2MakeRot(+45.0f * DEG2RAD));
+  b2CreatePolygonShape(groundId, &groundShapeDef, &rightwall);
+  std::printf("[BOX2DPROXY]: <CONCAVEGROUND>: Put shape @ %.2f,%.2f\n"
+    , groundBodyDef.position.x, groundBodyDef.position.y);
+  m_pImpl->m_mapBodies.insert({ B2TOU64(groundId), { groundId, true }});
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::Box2DProxy::createBodyTestGround()
 {
   f32 ffractionofground = 8.0f, foffright = .0f;
@@ -476,10 +520,12 @@ void stemcapsulax::Box2DProxy::removeBodiesOutsideRect(
     b2DestroyBody(b);
     m_pImpl->m_mapBodies.erase(B2TOU64(b));
   }
+#if 0  
   if (!vtoremove.empty()) {
     std::fprintf(stdout
       , "[BOX2DPROXY]: Body destroyed %zu\n",vtoremove.size());
   }
+#endif  
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -496,10 +542,12 @@ void stemcapsulax::Box2DProxy::removeBodiesYGreaterThan(f32 y)
     b2DestroyBody(b);
     m_pImpl->m_mapBodies.erase(B2TOU64(b));
   }
+#if 0  
   if (!vtoremove.empty()) {
     std::fprintf(stdout
       , "[BOX2DPROXY]: Body destroyed %zu\n",vtoremove.size());
   }
+#endif  
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

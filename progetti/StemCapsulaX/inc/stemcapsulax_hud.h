@@ -36,7 +36,7 @@ namespace stemcapsulax {
     Font& currentFont();
     void setCurrentFont(Font&);
     
-    void draw(RenderTexture2D&, const SystemInfo&);
+    void draw(RenderTexture2D&);
     void update();
     
   protected:

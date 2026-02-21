@@ -24,6 +24,7 @@
 #include "stemcapsulax_box2d_proxy.h"
 #include "stemcapsulax_status.h"
 #include "stemcapsulax_b2ddebugdraw.h"
+#include <cmath>
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * MACROS
@@ -83,6 +84,14 @@ stemcapsulax::SceneBox2D::~SceneBox2D()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::Scene::TypeID stemcapsulax::SceneBox2D::type() const
+{
+  return SceneTypes::kBOX2D;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::SceneBox2D::clear()
 {
   m_pImpl->m_proxy.destroyInactiveBodies();
@@ -120,14 +129,13 @@ void stemcapsulax::SceneBox2D::trigger(uint32_t what)
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::SceneBox2D::show()
 {
-
+  m_pImpl->m_proxy.createBodyConcaveGround();
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::SceneBox2D::draw(RenderTexture2D& rtex
-  , const SystemInfo& si)
+void stemcapsulax::SceneBox2D::draw(RenderTexture2D& rtex)
 {
   auto mp = GetMousePosition();
   auto& st = Status::GetInstance();
@@ -233,7 +241,7 @@ void stemcapsulax::SceneBox2D::update()
   }
   
   auto& st = Status::GetInstance();
-  if (!st.data().bAppPaused) {
+  if (!st.data().bSimulationPaused) {
     m_pImpl->m_proxy.update();
   }
 
@@ -254,7 +262,7 @@ void stemcapsulax::SceneBox2D::update()
    * Cancella da Box2D tutti i body che non sono più visibili, con il fine
    * di ridurre la quantità di calcoli e migliorare il framerate.
    */
-  m_pImpl->m_proxy.removeBodiesOutsideRect(0, -300, 100, 500);
+  m_pImpl->m_proxy.removeBodiesOutsideRect(-1000, -400, 1000, 600);
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

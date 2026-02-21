@@ -28,8 +28,21 @@
  * CLASS DECLARATION
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
+  enum SceneTypes : u32 {
+      kUNKNOWN = 0
+    , kBOX2D   = 1
+    , kLASTTYPE
+  };
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * CLASS DECLARATION
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+namespace stemcapsulax {
   class Scene {
   public:
+    using TypeID = u32;
+
     Scene();
     Scene(const Scene&)              = delete;
     Scene(Scene&&)                   = delete;
@@ -40,9 +53,10 @@ namespace stemcapsulax {
     virtual void clear() = 0;
     virtual void trigger(uint32_t) = 0;
     virtual void show() = 0;
-    virtual void draw(RenderTexture2D&, const SystemInfo&) = 0;
+    virtual void draw(RenderTexture2D&) = 0;
     virtual void update() = 0;
     virtual void unshow() = 0;
+    virtual TypeID type() const = 0;
 
   private:
     class Impl; Impl* m_pImpl;

@@ -19,38 +19,36 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_scene_box2d_h
-#define stemcapsulax_scene_box2d_h
+#ifndef stemcapsulax_layer_h
+#define stemcapsulax_layer_h
 
-#include "stemcapsulax_scene.h"
 #include "stemcapsulax_system.h"
-#include "stemcapsulax_box2d_proxy.h"
-#include "stemcapsulax_box2d_fromimage.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * CLASS DECLARATION
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
-  class SceneBox2D : public Scene {
+  class Layer {
   public:
-    SceneBox2D();
-    SceneBox2D(const SceneBox2D&)              = delete;
-    SceneBox2D(SceneBox2D&&)                   = delete;
-    SceneBox2D& operator=(const SceneBox2D&)   = delete;
-    SceneBox2D& operator=(SceneBox2D&&)        = delete;
-    virtual ~SceneBox2D();
+    using TypeID = u32;
 
-    void clear() override;
-    void trigger(uint32_t) override;
-    void show() override;
-    void draw(RenderTexture2D&) override;
-    void update() override;
-    void unshow() override;
-    TypeID type() const override;
+    Layer();
+    Layer(const Layer&)              = delete;
+    Layer(Layer&&)                   = delete;
+    Layer& operator=(const Layer&)   = delete;
+    Layer& operator=(Layer&&)        = delete;
+    virtual ~Layer();
+
+    virtual void clear() = 0;
+    virtual void show() = 0;
+    virtual void hide() = 0;
+    virtual void update() = 0;
+    virtual void draw(RenderTexture2D&) = 0;
+    virtual TypeID type() const = 0;
 
   private:
     class Impl; Impl* m_pImpl;
   };
 }
 
-#endif // stemcapsulax_scene_box2d_h
+#endif // stemcapsulax_layer_h

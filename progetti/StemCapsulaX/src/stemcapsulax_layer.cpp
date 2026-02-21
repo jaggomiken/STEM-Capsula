@@ -19,38 +19,51 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_scene_box2d_h
-#define stemcapsulax_scene_box2d_h
-
-#include "stemcapsulax_scene.h"
+#include "stemcapsulax_layer.h"
 #include "stemcapsulax_system.h"
-#include "stemcapsulax_box2d_proxy.h"
-#include "stemcapsulax_box2d_fromimage.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * CLASS DECLARATION
+ * PRIVATE IMPLEMENTATION CLASS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-namespace stemcapsulax {
-  class SceneBox2D : public Scene {
-  public:
-    SceneBox2D();
-    SceneBox2D(const SceneBox2D&)              = delete;
-    SceneBox2D(SceneBox2D&&)                   = delete;
-    SceneBox2D& operator=(const SceneBox2D&)   = delete;
-    SceneBox2D& operator=(SceneBox2D&&)        = delete;
-    virtual ~SceneBox2D();
+class stemcapsulax::Layer::Impl {
+public:
+  Impl();
+ ~Impl();
 
-    void clear() override;
-    void trigger(uint32_t) override;
-    void show() override;
-    void draw(RenderTexture2D&) override;
-    void update() override;
-    void unshow() override;
-    TypeID type() const override;
+private:
+};
 
-  private:
-    class Impl; Impl* m_pImpl;
-  };
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::Layer::Layer()
+: m_pImpl{ nullptr }
+{
+  m_pImpl = new(std::nothrow) Impl{};
+  STEMCAPSULAX_CAPTURE_CPU(nullptr == m_pImpl, "Cannot allocate");
 }
 
-#endif // stemcapsulax_scene_box2d_h
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::Layer::~Layer()
+{
+  delete m_pImpl;
+  m_pImpl = nullptr;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::Layer::Impl::Impl()
+{
+
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::Layer::Impl::~Impl()
+{
+
+}

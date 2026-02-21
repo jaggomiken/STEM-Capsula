@@ -32,8 +32,10 @@ namespace stemcapsulax {
   class Status {
   public:
     struct Data {
-      bool bAppPaused;
+      bool bSimulationPaused;
       bool bDrawDebugEnabled;
+      bool bShowHUD;
+      bool bShowGUI;
       AudioManager::StatusData sdAudioManager;
       SystemInfo sysinf;
     };

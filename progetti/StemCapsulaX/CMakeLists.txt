@@ -31,32 +31,34 @@ find_package(  box2d REQUIRED)
 set(SRC 
   src/stemcapsulax_main.cpp 
   src/stemcapsulax_system.cpp
-  src/stemcapsulax_background.cpp
   src/stemcapsulax_gui.cpp
   src/stemcapsulax_hud.cpp
   src/stemcapsulax_scene_manager.cpp
   src/stemcapsulax_scene.cpp
+  src/stemcapsulax_scene_layered.cpp
   src/stemcapsulax_scene_box2d.cpp
   src/stemcapsulax_status.cpp
   src/stemcapsulax_box2d_proxy.cpp
   src/stemcapsulax_box2d_fromimage.cpp
   src/stemcapsulax_audio_manager.cpp
+  src/stemcapsulax_layer.cpp
   # Add here your files
 )
 set(INC 
   inc/stemcapsulax_priv.h 
   inc/stemcapsulax_system.h
-  inc/stemcapsulax_background.h
   inc/stemcapsulax_gui.h
   inc/stemcapsulax_hud.h
   inc/stemcapsulax_scene_manager.h
   inc/stemcapsulax_scene.h
+  inc/stemcapsulax_scene_layered.h
   inc/stemcapsulax_scene_box2d.h
   inc/stemcapsulax_status.h
   inc/stemcapsulax_box2d_proxy.h
   inc/stemcapsulax_box2d_fromimage.h
   inc/stemcapsulax_b2ddebugdraw.h
   inc/stemcapsulax_audio_manager.h
+  inc/stemcapsulax_layer.h
   # Add here your files
 )
 set(EXT

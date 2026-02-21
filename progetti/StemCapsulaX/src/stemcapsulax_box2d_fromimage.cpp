@@ -26,6 +26,7 @@
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * MACROS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+#define STEMCAPSULAX_B2BODYFROMIMAGE_USE_CIRCLES                           1
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * CLASS/STRUCT DECLARATION
@@ -116,9 +117,13 @@ b2BodyId stemcapsulax::Box2DBodyFromImage::Impl::m_CreateBody(Color shapecolor
   bodyDef.angularDamping = 4.0f;
   bodyDef.position  = b2Vec2{ x, y };
   bodyDef.rotation  = b2MakeRot(.0f * (B2_PI / 180.0f));
-    b2BodyId     bodyId = b2CreateBody(wid, &bodyDef);
-   b2Polygon dynamicBox = b2MakeBox(bodyw / 2.0f, bodyh / 2.0f);
-  b2ShapeDef   shapeDef = b2DefaultShapeDef();
+  b2BodyId bodyId = b2CreateBody(wid, &bodyDef);
+#if STEMCAPSULAX_B2BODYFROMIMAGE_USE_CIRCLES == 0
+  b2Polygon dynamicBox = b2MakeBox(bodyw / 2.0f, bodyh / 2.0f);
+#else
+  b2Circle dynamicBox = {{bodyw / 2.0f, bodyh / 2.0f}, w};
+#endif   
+  b2ShapeDef shapeDef = b2DefaultShapeDef();
   shapeDef.enableContactEvents = false;
   shapeDef.enableHitEvents = false;
   shapeDef.density = density;
@@ -129,6 +134,10 @@ b2BodyId stemcapsulax::Box2DBodyFromImage::Impl::m_CreateBody(Color shapecolor
     | u32(shapecolor.r) << 16
     | u32(shapecolor.g) <<  8
     | u32(shapecolor.b);
+#if STEMCAPSULAX_B2BODYFROMIMAGE_USE_CIRCLES == 0
   b2CreatePolygonShape(bodyId, &shapeDef, &dynamicBox);
+#else
+  b2CreateCircleShape(bodyId, &shapeDef, &dynamicBox);
+#endif  
   return bodyId;
 }

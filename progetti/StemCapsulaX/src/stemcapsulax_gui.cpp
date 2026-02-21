@@ -121,7 +121,8 @@ void stemcapsulax::GUI::Impl::draw()
     ImGui::Separator();
     ImGui::TextUnformatted("System");
     ImGui::Separator();
-    ImGui::Checkbox("System Paused", &dt.bAppPaused);
+    ImGui::Checkbox("Simulation Paused", &dt.bSimulationPaused);
+    ImGui::Checkbox("HUD Visible", &dt.bShowHUD);
     ImGui::Separator();
     ImGui::TextUnformatted("Current Scene");
     ImGui::Separator();

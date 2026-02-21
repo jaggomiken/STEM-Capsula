@@ -86,6 +86,7 @@ namespace stemcapsulax {
     void destroyInactiveBodies();
 
     void createBodyTestGround();
+    void createBodyConcaveGround();
     void createBodyGroundRect(f32 x, f32 y, f32 w, f32 h);
     void createBodyRectangle(f32 x, f32 y, f32 w, f32 h);
     void createBodyCircle(f32 x, f32 y, f32 r);
