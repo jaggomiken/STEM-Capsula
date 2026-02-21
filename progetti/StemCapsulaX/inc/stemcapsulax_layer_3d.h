@@ -19,51 +19,34 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_scene_h
-#define stemcapsulax_scene_h
+#ifndef stemcapsulax_layer_3d_h
+#define stemcapsulax_layer_3d_h
 
-#include "stemcapsulax_task_runner.h"
-
-/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * ENUM DECLARATION
- * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-namespace stemcapsulax {
-  enum class SceneType : u32 {
-      kUNKNOWN = 0
-    , kBOX2D   = 1
-    , kLAYERED = 2
-    , kLASTTYPE
-  };
-}
+#include "stemcapsulax_layer.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * CLASS DECLARATION
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
-  class Scene {
+  class Layer3D : public Layer {
   public:
-    using TypeID = u32;
+    Layer3D();
+    Layer3D(const Layer3D&)              = delete;
+    Layer3D(Layer3D&&)                   = delete;
+    Layer3D& operator=(const Layer3D&)   = delete;
+    Layer3D& operator=(Layer3D&&)        = delete;
+    virtual ~Layer3D();
 
-    Scene();
-    Scene(const Scene&)              = delete;
-    Scene(Scene&&)                   = delete;
-    Scene& operator=(const Scene&)   = delete;
-    Scene& operator=(Scene&&)        = delete;
-    virtual ~Scene();
-
-    TaskRunner& runner();
-
-    virtual void clear() = 0;
-    virtual void trigger(uint32_t) = 0;
-    virtual void show() = 0;
-    virtual void draw(RenderTexture2D&) = 0;
-    virtual void update() = 0;
-    virtual void unshow() = 0;
-    virtual TypeID type() const = 0;
+    void clear() override;
+    void show() override;
+    void hide() override;
+    void update() override;
+    void draw(RenderTexture2D&) override;
+    TypeID type() const override;
 
   private:
     class Impl; Impl* m_pImpl;
   };
 }
 
-#endif // stemcapsulax_scene_h
+#endif // stemcapsulax_layer_3d_h

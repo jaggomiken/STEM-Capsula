@@ -19,24 +19,22 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#include "stemcapsulax_scene.h"
+#include "stemcapsulax_layer_box2d.h"
 #include "stemcapsulax_system.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * PRIVATE IMPLEMENTATION CLASS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-class stemcapsulax::Scene::Impl {
+class stemcapsulax::LayerBox2D::Impl {
 public:
   Impl();
  ~Impl();
-
-  TaskRunner m_runner;
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::Scene::Scene()
+stemcapsulax::LayerBox2D::LayerBox2D()
 : m_pImpl{ nullptr }
 {
   m_pImpl = new(std::nothrow) Impl{};
@@ -46,7 +44,7 @@ stemcapsulax::Scene::Scene()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::Scene::~Scene()
+stemcapsulax::LayerBox2D::~LayerBox2D()
 {
   delete m_pImpl;
   m_pImpl = nullptr;
@@ -55,15 +53,15 @@ stemcapsulax::Scene::~Scene()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::TaskRunner& stemcapsulax::Scene::runner()
+stemcapsulax::Layer::TypeID stemcapsulax::LayerBox2D::type() const
 {
-  return m_pImpl->m_runner;
+  return Layer::TypeID(LayerType::kBOX2D);
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::Scene::Impl::Impl()
+void stemcapsulax::LayerBox2D::clear()
 {
 
 }
@@ -71,7 +69,53 @@ stemcapsulax::Scene::Impl::Impl()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::Scene::Impl::~Impl()
+void stemcapsulax::LayerBox2D::show()
+{
+
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::LayerBox2D::hide()
+{
+
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::LayerBox2D::update()
+{
+  auto& tr = runner();
+  tr.enumerate([=, &tr](TaskRunner::Task& task) {
+    if (task.update) { task.update(tr, task); }
+  });
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::LayerBox2D::draw(RenderTexture2D& rtex)
+{
+  auto& tr = runner();
+  tr.enumerate([=, &tr, &rtex](TaskRunner::Task& task) {
+    if (task.draw) { task.draw(tr, task, rtex); }
+  });
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::LayerBox2D::Impl::Impl()
+{
+
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::LayerBox2D::Impl::~Impl()
 {
 
 }

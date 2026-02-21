@@ -26,6 +26,7 @@
 #include "stemcapsulax_status.h"
 #include "stemcapsulax_scene_box2d.h"
 #include "stemcapsulax_audio_manager.h"
+#include "stemcapsulax_director.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * MACROS
@@ -136,15 +137,7 @@ i32 main(i32 argc, char* argv[])
   static stemcapsulax::GUI gui;
   auto rtexForScene = LoadRenderTexture(ww, wh); // texture per la scena
   auto rtexForHUD   = LoadRenderTexture(ww, wh); // texture per lo HUD
-
-/* --------------------------------------------------------------------------
- * REGISTER SCENES (registrazione scene nello scene manager)
- * -------------------------------------------------------------------------- */
-  static stemcapsulax::SceneBox2D scene; // questa scena usa Conv configurato
-  sm.addScene(&scene);
-  sm.setCurrentSceneByIndex(0);
-  sm.currentScene().show(); // per attivare una scena, si deve chiamare show()
-  
+ 
 /* --------------------------------------------------------------------------
  * STATUS INIT (prepara lo stato globale del sistema)
  * -------------------------------------------------------------------------- */
@@ -152,6 +145,11 @@ i32 main(i32 argc, char* argv[])
   sta.data().bSimulationPaused = false;
   sta.data().bDrawDebugEnabled = true;
   sta.data().sysinf            = sysinf; // scrivi sysinf iniziale
+
+/* --------------------------------------------------------------------------
+ * DIRECTOR (prepara task, registra scene nello scene manager, ecc.)
+ * -------------------------------------------------------------------------- */
+  stemcapsulax::Director::PrepareAll(argc, argv);
 
 /* --------------------------------------------------------------------------
  * AUDIO START (prepara l'audio principale, se disponibile)

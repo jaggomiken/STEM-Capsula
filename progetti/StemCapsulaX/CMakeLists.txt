@@ -42,6 +42,10 @@ set(SRC
   src/stemcapsulax_box2d_fromimage.cpp
   src/stemcapsulax_audio_manager.cpp
   src/stemcapsulax_layer.cpp
+  src/stemcapsulax_layer_box2d.cpp
+  src/stemcapsulax_layer_background.cpp
+  src/stemcapsulax_layer_3d.cpp
+  src/stemcapsulax_task_runner.cpp
   # Add here your files
 )
 set(INC 
@@ -59,6 +63,11 @@ set(INC
   inc/stemcapsulax_b2ddebugdraw.h
   inc/stemcapsulax_audio_manager.h
   inc/stemcapsulax_layer.h
+  inc/stemcapsulax_layer_box2d.h
+  inc/stemcapsulax_layer_background.h
+  inc/stemcapsulax_layer_3d.h
+  inc/stemcapsulax_task_runner.h
+  inc/stemcapsulax_director.h
   # Add here your files
 )
 set(EXT
@@ -87,8 +96,20 @@ set(EXT
   ext/TaskScheduler.cpp
   ext/LockLessMultiReadPipe.h
 )
-            add_executable(${TARGET} ${SRC} ${INC} ${EXT})
-target_include_directories(${TARGET} PUBLIC inc ext ext/extras)
+set(TSK
+  tasks/stemcapsulax_task_crosshair.h
+  tasks/stemcapsulax_task_crosshair.cpp
+  tasks/stemcapsulax_task_growing_circle.h
+  tasks/stemcapsulax_task_growing_circle.cpp
+  tasks/stemcapsulax_task_energy_circle.h
+  tasks/stemcapsulax_task_energy_circle.cpp
+)
+set(DIRECTOR
+  # Only one director implementation shall be enabled here
+  directors/simpletest/stemcapsulax_director.cpp
+)
+            add_executable(${TARGET} ${SRC} ${INC} ${EXT} ${TSK} ${DIRECTOR})
+target_include_directories(${TARGET} PUBLIC inc ext ext/extras tasks)
      target_link_libraries(${TARGET} PRIVATE 
         raylib box2d::box2d Threads::Threads OpenGL::GL)
 if (APPLE)

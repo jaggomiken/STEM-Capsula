@@ -19,51 +19,29 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_scene_h
-#define stemcapsulax_scene_h
+#ifndef stemcapsulax_director_h
+#define stemcapsulax_director_h
 
-#include "stemcapsulax_task_runner.h"
+#include "stemcapsulax_system.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * ENUM DECLARATION
+ * Questa classe ha solo un metodo statico che configura l'intero sistema.
+ * Devi usare questa classe per configurare tutto il tuo gioco o la tua
+ * applicazione grafica. Devi includere nel CMakeLists.txt solo un cpp di
+ * director alla volta di modo che il main() invochi quello giusto. Non è
+ * molto flessibile come sistema, ma non sto costruendo un framework molto
+ * generale, solo un ambiente agevole per ottenere rapidamente un qualche
+ * risultato grafico visibile.
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-namespace stemcapsulax {
-  enum class SceneType : u32 {
-      kUNKNOWN = 0
-    , kBOX2D   = 1
-    , kLAYERED = 2
-    , kLASTTYPE
-  };
-}
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * CLASS DECLARATION
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
-  class Scene {
+  class Director {
   public:
-    using TypeID = u32;
-
-    Scene();
-    Scene(const Scene&)              = delete;
-    Scene(Scene&&)                   = delete;
-    Scene& operator=(const Scene&)   = delete;
-    Scene& operator=(Scene&&)        = delete;
-    virtual ~Scene();
-
-    TaskRunner& runner();
-
-    virtual void clear() = 0;
-    virtual void trigger(uint32_t) = 0;
-    virtual void show() = 0;
-    virtual void draw(RenderTexture2D&) = 0;
-    virtual void update() = 0;
-    virtual void unshow() = 0;
-    virtual TypeID type() const = 0;
-
-  private:
-    class Impl; Impl* m_pImpl;
+    static void PrepareAll(int argc, char* argv[]);
   };
 }
 
-#endif // stemcapsulax_scene_h
+#endif // stemcapsulax_director_h

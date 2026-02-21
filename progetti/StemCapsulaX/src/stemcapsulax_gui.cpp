@@ -124,7 +124,7 @@ void stemcapsulax::GUI::Impl::draw()
     ImGui::Checkbox("Simulation Paused", &dt.bSimulationPaused);
     ImGui::Checkbox("HUD Visible", &dt.bShowHUD);
     ImGui::Separator();
-    ImGui::TextUnformatted("Current Scene");
+    ImGui::Text("Current Scene (Type=%u)", sm.currentScene().type());
     ImGui::Separator();
     ImGui::Checkbox("Debug Draw Enabled", &dt.bDrawDebugEnabled);
     ImGui::PushItemWidth(120.0f);

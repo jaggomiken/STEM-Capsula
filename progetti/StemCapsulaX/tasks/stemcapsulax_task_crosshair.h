@@ -19,51 +19,16 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_scene_h
-#define stemcapsulax_scene_h
-
 #include "stemcapsulax_task_runner.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * ENUM DECLARATION
+ * Questo task mostra un cursore a croce fullscreen in corrispondenza della
+ * posizione corrente del mouse.
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-namespace stemcapsulax {
-  enum class SceneType : u32 {
-      kUNKNOWN = 0
-    , kBOX2D   = 1
-    , kLAYERED = 2
-    , kLASTTYPE
-  };
-}
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * CLASS DECLARATION
+ * STEMCAPSULAX TASK CREATOR
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
-  class Scene {
-  public:
-    using TypeID = u32;
-
-    Scene();
-    Scene(const Scene&)              = delete;
-    Scene(Scene&&)                   = delete;
-    Scene& operator=(const Scene&)   = delete;
-    Scene& operator=(Scene&&)        = delete;
-    virtual ~Scene();
-
-    TaskRunner& runner();
-
-    virtual void clear() = 0;
-    virtual void trigger(uint32_t) = 0;
-    virtual void show() = 0;
-    virtual void draw(RenderTexture2D&) = 0;
-    virtual void update() = 0;
-    virtual void unshow() = 0;
-    virtual TypeID type() const = 0;
-
-  private:
-    class Impl; Impl* m_pImpl;
-  };
+  TaskRunner::Task CreateTask_CrossHair();
 }
-
-#endif // stemcapsulax_scene_h

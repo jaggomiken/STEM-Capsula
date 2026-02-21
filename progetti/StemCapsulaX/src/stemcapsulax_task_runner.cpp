@@ -19,24 +19,25 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#include "stemcapsulax_scene.h"
-#include "stemcapsulax_system.h"
+#include "stemcapsulax_task_runner.h"
+#include <map>
+#include <vector>
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * PRIVATE IMPLEMENTATION CLASS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-class stemcapsulax::Scene::Impl {
+class stemcapsulax::TaskRunner::Impl {
 public:
   Impl();
  ~Impl();
 
-  TaskRunner m_runner;
+  std::map<std::string, Task> m_mapTasks;
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::Scene::Scene()
+stemcapsulax::TaskRunner::TaskRunner()
 : m_pImpl{ nullptr }
 {
   m_pImpl = new(std::nothrow) Impl{};
@@ -46,7 +47,7 @@ stemcapsulax::Scene::Scene()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::Scene::~Scene()
+stemcapsulax::TaskRunner::~TaskRunner()
 {
   delete m_pImpl;
   m_pImpl = nullptr;
@@ -55,15 +56,47 @@ stemcapsulax::Scene::~Scene()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::TaskRunner& stemcapsulax::Scene::runner()
+void stemcapsulax::TaskRunner::taskAdd(const Task& task)
 {
-  return m_pImpl->m_runner;
+  STEMCAPSULAX_CAPTURE_CPU(0 != m_pImpl->m_mapTasks.count(task.name)
+    , "Task with that name already in the table");
+  m_pImpl->m_mapTasks.insert({ task.name, task });
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::Scene::Impl::Impl()
+void stemcapsulax::TaskRunner::taskRemove(const std::string& name)
+{
+  if (0 != m_pImpl->m_mapTasks.count(name)) {
+    m_pImpl->m_mapTasks.erase(name);
+  }
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+size_t stemcapsulax::TaskRunner::taskCount() const
+{
+  return m_pImpl->m_mapTasks.size();
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::TaskRunner::enumerate(const std::function<void(Task&)>& cb)
+{
+  if (cb) {
+    for (auto& pair : m_pImpl->m_mapTasks) {
+      cb(pair.second);
+    }
+  }
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::TaskRunner::Impl::Impl()
 {
 
 }
@@ -71,7 +104,7 @@ stemcapsulax::Scene::Impl::Impl()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::Scene::Impl::~Impl()
+stemcapsulax::TaskRunner::Impl::~Impl()
 {
 
 }

@@ -56,6 +56,14 @@ stemcapsulax::LayeredScene::~LayeredScene()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::Scene::TypeID stemcapsulax::LayeredScene::type() const
+{
+  return TypeID(SceneType::kLAYERED);
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayeredScene::layerAdd(Layer* pL)
 {
   STEMCAPSULAX_CAPTURE_CPU(nullptr == pL, "Pointer to layer is NULL");
@@ -131,6 +139,14 @@ void stemcapsulax::LayeredScene::clear()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::LayeredScene::trigger(u32)
+{
+  // niente da fare in questo metodo qui
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayeredScene::show()
 {
   for (auto pL : m_pImpl->m_vLayers) {
@@ -141,9 +157,18 @@ void stemcapsulax::LayeredScene::show()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::LayeredScene::draw(RenderTexture2D&)
+void stemcapsulax::LayeredScene::draw(RenderTexture2D& rtex)
 {
-
+  BeginTextureMode(rtex);
+  ClearBackground(Fade(BLACK, .0f));
+  for (auto pL : m_pImpl->m_vLayers) {
+    if (nullptr != pL) { pL->draw(rtex); }
+  }
+  auto& tr = runner();
+  tr.enumerate([=, &tr, &rtex](TaskRunner::Task& task) {
+    if (task.draw) { task.draw(tr, task, rtex); }
+  });
+  EndTextureMode();
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -154,6 +179,11 @@ void stemcapsulax::LayeredScene::update()
   for (auto pL : m_pImpl->m_vLayers) {
     if (nullptr != pL) { pL->update(); }
   }
+
+  auto& tr = runner();
+  tr.enumerate([=, &tr](TaskRunner::Task& task) {
+    if (task.update) { task.update(tr, task); }
+  });
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

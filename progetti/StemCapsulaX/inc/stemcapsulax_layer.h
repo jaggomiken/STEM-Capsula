@@ -22,7 +22,21 @@
 #ifndef stemcapsulax_layer_h
 #define stemcapsulax_layer_h
 
-#include "stemcapsulax_system.h"
+#include "stemcapsulax_task_runner.h"
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * ENUM DECLARATION
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+namespace stemcapsulax {
+  enum class LayerType : u32 {
+      kUNKNOWN    = 0
+    , kBACKGROUND = 1      
+    , kBOX2D      = 2
+    , k2D         = 3
+    , k3D         = 4
+    , kLASTTYPE
+  };
+}
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * CLASS DECLARATION
@@ -38,6 +52,8 @@ namespace stemcapsulax {
     Layer& operator=(const Layer&)   = delete;
     Layer& operator=(Layer&&)        = delete;
     virtual ~Layer();
+
+    TaskRunner& runner();
 
     virtual void clear() = 0;
     virtual void show() = 0;

@@ -36,6 +36,9 @@
  * numero predefinito di livelli è 2, un background e un foreground.
  * L'allocazione e deallocazione di un Layer non è gestita da questa classe.
  * Il Layer deve sopravvivere almeno finché non è rimosso dalla scena.
+ * 
+ * La scena disegna i task per ultimi, in sovraimpressione a tutti i layer
+ * già disegnati. Ricordiamo che la scena possiede un task runner interno.
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -61,10 +64,12 @@ namespace stemcapsulax {
 
     /* Questi metodi sono proxy verso gli omologhi di Layer */
     void clear() override final;
+    void trigger(uint32_t) override;
     void show() override final;
     void draw(RenderTexture2D&) override final;
     void update() override final;
     void unshow() override final;
+    TypeID type() const override final;
 
   private:
     class Impl; Impl* m_pImpl;

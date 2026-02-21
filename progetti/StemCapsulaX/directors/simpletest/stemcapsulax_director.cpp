@@ -19,51 +19,36 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_scene_h
-#define stemcapsulax_scene_h
-
-#include "stemcapsulax_task_runner.h"
-
-/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * ENUM DECLARATION
- * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-namespace stemcapsulax {
-  enum class SceneType : u32 {
-      kUNKNOWN = 0
-    , kBOX2D   = 1
-    , kLAYERED = 2
-    , kLASTTYPE
-  };
-}
+#include "stemcapsulax_director.h"
+#include "stemcapsulax_audio_manager.h"
+#include "stemcapsulax_scene_layered.h"
+#include "stemcapsulax_scene_manager.h"
+#include "stemcapsulax_task_crosshair.h"
+#include "stemcapsulax_task_growing_circle.h"
+#include "stemcapsulax_task_energy_circle.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * CLASS DECLARATION
+ * Il Director decide quali scene creare (sempre come static) e registrare
+ * nel gestore delle scene. Inoltre il director decide quali task inserire
+ * nelle varie scene (i task sono come attori). In genere una scena a layer
+ * può fare il subclassing di LayeredScane e quindi fornire i livelli in
+ * proprio. Ma il director potrebbe usare direttamente una LayeredScene e
+ * popolarla con propri layer dedicati. Ricordiamo sempre che i task sono
+ * di scene e anche di livello.
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-namespace stemcapsulax {
-  class Scene {
-  public:
-    using TypeID = u32;
 
-    Scene();
-    Scene(const Scene&)              = delete;
-    Scene(Scene&&)                   = delete;
-    Scene& operator=(const Scene&)   = delete;
-    Scene& operator=(Scene&&)        = delete;
-    virtual ~Scene();
-
-    TaskRunner& runner();
-
-    virtual void clear() = 0;
-    virtual void trigger(uint32_t) = 0;
-    virtual void show() = 0;
-    virtual void draw(RenderTexture2D&) = 0;
-    virtual void update() = 0;
-    virtual void unshow() = 0;
-    virtual TypeID type() const = 0;
-
-  private:
-    class Impl; Impl* m_pImpl;
-  };
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * STATIC METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
+{
+  static LayeredScene scene;
+  auto& tr = scene.runner();
+  tr.taskAdd(CreateTask_CrossHair());
+  tr.taskAdd(CreateTask_GrowingCircle());
+  tr.taskAdd(CreateTask_EnergyCircle());
+  auto& sm = SceneManager::GetInstance();
+  sm.addScene(&scene);
+  sm.setCurrentSceneByIndex(0);
+  sm.currentScene().show();
 }
-
-#endif // stemcapsulax_scene_h

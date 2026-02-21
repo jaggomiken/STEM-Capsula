@@ -86,7 +86,7 @@ stemcapsulax::SceneBox2D::~SceneBox2D()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::Scene::TypeID stemcapsulax::SceneBox2D::type() const
 {
-  return SceneTypes::kBOX2D;
+  return TypeID(SceneType::kBOX2D);
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

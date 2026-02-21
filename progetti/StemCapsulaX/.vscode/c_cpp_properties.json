@@ -5,7 +5,9 @@
             "includePath": [
                 "${default}",
                 "${workspaceFolder}/inc/**",
-                "${workspaceFolder}/ext"
+                "${workspaceFolder}/ext/**",
+                "${workspaceFolder}/tasks/**",
+                "${workspaceFolder}/directors/**"
             ],
             "defines": [
                 "_DEBUG",
