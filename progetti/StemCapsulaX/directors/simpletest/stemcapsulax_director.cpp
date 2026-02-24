@@ -29,12 +29,13 @@
 #include "stemcapsulax_task_crosshair.h"
 #include "stemcapsulax_task_growing_circle.h"
 #include "stemcapsulax_task_energy_circle.h"
+#include "stemcapsulax_box2d_proxy.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * Il Director decide quali scene creare (sempre come static) e registrare
  * nel gestore delle scene. Inoltre il director decide quali task inserire
  * nelle varie scene (i task sono come attori). In genere una scena a layer
- * può fare il subclassing di LayeredScane e quindi fornire i livelli in
+ * può fare il subclassing di LayeredScene e quindi fornire i livelli in
  * proprio. Ma il director potrebbe usare direttamente una LayeredScene e
  * popolarla con propri layer dedicati. Ricordiamo sempre che i task sono
  * di scene e anche di livello.
@@ -47,14 +48,26 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
 {
   /////////////////////////////////////////////////////////////////////////////
   // In questo esempio, il director configura esternamente i layer della scena
-  // inserendo un background e poi un layer box2d.
+  // inserendo un background, un layer 3D e poi un layer Box2D. Inoltre
+  // configura dei task che svolgono specifiche funzioni nella scena per
+  // intero.
   /////////////////////////////////////////////////////////////////////////////
   static LayeredScene scene;
   static LayerBackground laback;
   static Layer3D la3d;
   static LayerBox2D lab2d;
-  // inizializza i layer
-  laback.setImagePath(imagepath("backdemo.png"));
+  // inizializza i layer secondo le loro specificità
+  laback.setImagePath(imagepath("backdemo.png")); // background texture
+  auto fnGrowingCircle = [](f32 radius) {
+    auto mp = GetScreenToWorld2D(GetMousePosition(), lab2d.camera());
+    auto& cnv = Conv::GetInstance();
+    lab2d.circleAt(cnv.x_s2w(mp.x), cnv.y_s2w(mp.y), cnv.x_s2w(radius));
+  };
+  auto fnExplosion = [](f32 energy) {
+    auto mp = GetScreenToWorld2D(GetMousePosition(), lab2d.camera());
+    auto& cnv = Conv::GetInstance();
+    lab2d.explodeAt(cnv.x_s2w(mp.x), cnv.y_s2w(mp.y), energy);
+  };
 
   // configura i layer di scena
   scene.layerAdd(&laback); // disegnato per primo
@@ -63,8 +76,8 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
   // configura i task di scena
   auto& tr = scene.runner();
   tr.taskAdd(CreateTask_CrossHair());
-  tr.taskAdd(CreateTask_GrowingCircle());
-  tr.taskAdd(CreateTask_EnergyCircle());
+  tr.taskAdd(CreateTask_GrowingCircle(fnGrowingCircle));
+  tr.taskAdd(CreateTask_EnergyCircle(fnExplosion));
   auto& sm = SceneManager::GetInstance();
   sm.addScene(&scene);
   sm.setCurrentSceneByIndex(0);

@@ -20,6 +20,7 @@
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #include "stemcapsulax_task_runner.h"
+#include <functional>
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * Questo task intercetta la posizione del mouse e la pressione del tasto
@@ -34,5 +35,5 @@
  * STEMCAPSULAX TASK CREATOR
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
-  TaskRunner::Task CreateTask_GrowingCircle();
+  TaskRunner::Task CreateTask_GrowingCircle(const std::function<void(f32)>&);
 }

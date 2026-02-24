@@ -19,21 +19,59 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#include "stemcapsulax_task_runner.h"
-#include <functional>
+#include "stemcapsulax_actor.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * Questo task intercetta la posizione del mouse e la pressione del tasto
- * ALT sinistro. Finché il tasto ALT è premuto, viene mostrato un cerchio
- * con raggio crescente nel tempo. Quanto l'utente preme il tasto sinistro
- * del mouse, la crescita del raggio si interrompe e il cerchio persiste
- * sullo schermo, scomparendo quando il tasto sinistro del mouse viene
- * rilasciato. Il colore è rosso.
+ * PRIVATE IMPLEMENTATION CLASS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+class stemcapsulax::Actor::Impl {
+public:
+  Impl();
+ ~Impl();
+
+  std::string m_strName;
+};
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * STEMCAPSULAX TASK CREATOR
+ * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-namespace stemcapsulax {
-  TaskRunner::Task CreateTask_EnergyCircle(const std::function<void(f32)>&);
+stemcapsulax::Actor::Actor(const std::string& name)
+: m_pImpl{ nullptr }
+{
+  m_pImpl = new(std::nothrow) Impl{};
+  STEMCAPSULAX_CAPTURE_CPU(nullptr == m_pImpl, "Cannot allocate");
+  m_pImpl->m_strName = name;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::Actor::~Actor()
+{
+  delete m_pImpl;
+  m_pImpl = nullptr;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+std::string stemcapsulax::Actor::name() const
+{
+  return m_pImpl->m_strName;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::Actor::Impl::Impl()
+{
+
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::Actor::Impl::~Impl()
+{
+
 }

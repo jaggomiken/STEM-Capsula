@@ -39,14 +39,15 @@ struct Task_EnergyCircle {
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * STATIC METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::TaskRunner::Task stemcapsulax::CreateTask_EnergyCircle()
+stemcapsulax::TaskRunner::Task 
+  stemcapsulax::CreateTask_EnergyCircle(const std::function<void(f32)>& cb)
 {
   static Task_EnergyCircle taskcrosshair;
   taskcrosshair.m_fExplosionEnergy =  1.0f;
   TaskRunner::Task task;
   task.name      = "00_EnergyCircle";
   task.pUserData = &taskcrosshair;
-  task.update    = [](TaskRunner& r, TaskRunner::Task& t) {
+  task.update    = [cb](TaskRunner& r, TaskRunner::Task& t) {
     Task_EnergyCircle* pT = reinterpret_cast<Task_EnergyCircle*>(t.pUserData);
     if (IsKeyDown(KEY_LEFT_ALT)) {
       pT->m_bDrawEnergyRange = true;
@@ -60,7 +61,7 @@ stemcapsulax::TaskRunner::Task stemcapsulax::CreateTask_EnergyCircle()
     }
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
       if (IsKeyDown(KEY_LEFT_ALT)) {
-        // è possibile invocare una callback qui
+        if (cb) { cb(pT->m_fExplosionEnergy); }
         pT->m_bIncreaseEnergy = false;
       }
     }

@@ -40,7 +40,8 @@ struct Task_GrowingCircle {
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * STATIC METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::TaskRunner::Task stemcapsulax::CreateTask_GrowingCircle()
+stemcapsulax::TaskRunner::Task 
+  stemcapsulax::CreateTask_GrowingCircle(const std::function<void(f32)>& cb)
 {
   static Task_GrowingCircle taskcrosshair;
   taskcrosshair.m_fCircleRadius =  1.0f;
@@ -48,7 +49,7 @@ stemcapsulax::TaskRunner::Task stemcapsulax::CreateTask_GrowingCircle()
   TaskRunner::Task task;
   task.name      = "00_GrowingCircle";
   task.pUserData = &taskcrosshair;
-  task.update    = [](TaskRunner& r, TaskRunner::Task& t) {
+  task.update    = [cb](TaskRunner& r, TaskRunner::Task& t) {
     Task_GrowingCircle* pT = reinterpret_cast<Task_GrowingCircle*>(t.pUserData);
     if (IsKeyDown(KEY_LEFT_CONTROL)) {
       pT->m_bDrawCircle = true;
@@ -62,7 +63,7 @@ stemcapsulax::TaskRunner::Task stemcapsulax::CreateTask_GrowingCircle()
     }
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
       if (IsKeyDown(KEY_LEFT_CONTROL)) {
-        // è possibile invocare una callback qui
+        if (cb) { cb(pT->m_fCircleRadius); }
         pT->m_bIncreaseRadius = false;
       }
     }

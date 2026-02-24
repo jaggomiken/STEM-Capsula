@@ -19,41 +19,50 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_layer_box2d_h
-#define stemcapsulax_layer_box2d_h
+#ifndef stemcapsulax_actor_h
+#define stemcapsulax_actor_h
 
-#include "stemcapsulax_layer.h"
-#include "stemcapsulax_actor.h"
+#include "stemcapsulax_system.h"
+#include <functional>
+#include <string>
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * Questa classe rappresenta un attore che compare e agisce in un layer. Si
+ * differenzia da un Task perché è più complesso in termini di comportamenti
+ * e, per esempio in un layer Box2D, può essere composta da molti body tra
+ * loro interconnessi.
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * CLASS DECLARATION
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
-  class LayerBox2D : public Layer {
+  class Actor {
   public:
-    LayerBox2D();
-    LayerBox2D(const LayerBox2D&)              = delete;
-    LayerBox2D(LayerBox2D&&)                   = delete;
-    LayerBox2D& operator=(const LayerBox2D&)   = delete;
-    LayerBox2D& operator=(LayerBox2D&&)        = delete;
-    virtual ~LayerBox2D();
+    using TypeID = u32;
+    struct ControlData {
+      // da sistemare prossimamente
+    };
 
-    void circleAt(f32 x, f32 y, f32 radius); // da rimuovere perché non è questa l'interfaccia
-    void explodeAt(f32 x, f32 y, f32 energy);
-    b2WorldId worldId() const;
-    const Camera2D& camera() const;
-          Camera2D& camera();
+    explicit Actor(const std::string& name = {});
+    Actor(const Actor&)              = delete;
+    Actor(Actor&&)                   = delete;
+    Actor& operator=(const Actor&)   = delete;
+    Actor& operator=(Actor&&)        = delete;
+    virtual ~Actor();
 
-    void clear() override;
-    void show() override;
-    void hide() override;
-    void update() override;
-    void draw(RenderTexture2D&) override;
-    TypeID type() const override;
+    std::string name() const;
+
+    virtual TypeID type() const = 0;
+    virtual void show() = 0;
+    virtual void hide() = 0;
+    virtual void update() = 0;
+    virtual void draw(RenderTexture2D&) = 0;
+    virtual void control(const ControlData&) = 0;
 
   private:
     class Impl; Impl* m_pImpl;
   };
 }
 
-#endif // stemcapsulax_layer_box2d_h
+#endif // stemcapsulax_scene_h

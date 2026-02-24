@@ -46,6 +46,7 @@ set(SRC
   src/stemcapsulax_layer_background.cpp
   src/stemcapsulax_layer_3d.cpp
   src/stemcapsulax_task_runner.cpp
+  src/stemcapsulax_actor.cpp
   # Add here your files
 )
 set(INC 
@@ -68,6 +69,7 @@ set(INC
   inc/stemcapsulax_layer_3d.h
   inc/stemcapsulax_task_runner.h
   inc/stemcapsulax_director.h
+  inc/stemcapsulax_actor.h
   # Add here your files
 )
 set(EXT

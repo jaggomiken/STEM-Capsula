@@ -21,6 +21,9 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #include "stemcapsulax_layer_box2d.h"
 #include "stemcapsulax_system.h"
+#include "stemcapsulax_box2d_proxy.h"
+#include "stemcapsulax_b2ddebugdraw.h"
+#include "stemcapsulax_status.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * PRIVATE IMPLEMENTATION CLASS
@@ -29,6 +32,10 @@ class stemcapsulax::LayerBox2D::Impl {
 public:
   Impl();
  ~Impl();
+
+  RaylibBox2DDebugDraw m_debugdraw;
+  Camera2D m_camera;
+  Box2DProxy m_b2proxy;
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -53,6 +60,46 @@ stemcapsulax::LayerBox2D::~LayerBox2D()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::LayerBox2D::circleAt(f32 x, f32 y, f32 radius)
+{
+  m_pImpl->m_b2proxy.createBodyCircle(x, y, radius);
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::LayerBox2D::explodeAt(f32 x, f32 y, f32 energy)
+{
+  m_pImpl->m_b2proxy.createExplosion(x, y, energy);
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+b2WorldId stemcapsulax::LayerBox2D::worldId() const
+{
+  return m_pImpl->m_b2proxy.worldId();
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+const Camera2D& stemcapsulax::LayerBox2D::camera() const
+{
+  return m_pImpl->m_camera;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+Camera2D& stemcapsulax::LayerBox2D::camera()
+{
+  return m_pImpl->m_camera;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::Layer::TypeID stemcapsulax::LayerBox2D::type() const
 {
   return Layer::TypeID(LayerType::kBOX2D);
@@ -71,7 +118,7 @@ void stemcapsulax::LayerBox2D::clear()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayerBox2D::show()
 {
-
+  m_pImpl->m_b2proxy.createBodyConcaveGround();
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -87,10 +134,22 @@ void stemcapsulax::LayerBox2D::hide()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayerBox2D::update()
 {
+  auto& st = Status::GetInstance();
+  if (!st.data().bSimulationPaused) {
+    m_pImpl->m_b2proxy.update();
+  }
+
   auto& tr = runner();
   tr.enumerate([=, &tr](TaskRunner::Task& task) {
     if (task.update) { task.update(tr, task); }
   });
+
+  /*
+   * Cancella da Box2D tutti i body che non sono più visibili, con il fine
+   * di ridurre la quantità di calcoli e migliorare il framerate. Si deve
+   * stabilire come gestire questo rettangolo.
+   */
+  m_pImpl->m_b2proxy.removeBodiesOutsideRect(-1000, -400, 1000, 600);
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -98,6 +157,16 @@ void stemcapsulax::LayerBox2D::update()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayerBox2D::draw(RenderTexture2D& rtex)
 {
+  auto& st = Status::GetInstance();
+  auto& cv = Conv::GetInstance();
+  bool bDebugDraw = st.data().bDrawDebugEnabled;
+
+  BeginMode2D(m_pImpl->m_camera);
+  if (bDebugDraw) {
+    m_pImpl->m_debugdraw.drawWorld(m_pImpl->m_b2proxy.worldId());
+  }
+  EndMode2D();
+
   auto& tr = runner();
   tr.enumerate([=, &tr, &rtex](TaskRunner::Task& task) {
     if (task.draw) { task.draw(tr, task, rtex); }
@@ -109,7 +178,20 @@ void stemcapsulax::LayerBox2D::draw(RenderTexture2D& rtex)
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::LayerBox2D::Impl::Impl()
 {
+  auto& cnv = Conv::GetInstance();
+  m_b2proxy.setWidth ( cnv.fWorldWidth);
+  m_b2proxy.setHeight(cnv.fWorldHeight);
+  m_debugdraw.fPixelToUnitRatio =  cnv.fScreenWidth /  cnv.fWorldWidth;
+  m_debugdraw.fScreenWidth  = cnv.fScreenWidth;
+  m_debugdraw.fScreenHeight = cnv.fScreenHeight;
 
+  f32 cx =  cnv.fScreenWidth / 2.0f;
+  f32 cy = cnv.fScreenHeight / 2.0f;
+
+  m_camera.target   = { cx, cy };
+  m_camera.offset   = { cx, cy };
+  m_camera.rotation = 0.0f;
+  m_camera.zoom     = 1.0f;
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
