@@ -30,6 +30,7 @@
 #include "stemcapsulax_task_growing_circle.h"
 #include "stemcapsulax_task_energy_circle.h"
 #include "stemcapsulax_box2d_proxy.h"
+#include "stemcapsulax_actor_puppet.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * Il Director decide quali scene creare (sempre come static) e registrare
@@ -59,15 +60,33 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
   // inizializza i layer secondo le loro specificità
   laback.setImagePath(imagepath("backdemo.png")); // background texture
   auto fnGrowingCircle = [](f32 radius) {
-    auto mp = GetScreenToWorld2D(GetMousePosition(), lab2d.camera());
+    auto   mp = GetScreenToWorld2D(GetMousePosition(), lab2d.camera());
     auto& cnv = Conv::GetInstance();
     lab2d.circleAt(cnv.x_s2w(mp.x), cnv.y_s2w(mp.y), cnv.x_s2w(radius));
   };
   auto fnExplosion = [](f32 energy) {
-    auto mp = GetScreenToWorld2D(GetMousePosition(), lab2d.camera());
+    auto   mp = GetScreenToWorld2D(GetMousePosition(), lab2d.camera());
     auto& cnv = Conv::GetInstance();
     lab2d.explodeAt(cnv.x_s2w(mp.x), cnv.y_s2w(mp.y), energy);
   };
+
+  // aggiungi gli attori ai layer
+  auto& cnv = Conv::GetInstance();
+  static ActorPuppet pup1{lab2d.worldId()
+    , { cnv.fWorldWidth / 2.0f - 40.0f, cnv.fWorldHeight / 2.0f }
+    , "Pup1" };
+  static ActorPuppet pup2{lab2d.worldId()
+    , { cnv.fWorldWidth / 2.0f - 20.0f , cnv.fWorldHeight / 2.0f }
+    , "Pup2" };
+  static ActorPuppet pup3{lab2d.worldId()
+    , { cnv.fWorldWidth / 2.0f - 0.0f , cnv.fWorldHeight / 2.0f }
+    , "Pup3" };
+  static ActorPuppet pup4{lab2d.worldId()
+    , { cnv.fWorldWidth / 2.0f + 20.0f , cnv.fWorldHeight / 2.0f }
+    , "Pup4" };
+  static ActorPuppet pup5{lab2d.worldId()
+    , { cnv.fWorldWidth / 2.0f + 40.0f , cnv.fWorldHeight / 2.0f }
+    , "Pup5" };
 
   // configura i layer di scena
   scene.layerAdd(&laback); // disegnato per primo
@@ -78,6 +97,8 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
   tr.taskAdd(CreateTask_CrossHair());
   tr.taskAdd(CreateTask_GrowingCircle(fnGrowingCircle));
   tr.taskAdd(CreateTask_EnergyCircle(fnExplosion));
+
+  // aggiunge la scena al gestore
   auto& sm = SceneManager::GetInstance();
   sm.addScene(&scene);
   sm.setCurrentSceneByIndex(0);

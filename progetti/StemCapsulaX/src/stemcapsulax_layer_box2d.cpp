@@ -118,7 +118,7 @@ void stemcapsulax::LayerBox2D::clear()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayerBox2D::show()
 {
-  m_pImpl->m_b2proxy.createBodyConcaveGround();
+  m_pImpl->m_b2proxy.createBodyTestGround();
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
