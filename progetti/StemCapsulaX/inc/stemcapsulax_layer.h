@@ -23,6 +23,7 @@
 #define stemcapsulax_layer_h
 
 #include "stemcapsulax_task_runner.h"
+#include "stemcapsulax_actor.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * ENUM DECLARATION
@@ -54,6 +55,10 @@ namespace stemcapsulax {
     virtual ~Layer();
 
     TaskRunner& runner();
+    bool actorAdd(Actor*); // false in caso di errore
+    bool actorRemove(const std::string&); // false in caso di errore
+    size_t actorCout() const;
+    void enumerate(const std::function<void(Actor*)>&);
 
     virtual void clear() = 0;
     virtual void show() = 0;

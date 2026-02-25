@@ -88,6 +88,12 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
     , { cnv.fWorldWidth / 2.0f + 40.0f , cnv.fWorldHeight / 2.0f }
     , "Pup5" };
 
+  lab2d.actorAdd(&pup1);
+  lab2d.actorAdd(&pup2);
+  lab2d.actorAdd(&pup3);
+  lab2d.actorAdd(&pup4);
+  lab2d.actorAdd(&pup5);
+
   // configura i layer di scena
   scene.layerAdd(&laback); // disegnato per primo
   scene.layerAdd(&la3d);   // disegnato per secondo

@@ -139,6 +139,10 @@ void stemcapsulax::LayerBox2D::update()
     m_pImpl->m_b2proxy.update();
   }
 
+  enumerate([=](Actor* pA) {
+    pA->update();
+  });
+
   auto& tr = runner();
   tr.enumerate([=, &tr](TaskRunner::Task& task) {
     if (task.update) { task.update(tr, task); }
@@ -162,6 +166,9 @@ void stemcapsulax::LayerBox2D::draw(RenderTexture2D& rtex)
   bool bDebugDraw = st.data().bDrawDebugEnabled;
 
   BeginMode2D(m_pImpl->m_camera);
+  enumerate([=, &rtex](Actor* pA) {
+    pA->draw(rtex);
+  });
   if (bDebugDraw) {
     m_pImpl->m_debugdraw.drawWorld(m_pImpl->m_b2proxy.worldId());
   }

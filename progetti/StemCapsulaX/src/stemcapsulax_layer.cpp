@@ -21,6 +21,7 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #include "stemcapsulax_layer.h"
 #include "stemcapsulax_system.h"
+#include <map>
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * PRIVATE IMPLEMENTATION CLASS
@@ -31,6 +32,7 @@ public:
  ~Impl();
 
   TaskRunner m_runner;
+  std::map<std::string,Actor*> m_mapActors;
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -58,6 +60,59 @@ stemcapsulax::Layer::~Layer()
 stemcapsulax::TaskRunner& stemcapsulax::Layer::runner()
 {
   return m_pImpl->m_runner;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+bool stemcapsulax::Layer::actorAdd(Actor* pA)
+{
+  STEMCAPSULAX_CAPTURE_CPU(nullptr == pA, "Pointer to actor is NULL");
+  STEMCAPSULAX_CAPTURE_CPU(pA->name().empty(), "Actor name is empty");
+  if (0 != m_pImpl->m_mapActors.count(pA->name())) {
+    std::fprintf(stderr, "[ERROR]: Actor %s already in layer!\n"
+      , pA->name().c_str());
+    return false;
+  }
+  m_pImpl->m_mapActors.insert({ pA->name(), pA });
+  return true;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+bool stemcapsulax::Layer::actorRemove(const std::string& name)
+{
+  STEMCAPSULAX_CAPTURE_CPU(name.empty(), "Actor name is empty");
+  if (0 == m_pImpl->m_mapActors.count(name)) {
+    std::fprintf(stderr, "[ERROR]: Actor %s not found in layer!\n"
+      , name.c_str());
+    return false;
+  }
+  m_pImpl->m_mapActors.erase(name);
+  return true;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+size_t stemcapsulax::Layer::actorCout() const
+{
+  return m_pImpl->m_mapActors.size();
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::Layer::enumerate(const std::function<void(Actor*)>& cb)
+{
+  if (cb) {
+    for (auto& item : m_pImpl->m_mapActors) {
+      if (nullptr != item.second) {
+        cb(item.second);
+      }
+    }
+  }
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

@@ -71,9 +71,9 @@ stemcapsulax::ActorPuppet::~ActorPuppet()
 void stemcapsulax::ActorPuppet::update()
 {
   auto& st = Status::GetInstance();
-  f32 t = st.data().sysinf.uSecondsElapsed;
-  b2RevoluteJoint_SetMotorSpeed(m_pImpl->vjoints[3], std::cosf(0.5f * t));
-  b2RevoluteJoint_SetMotorSpeed(m_pImpl->vjoints[4], std::sinf(0.5f * t));
+  f32 t = st.data().sysinf.fSecondsElapsed;
+  b2RevoluteJoint_SetMotorSpeed(m_pImpl->vjoints[0], 5.0f * std::cosf(0.5f * t));
+  b2RevoluteJoint_SetMotorSpeed(m_pImpl->vjoints[7], 3.0f * std::sinf(0.5f * t));
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

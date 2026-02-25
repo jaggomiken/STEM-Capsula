@@ -110,7 +110,7 @@ i32 main(i32 argc, char* argv[])
   sysinf.iWindowWidth    = ww;
   sysinf.iWindowHeight   = wh;
   sysinf.iFPS            = 0;
-  sysinf.uSecondsElapsed = 0;
+  sysinf.fSecondsElapsed = .0f;
   sysinf.strWindowTitle  = strTitle;
   sysinf.strTopMessage   = strMessg;
   sysinf.font            = font;
@@ -177,9 +177,9 @@ i32 main(i32 argc, char* argv[])
      | GETRAYLIBINFO (prende informazioni da RAYLIB e aggiorna stato)
      * ---------------------------------------------------------------------- */
     sysinf.iFPS = GetFPS(); // prende gli FPS effettivi
-    sysinf.uSecondsElapsed += GetFrameTime();
+    sysinf.fSecondsElapsed += GetFrameTime();
     sta.data().sysinf.iFPS = sysinf.iFPS;
-    sta.data().sysinf.uSecondsElapsed = sysinf.uSecondsElapsed;
+    sta.data().sysinf.fSecondsElapsed = sysinf.fSecondsElapsed;
     sta.data().bShowGUI = bShowGUI;
     sta.data().bShowHUD = bShowHUD;
 

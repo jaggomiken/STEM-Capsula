@@ -139,7 +139,7 @@ namespace stemcapsulax {
      i32 iWindowWidth;
      i32 iWindowHeight;
      i32 iFPS;            // framerate aggiornato
-     u32 uSecondsElapsed; // somma dei frame-time
+     f32 fSecondsElapsed; // somma dei frame-time
     bool bIsFullScreen;
     std::string strWindowTitle;
     std::string strTopMessage;
