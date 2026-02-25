@@ -168,6 +168,8 @@ void stemcapsulax::GUI::Impl::draw()
       , dt.sdAudioManager.uNFTDequeuedSamples);
     ImGui::Text("Samples Processed by Frequency Analysis: %-9u"
       , dt.sdAudioManager.uNFTProcessedSamples);
+    ImGui::Text(" Queue Frequency Analysis Ready Results: %-9u"
+      , dt.sdAudioManager.uNFFTReadyResults);
   }
   ImGui::End();
 

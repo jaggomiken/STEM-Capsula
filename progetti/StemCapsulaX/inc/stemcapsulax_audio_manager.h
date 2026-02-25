@@ -35,16 +35,32 @@ using audiosamplebuffer48x2 = stemcapsulax::buffer<f32, 48000 * 2>;
 namespace stemcapsulax {
   class AudioManager {
   public:
+    using DataCallback = 
+      std::function<void(
+          const std::vector<f32>& vleft
+        , const std::vector<f32>& vrght
+        , f32 fL_Energy
+        , f32 fL_AmpMax
+        , f32 fL_AmpMin
+        , f32 fR_Energy
+        , f32 fR_AmpMax
+        , f32 fR_AmpMin)>;
+
     struct StatusData {
       u32 uNTotalFrames;         // numero totale di frame
       u32 uNStreamedSamples;     // numero di campioni trasferiti al device
       u32 uFTQueueSizeInSamples; // numero campioni accodati per Fourier
       u32 uNFTDequeuedSamples;   // numero di campioni rimossi dalla coda FFT
       u32 uNFTProcessedSamples;  // numero di campioni elaborati dalla FFT
+      u32 uNFFTReadyResults;     // numero di risultati pronti in coda FFT
     };
   
     static AudioManager& GetInstance();
    ~AudioManager();
+
+    // La callback è invocata nel metodo update quando sono disponibili dati FFT
+    // (viene invocata nel main thread)
+    void registerDataCallback(const DataCallback&);
 
     void reset();
     void update();

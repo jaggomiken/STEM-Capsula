@@ -30,7 +30,7 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 class stemcapsulax::ActorPuppet::Impl {
 public:
-  Impl(b2WorldId wid, const b2Vec2& center);
+  Impl(b2WorldId wid, const b2Vec2& center, f32 scale);
  ~Impl();
 
   b2BodyId m_CreateBox(b2WorldId wid, f32 x, f32 y
@@ -48,11 +48,11 @@ public:
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::ActorPuppet::ActorPuppet(b2WorldId wid, const b2Vec2& center
-  , const std::string& name)
+  , f32 scale, const std::string& name)
 : ActorBox2D  { wid, name }
 , m_pImpl     {   nullptr }
 {
-  m_pImpl = new(std::nothrow) Impl{wid, center };
+  m_pImpl = new(std::nothrow) Impl{wid, center, scale };
   STEMCAPSULAX_CAPTURE_CPU(nullptr == m_pImpl, "Cannot allocate");
 }
 
@@ -79,32 +79,33 @@ void stemcapsulax::ActorPuppet::update()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::ActorPuppet::Impl::Impl(b2WorldId wid, const b2Vec2& c)
+stemcapsulax::ActorPuppet::Impl::Impl(b2WorldId wid
+  , const b2Vec2& c, f32 s)
 {
-  auto bidUHead = m_CreateCapsule(wid, c.x +  .0f, c.y - 5.5f
-    , { .0f, 1.0f }, { .0f, -1.0f }, 1.0f);
-  auto bidTorso = m_CreateCapsule(wid, c.x +  .0f, c.y +  .0f
-    , { .0f, 3.0f }, { .0f, -2.0f }, 2.0f, 1.2);
-  auto bidLeArT = m_CreateCapsule(wid, c.x - 3.0f, c.y +  .0f
-    , { .0f, 2.0f }, { .0f, -2.0f }, 1.0f);
-  auto bidLeArB = m_CreateCapsule(wid, c.x - 3.0f, c.y + 4.0f
-    , { .0f, 2.0f }, { .0f, -2.0f }, 1.0f);
-  auto bidRaArT = m_CreateCapsule(wid, c.x + 3.0f, c.y +  .0f
-    , { .0f, 2.0f }, { .0f, -2.0f }, 1.0f);
-  auto bidRaArB = m_CreateCapsule(wid, c.x + 3.0f, c.y + 4.0f
-    , { .0f, 2.0f }, { .0f, -2.0f }, 1.0f);
-  auto bidLeLeT = m_CreateCapsule(wid, c.x - 1.0f, c.y +  8.0f
-    , { .0f, 4.0f }, { .0f, -4.0f }, 1.0f, 10.0f);
-  auto bidLeLeB = m_CreateCapsule(wid, c.x - 1.0f, c.y + 14.5f
-    , { .0f, 3.5f }, { .0f, -3.5f }, 1.0f, 20.0f);
-  auto bidRaLeT = m_CreateCapsule(wid, c.x + 1.0f, c.y +  8.0f
-    , { .0f, 4.0f }, { .0f, -4.0f }, 1.0f, 10.0f);
-  auto bidRaLeB = m_CreateCapsule(wid, c.x + 1.0f, c.y + 14.5f
-    , { .0f, 3.5f }, { .0f, -3.5f }, 1.0f, 20.0f);
-  auto bidFootL = m_CreateBox(wid, c.x - 1.5f, c.y + 19.0f
-    , { 3.0f, 1.0f }, 100.0f);
-  auto bidFootR = m_CreateBox(wid, c.x + 1.5f, c.y + 19.0f
-    , { 3.0f, 1.0f }, 100.0f);
+  auto bidUHead = m_CreateCapsule(wid, c.x + s*.0f, c.y - s*5.5f
+    , { s*.0f, s*1.0f }, { s*.0f, s*-1.0f }, s*1.0f);
+  auto bidTorso = m_CreateCapsule(wid, c.x + s*.0f, c.y + s*.0f
+    , { s*.0f, s*3.0f }, { s*.0f, s*-2.0f }, s*2.0f, 1.2);
+  auto bidLeArT = m_CreateCapsule(wid, c.x - s*3.0f, c.y + s*.0f
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f);
+  auto bidLeArB = m_CreateCapsule(wid, c.x - s*3.0f, c.y + s*4.0f
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f);
+  auto bidRaArT = m_CreateCapsule(wid, c.x + s*3.0f, c.y + s*.0f
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f);
+  auto bidRaArB = m_CreateCapsule(wid, c.x + s*3.0f, c.y + s*4.0f
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f);
+  auto bidLeLeT = m_CreateCapsule(wid, c.x - s*1.0f, c.y + s*8.0f
+    , { s*.0f, s*4.0f }, { s*.0f, s*-4.0f }, s*1.0f, 10.0f);
+  auto bidLeLeB = m_CreateCapsule(wid, c.x - s*1.0f, c.y + s*14.5f
+    , { s*.0f, s*3.5f }, { s*.0f, s*-3.5f }, s*1.0f, 100.0f);
+  auto bidRaLeT = m_CreateCapsule(wid, c.x + s*1.0f, c.y + s*8.0f
+    , { s*.0f, s*4.0f }, { s*.0f, s*-4.0f }, s*1.0f, 10.0f);
+  auto bidRaLeB = m_CreateCapsule(wid, c.x + s*1.0f, c.y + s*14.5f
+    , { s*.0f, s*3.5f }, { s*.0f, s*-3.5f }, s*1.0f, 100.0f);
+  auto bidFootL = m_CreateBox(wid, c.x - s*1.5f, c.y + s*19.0f
+    , { s*3.0f, s*1.0f }, 1000.0f);
+  auto bidFootR = m_CreateBox(wid, c.x + s*1.5f, c.y + s*19.0f
+    , { s*3.0f, s*1.0f }, 1000.0f);
 
   vbodies.push_back(bidUHead); // testa
   vbodies.push_back(bidTorso); // corpo
@@ -119,17 +120,17 @@ stemcapsulax::ActorPuppet::Impl::Impl(b2WorldId wid, const b2Vec2& c)
   vbodies.push_back(bidFootL); // piede sinistro
   vbodies.push_back(bidFootR); // piede destro
 
-  auto jidHTO = m_CreateJoint(wid, c.x +  .0f, c.y -  4.0f, bidUHead, bidTorso);
-  auto jidLTT = m_CreateJoint(wid, c.x - 3.0f, c.y -  2.0f, bidTorso, bidLeArT);
-  auto jidLTB = m_CreateJoint(wid, c.x - 3.0f, c.y +  2.0f, bidLeArT, bidLeArB);
-  auto jidRTT = m_CreateJoint(wid, c.x + 3.0f, c.y -  2.0f, bidTorso, bidRaArT);
-  auto jidRTB = m_CreateJoint(wid, c.x + 3.0f, c.y +  2.0f, bidRaArT, bidRaArB);
-  auto jidLLT = m_CreateJoint(wid, c.x - 1.0f, c.y +  5.0f, bidTorso, bidLeLeT);
-  auto jidLLB = m_CreateJoint(wid, c.x - 1.0f, c.y + 12.0f, bidLeLeT, bidLeLeB);
-  auto jidRLT = m_CreateJoint(wid, c.x + 1.0f, c.y +  5.0f, bidTorso, bidRaLeT);
-  auto jidRLB = m_CreateJoint(wid, c.x + 1.0f, c.y + 12.0f, bidRaLeT, bidRaLeB);
-  auto jidFTL = m_CreateJoint(wid, c.x - 1.0f, c.y + 19.0f, bidLeLeB, bidFootL);
-  auto jidFTR = m_CreateJoint(wid, c.x + 1.0f, c.y + 19.0f, bidRaLeB, bidFootR);
+  auto jidHTO = m_CreateJoint(wid, c.x + s* .0f, c.y - s* 4.0f, bidUHead, bidTorso);
+  auto jidLTT = m_CreateJoint(wid, c.x - s*3.0f, c.y - s* 2.0f, bidTorso, bidLeArT);
+  auto jidLTB = m_CreateJoint(wid, c.x - s*3.0f, c.y + s* 2.0f, bidLeArT, bidLeArB);
+  auto jidRTT = m_CreateJoint(wid, c.x + s*3.0f, c.y - s* 2.0f, bidTorso, bidRaArT);
+  auto jidRTB = m_CreateJoint(wid, c.x + s*3.0f, c.y + s* 2.0f, bidRaArT, bidRaArB);
+  auto jidLLT = m_CreateJoint(wid, c.x - s*1.0f, c.y + s* 5.0f, bidTorso, bidLeLeT);
+  auto jidLLB = m_CreateJoint(wid, c.x - s*1.0f, c.y + s*12.0f, bidLeLeT, bidLeLeB);
+  auto jidRLT = m_CreateJoint(wid, c.x + s*1.0f, c.y + s* 5.0f, bidTorso, bidRaLeT);
+  auto jidRLB = m_CreateJoint(wid, c.x + s*1.0f, c.y + s*12.0f, bidRaLeT, bidRaLeB);
+  auto jidFTL = m_CreateJoint(wid, c.x - s*1.0f, c.y + s*19.0f, bidLeLeB, bidFootL);
+  auto jidFTR = m_CreateJoint(wid, c.x + s*1.0f, c.y + s*19.0f, bidRaLeB, bidFootR);
 
   vjoints.push_back(jidHTO);
   vjoints.push_back(jidLTT);
@@ -211,8 +212,8 @@ b2JointId stemcapsulax::ActorPuppet::Impl::m_CreateJoint(b2WorldId wid
   jd.bodyIdB = b1;
   jd.localAnchorA = b2Body_GetLocalPoint(b0, pivot);
   jd.localAnchorB = b2Body_GetLocalPoint(b1, pivot);
-  jd.lowerAngle = -0.10f * M_PI;
-  jd.upperAngle =  0.10f * M_PI;
+  jd.lowerAngle = -0.50f * M_PI;
+  jd.upperAngle =  0.50f * M_PI;
   jd.enableLimit = true;
   jd.maxMotorTorque = 50.0f;
   jd.motorSpeed = 2.0f;

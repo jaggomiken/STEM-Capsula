@@ -46,6 +46,19 @@ static struct AudioStreamCallbackStatus {
 } gASCS;
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * LOCAL STRUCT
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+struct FFTResultDataPackage {
+  fftsimd::SpectrumResult res;
+  f32 fL_Energy;
+  f32 fL_AmpMin;
+  f32 fL_AmpMax;
+  f32 fR_Energy;
+  f32 fR_AmpMin;
+  f32 fR_AmpMax;
+};
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * PRIVATE IMPLEMENTATION CLASS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 class stemcapsulax::AudioManager::Impl {
@@ -61,10 +74,17 @@ public:
   f32 m_fMainWaveSampleAvg;
   std::string m_strMainWaveFilename;
   
+  std::queue<FFTResultDataPackage> m_qfftres;
+  std::mutex m_mtxqfftres;
+
   StatusData m_data;
   std::thread m_threadFFT;
   bool m_bExitThread;
   bool m_bThreadStarted;
+  DataCallback m_datacb;
+
+  void m_ComputeEnergyForResult(const fftsimd::SpectrumResult&
+    , FFTResultDataPackage& dataout);
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -97,6 +117,14 @@ stemcapsulax::AudioManager::~AudioManager()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::AudioManager::registerDataCallback(const DataCallback& cb)
+{
+  m_pImpl->m_datacb = cb;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::AudioManager::shutdown()
 {
   playMainWave(false);
@@ -108,7 +136,7 @@ void stemcapsulax::AudioManager::shutdown()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::AudioManager::reset()
 {
-
+  m_pImpl->m_datacb = {};
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -118,6 +146,18 @@ void stemcapsulax::AudioManager::update()
 {
   m_pImpl->m_data.uNStreamedSamples     = u32(gASCS.iAudioWindowCursor);
   m_pImpl->m_data.uFTQueueSizeInSamples = u32(gASCS.qdata.size());
+  { std::lock_guard<std::mutex> guard{ m_pImpl->m_mtxqfftres };
+    m_pImpl->m_data.uNFFTReadyResults = u32(m_pImpl->m_qfftres.size());
+    if (!m_pImpl->m_qfftres.empty()) {
+      const auto& item = m_pImpl->m_qfftres.front();
+      if (m_pImpl->m_datacb) {
+        m_pImpl->m_datacb(item.res.magL, item.res.magR
+          , item.fL_Energy, item.fL_AmpMax, item.fL_AmpMin
+          , item.fR_Energy, item.fR_AmpMax, item.fR_AmpMin);
+      }
+      m_pImpl->m_qfftres.pop();
+    }
+  }
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -231,15 +271,14 @@ stemcapsulax::AudioManager::Impl::Impl()
   m_data.uNFTProcessedSamples  = 0;
   m_data.uNStreamedSamples     = 0;
   m_data.uNFTDequeuedSamples   = 0;
+  m_data.uNFFTReadyResults     = 0;
 
   InitAudioDevice();
   SetAudioStreamBufferSizeDefault(STEMCAPSULAX_AUDIOMANAGER_BUFSZ);
   
   m_threadFFT = std::thread([=]() {
-    fftsimd::SpectrumResult res;
     std::vector<f32> vinput;
     std::queue<f32> qstored;
-    vinput.reserve(2 * STEMCAPSULAX_AUDIOMANAGER_FFTSZ);
     m_bThreadStarted = true;
     while (!m_bExitThread) {
       // preleva il buffer dalla coda
@@ -266,8 +305,11 @@ stemcapsulax::AudioManager::Impl::Impl()
       
       // nutri il processore FFT
       if (vinput.size() >= STEMCAPSULAX_AUDIOMANAGER_FFTSZ) {
-        res = fftsimd::spectrum_stereo_48k_float32(
-          vinput.data(), vinput.size());
+        FFTResultDataPackage rdt;
+        rdt.res = fftsimd::spectrum_stereo_48k_float32(vinput.data(), 4096, true);
+        m_ComputeEnergyForResult(rdt.res, rdt);
+        { std::lock_guard<std::mutex> guard{ m_mtxqfftres };
+          m_qfftres.push(rdt); }
         m_data.uNFTProcessedSamples += vinput.size();
         vinput.clear();
       }
@@ -282,6 +324,31 @@ stemcapsulax::AudioManager::Impl::~Impl()
 {
   m_bExitThread = true;
   if (m_threadFFT.joinable()) { m_threadFFT.join(); }
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::AudioManager::Impl::m_ComputeEnergyForResult(
+    const fftsimd::SpectrumResult& in
+  , FFTResultDataPackage& dataout)
+{
+  dataout.fL_Energy = .0f;
+  dataout.fL_AmpMax = -std::numeric_limits<f32>::max();
+  dataout.fL_AmpMin =  std::numeric_limits<f32>::max();
+  for (auto value : in.magL) {
+    dataout.fL_Energy += value * value;
+    dataout.fL_AmpMax = std::max<f32>(dataout.fL_AmpMax, value);
+    dataout.fL_AmpMin = std::min<f32>(dataout.fL_AmpMin, value);
+  }
+  dataout.fR_Energy = .0f;
+  dataout.fR_AmpMax = -std::numeric_limits<f32>::max();
+  dataout.fR_AmpMin =  std::numeric_limits<f32>::max();
+  for (auto value : in.magR) { 
+    dataout.fR_Energy += value * value;
+    dataout.fR_AmpMax = std::max<f32>(dataout.fR_AmpMax, value);
+    dataout.fR_AmpMin = std::min<f32>(dataout.fR_AmpMin, value);
+  }
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

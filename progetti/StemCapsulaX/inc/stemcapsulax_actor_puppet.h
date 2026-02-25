@@ -37,7 +37,7 @@
 namespace stemcapsulax {
   class ActorPuppet : public ActorBox2D {
   public:
-    explicit ActorPuppet(b2WorldId, const b2Vec2& center
+    explicit ActorPuppet(b2WorldId, const b2Vec2& center, f32 scale = 1.0f
       , const std::string& name = {});
     ActorPuppet(const ActorPuppet&)              = delete;
     ActorPuppet(ActorPuppet&&)                   = delete;
