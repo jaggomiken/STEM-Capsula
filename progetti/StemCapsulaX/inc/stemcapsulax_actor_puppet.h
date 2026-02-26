@@ -37,6 +37,14 @@
 namespace stemcapsulax {
   class ActorPuppet : public ActorBox2D {
   public:
+    /* potenza di due così si possono mettere in OR */
+    enum class Behaviour : u64 {
+        kJUMP     = 1
+      , kOPENARMS = 2
+      , kOPENLEGS = 4
+      , kTREMBLE  = 8
+    };
+
     explicit ActorPuppet(b2WorldId, const b2Vec2& center, f32 scale = 1.0f
       , const std::string& name = {});
     ActorPuppet(const ActorPuppet&)              = delete;
@@ -46,7 +54,8 @@ namespace stemcapsulax {
     virtual ~ActorPuppet();
 
     void update() override;
-    
+    void behave(u64,const std::vector<f32>&) override;
+
   private:
     class Impl; Impl* m_pImpl;
   };

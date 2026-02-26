@@ -77,16 +77,16 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
     , { cnv.fWorldWidth / 2.0f - 40.0f, cnv.fWorldHeight / 2.0f }, 1.0f
     , "Pup1" };
   static ActorPuppet pup2{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f - 30.0f, cnv.fWorldHeight / 2.0f }, 1.0f
+    , { cnv.fWorldWidth / 2.0f - 30.0f, cnv.fWorldHeight / 2.0f }, 1.1f
     , "Pup2" };
   static ActorPuppet pup3{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f - 10.0f, cnv.fWorldHeight / 2.0f }, 1.1f
+    , { cnv.fWorldWidth / 2.0f - 10.0f, cnv.fWorldHeight / 2.0f }, 1.2f
     , "Pup3" };
   static ActorPuppet pup4{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f + 20.0f, cnv.fWorldHeight / 2.0f }, 1.1f
+    , { cnv.fWorldWidth / 2.0f + 10.0f, cnv.fWorldHeight / 2.0f }, 1.2f
     , "Pup4" };
   static ActorPuppet pup5{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f + 30.0f, cnv.fWorldHeight / 2.0f }, 1.0f
+    , { cnv.fWorldWidth / 2.0f + 30.0f, cnv.fWorldHeight / 2.0f }, 1.1f
     , "Pup5" };
   static ActorPuppet pup6{lab2d.worldId()
     , { cnv.fWorldWidth / 2.0f + 40.0f, cnv.fWorldHeight / 2.0f }, 1.0f
@@ -122,8 +122,11 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
     f32 freqA = 64.0f, freqB = 123.0f;
     f32 yA = yoff * std::cosf(2 * M_PI * freqA * st.data().sysinf.fSecondsElapsed);
     f32 yB = yoff * std::sinf(2 * M_PI * freqB * st.data().sysinf.fSecondsElapsed);
-    lab2d.explodeAt(cnv.x_s2w(x_p), cnv.y_s2w(y_p + yA), fTot * 300.0f);
-    lab2d.explodeAt(cnv.x_s2w(x_p), cnv.y_s2w(y_p + yB), fTot * 300.0f);
+
+    lab2d.enumerate([&](Actor* pA) {
+      pA->behave(u64(ActorPuppet::Behaviour::kJUMP)
+        , { 10000.0f * fL_Energy, 10000.0f * fR_Energy });
+    });
 
     std::fprintf(stdout
       , "[AMCB]: TOT=%f L=%.6f (MIN=%f,MAX=%f) R=%.6f (MIN=%f,MAX=%f) X=%d YA=%d YB=%d\r"
@@ -131,10 +134,6 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
       , fL_Energy, fL_AmpMin, fL_AmpMax, fR_Energy, fR_AmpMin, fR_AmpMax
       , x_p, i32(yA), i32(yB));
     std::fflush(stdout);
-    
-    x_p += x_inc;
-    if      (x_p > i32(cnv.fScreenWidth)) { x_inc = -cnv.fScreenWidth / 6; }
-    else if (x_p < 0)                     { x_inc = +cnv.fScreenWidth / 6; }
   };
   AudioManager::GetInstance().registerDataCallback(fnam);
 

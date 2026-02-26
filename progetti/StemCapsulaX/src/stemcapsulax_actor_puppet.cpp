@@ -38,7 +38,7 @@ public:
   b2BodyId m_CreateCapsule(b2WorldId wid, f32 x, f32 y
     , const b2Vec2& p0, const b2Vec2& p1, f32 radius, f32 dens = 1.0f);
   b2JointId m_CreateJoint(b2WorldId wid, f32 x, f32 y
-    , b2BodyId b0, b2BodyId b1);
+    , b2BodyId b0, b2BodyId b1, b2Vec2 angles);
 
   std::vector<b2BodyId> vbodies;
   std::vector<b2JointId> vjoints;
@@ -68,19 +68,34 @@ stemcapsulax::ActorPuppet::~ActorPuppet()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::ActorPuppet::behave(u64 what, const std::vector<f32>& v)
+{
+  f32 s = 10.0f;
+  f32 force_x = v.size() >= 1 ? v.at(0) : 10.0f;
+  f32 force_y = v.size() >= 2 ? v.at(1) : 10.0f;
+  if (what & u64(Behaviour::kJUMP)) {
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 2], { -force_x  ,  force_y   }, true);
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 4], {  force_x  ,  force_y   }, true);
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 6], { -force_x*s, -force_y*s }, true);
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 8], {  force_x*s, -force_y*s }, true);
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 9], { -force_x*s, -force_y*s }, true);
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[11], {  force_x*s, -force_y*s }, true);
+  }
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::ActorPuppet::update()
 {
-  auto& st = Status::GetInstance();
-  f32 t = st.data().sysinf.fSecondsElapsed;
-  b2RevoluteJoint_SetMotorSpeed(m_pImpl->vjoints[0], 5.0f * std::cosf(0.5f * t));
-  b2RevoluteJoint_SetMotorSpeed(m_pImpl->vjoints[7], 3.0f * std::sinf(0.5f * t));
+
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::ActorPuppet::Impl::Impl(b2WorldId wid
-  , const b2Vec2& c, f32 s)
+  , const b2Vec2& c, f32 s /* scala */)
 {
   auto bidUHead = m_CreateCapsule(wid, c.x + s*.0f, c.y - s*5.5f
     , { s*.0f, s*1.0f }, { s*.0f, s*-1.0f }, s*1.0f);
@@ -120,17 +135,17 @@ stemcapsulax::ActorPuppet::Impl::Impl(b2WorldId wid
   vbodies.push_back(bidFootL); // piede sinistro
   vbodies.push_back(bidFootR); // piede destro
 
-  auto jidHTO = m_CreateJoint(wid, c.x + s* .0f, c.y - s* 4.0f, bidUHead, bidTorso);
-  auto jidLTT = m_CreateJoint(wid, c.x - s*3.0f, c.y - s* 2.0f, bidTorso, bidLeArT);
-  auto jidLTB = m_CreateJoint(wid, c.x - s*3.0f, c.y + s* 2.0f, bidLeArT, bidLeArB);
-  auto jidRTT = m_CreateJoint(wid, c.x + s*3.0f, c.y - s* 2.0f, bidTorso, bidRaArT);
-  auto jidRTB = m_CreateJoint(wid, c.x + s*3.0f, c.y + s* 2.0f, bidRaArT, bidRaArB);
-  auto jidLLT = m_CreateJoint(wid, c.x - s*1.0f, c.y + s* 5.0f, bidTorso, bidLeLeT);
-  auto jidLLB = m_CreateJoint(wid, c.x - s*1.0f, c.y + s*12.0f, bidLeLeT, bidLeLeB);
-  auto jidRLT = m_CreateJoint(wid, c.x + s*1.0f, c.y + s* 5.0f, bidTorso, bidRaLeT);
-  auto jidRLB = m_CreateJoint(wid, c.x + s*1.0f, c.y + s*12.0f, bidRaLeT, bidRaLeB);
-  auto jidFTL = m_CreateJoint(wid, c.x - s*1.0f, c.y + s*19.0f, bidLeLeB, bidFootL);
-  auto jidFTR = m_CreateJoint(wid, c.x + s*1.0f, c.y + s*19.0f, bidRaLeB, bidFootR);
+  auto jidHTO = m_CreateJoint(wid, c.x + s* .0f, c.y - s* 4.0f, bidUHead, bidTorso, {-0.10f,+0.10f});
+  auto jidLTT = m_CreateJoint(wid, c.x - s*3.0f, c.y - s* 2.0f, bidTorso, bidLeArT, {-0.30f,+0.30f});
+  auto jidLTB = m_CreateJoint(wid, c.x - s*3.0f, c.y + s* 2.0f, bidLeArT, bidLeArB, {-0.50f,+0.50f});
+  auto jidRTT = m_CreateJoint(wid, c.x + s*3.0f, c.y - s* 2.0f, bidTorso, bidRaArT, {-0.30f,+0.30f});
+  auto jidRTB = m_CreateJoint(wid, c.x + s*3.0f, c.y + s* 2.0f, bidRaArT, bidRaArB, {-0.50f,+0.50f});
+  auto jidLLT = m_CreateJoint(wid, c.x - s*1.0f, c.y + s* 5.0f, bidTorso, bidLeLeT, {-0.20f,+0.20f});
+  auto jidLLB = m_CreateJoint(wid, c.x - s*1.0f, c.y + s*12.0f, bidLeLeT, bidLeLeB, {-0.01f,+0.25f});
+  auto jidRLT = m_CreateJoint(wid, c.x + s*1.0f, c.y + s* 5.0f, bidTorso, bidRaLeT, {-0.20f,+0.20f});
+  auto jidRLB = m_CreateJoint(wid, c.x + s*1.0f, c.y + s*12.0f, bidRaLeT, bidRaLeB, {-0.01f,+0.25f});
+  auto jidFTL = m_CreateJoint(wid, c.x - s*1.0f, c.y + s*19.0f, bidLeLeB, bidFootL, {-0.10f,+0.10f});
+  auto jidFTR = m_CreateJoint(wid, c.x + s*1.0f, c.y + s*19.0f, bidRaLeB, bidFootR, {-0.10f,+0.10f});
 
   vjoints.push_back(jidHTO);
   vjoints.push_back(jidLTT);
@@ -204,7 +219,7 @@ b2BodyId stemcapsulax::ActorPuppet::Impl::m_CreateCapsule(b2WorldId wid
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 b2JointId stemcapsulax::ActorPuppet::Impl::m_CreateJoint(b2WorldId wid
-  , f32 x, f32 y, b2BodyId b0, b2BodyId b1)
+  , f32 x, f32 y, b2BodyId b0, b2BodyId b1, b2Vec2 angles)
 {
   b2Vec2 pivot = { x, y }; // in coordiante mondo
   b2RevoluteJointDef jd = b2DefaultRevoluteJointDef();
@@ -212,11 +227,11 @@ b2JointId stemcapsulax::ActorPuppet::Impl::m_CreateJoint(b2WorldId wid
   jd.bodyIdB = b1;
   jd.localAnchorA = b2Body_GetLocalPoint(b0, pivot);
   jd.localAnchorB = b2Body_GetLocalPoint(b1, pivot);
-  jd.lowerAngle = -0.50f * M_PI;
-  jd.upperAngle =  0.50f * M_PI;
+  jd.lowerAngle = angles.x * M_PI;
+  jd.upperAngle = angles.y * M_PI;
   jd.enableLimit = true;
   jd.maxMotorTorque = 50.0f;
-  jd.motorSpeed = 2.0f;
+  jd.motorSpeed = 30.0f;
   jd.enableMotor = true;
   b2JointId jid = b2CreateRevoluteJoint(wid, &jd);
   return jid;

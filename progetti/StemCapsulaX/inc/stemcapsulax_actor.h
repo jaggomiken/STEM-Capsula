@@ -59,6 +59,7 @@ namespace stemcapsulax {
     virtual void update() = 0;
     virtual void draw(RenderTexture2D&) = 0;
     virtual void control(const ControlData&) = 0;
+    virtual void behave(u64,const std::vector<f32>&) = 0;
 
   private:
     class Impl; Impl* m_pImpl;

@@ -51,6 +51,7 @@ namespace stemcapsulax {
     void update() override;
     void draw(RenderTexture2D&) override;
     void control(const ControlData&) override;
+    void behave(u64,const std::vector<f32>&) override;
 
   private:
     class Impl; Impl* m_pImpl;
