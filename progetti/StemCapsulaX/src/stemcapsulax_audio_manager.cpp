@@ -354,11 +354,11 @@ void stemcapsulax::AudioManager::Impl::m_ComputeEnergyForResult(
     auto value = in.magL.at(k);
     dataout.fL_Energy += value * value;
     if (value > dataout.pairFreqAmpMaxLft.second) {
-      dataout.pairFreqAmpMaxLft = std::make_pair(f32(k) * fs / f32(N)
+      dataout.pairFreqAmpMaxLft = std::make_pair(f32(k) * fs * .5f / f32(N)
         , std::max(dataout.pairFreqAmpMaxLft.second, value));
     }
     if (value < dataout.pairFreqAmpMinLft.second) {
-      dataout.pairFreqAmpMinLft = std::make_pair(f32(k) * fs / f32(N)
+      dataout.pairFreqAmpMinLft = std::make_pair(f32(k) * fs * .5f / f32(N)
         , std::min(dataout.pairFreqAmpMaxLft.second, value));
     }
   }
@@ -372,11 +372,11 @@ void stemcapsulax::AudioManager::Impl::m_ComputeEnergyForResult(
     auto value = in.magR.at(k);
     dataout.fR_Energy += value * value;
     if (value > dataout.pairFreqAmpMaxRgt.second) {
-      dataout.pairFreqAmpMaxRgt = std::make_pair(f32(k) * fs / f32(N)
+      dataout.pairFreqAmpMaxRgt = std::make_pair(f32(k) * fs * .5f / f32(N)
         , std::max(dataout.pairFreqAmpMaxRgt.second, value));
     }
     if (value < dataout.pairFreqAmpMinRgt.second) {
-      dataout.pairFreqAmpMinRgt = std::make_pair(f32(k) * fs / f32(N)
+      dataout.pairFreqAmpMinRgt = std::make_pair(f32(k) * fs * .5f / f32(N)
         , std::min(dataout.pairFreqAmpMaxRgt.second, value));
     }
   }

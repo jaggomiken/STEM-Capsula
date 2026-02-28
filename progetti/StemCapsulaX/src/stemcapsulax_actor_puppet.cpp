@@ -68,11 +68,12 @@ stemcapsulax::ActorPuppet::~ActorPuppet()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::ActorPuppet::applyTransform(f32 x, f32 y, f32 angle)
+void stemcapsulax::ActorPuppet::moveRelative(f32 x, f32 y)
 {
   float timeStep = 1.0f / 60.0f;
-  b2Vec2 targetPosition = {x, y};
-   b2Rot targetRotation = b2MakeRot(angle);
+  auto trcur = b2Body_GetTransform(m_pImpl->vbodies[1]);
+  b2Vec2 targetPosition = {trcur.p.x + x, trcur.p.y + y};
+   b2Rot targetRotation = b2MakeRot(.0f);
   b2Transform target = {targetPosition, targetRotation};
   b2Body_SetTargetTransform(m_pImpl->vbodies[1], target, timeStep); // torso
 }
@@ -82,19 +83,27 @@ void stemcapsulax::ActorPuppet::applyTransform(f32 x, f32 y, f32 angle)
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::ActorPuppet::behave(u64 what, const std::vector<f32>& v)
 {
-  f32 force_x = v.size() >= 1 ? v.at(0) : 10.0f;
-  f32 force_y = v.size() >= 2 ? v.at(1) : 10.0f;
+  f32 force_x = v.size() >= 1 ? v.at(0) : 0.0f;
+  f32 force_y = v.size() >= 2 ? v.at(1) : 0.0f;
   if (what & u64(Behaviour::kMOVELEGS)) {
-    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 6], { -force_x, .0f }, true);
-    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 8], {  force_x, .0f }, true);
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 6], { -30000.0f * force_x, .0f }, true);
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 8], { +30000.0f * force_x, .0f }, true);
   }
   if (what & u64(Behaviour::kJUMP)) {
     b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[10], { .0f, -force_y }, true);
     b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[11], { .0f, -force_y }, true);
   }
   if (what & u64(Behaviour::kOPENLEGS)) {
-    b2Body_ApplyForceToCenter(m_pImpl->vbodies[10], { -force_x, .0f }, true);
-    b2Body_ApplyForceToCenter(m_pImpl->vbodies[11], {  force_x, .0f }, true);
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[10], { -20000.0f, .0f }, true);
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[11], { +20000.0f, .0f }, true);
+  }
+  if (what & u64(Behaviour::kLEFTARMUP)) {
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 2], { -100.0f, 100.0f * force_x }, true);
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 3], { -100.0f, 100.0f * force_x }, true);
+  }
+  if (what & u64(Behaviour::kRIGHTARMUP)) {
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 4], { +100.0f, 100.0f * force_x }, true);
+    b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[ 5], { +100.0f, 100.0f * force_x }, true);
   }
 }
 
@@ -113,29 +122,29 @@ stemcapsulax::ActorPuppet::Impl::Impl(b2WorldId wid
   , const b2Vec2& c, f32 s /* scala */)
 {
   auto bidUHead = m_CreateCapsule(wid, c.x + s*.0f, c.y - s*5.5f
-    , { s*.0f, s*1.0f }, { s*.0f, s*-1.0f }, s*1.0f, 1.0f, Color{124, 76, 22});
+    , { s*.0f, s*1.0f }, { s*.0f, s*-1.0f }, s*1.0f, 1.0f, Color{142,115, 25});
   auto bidTorso = m_CreateCapsule(wid, c.x + s*.0f, c.y + s*.0f
-    , { s*.0f, s*3.0f }, { s*.0f, s*-2.0f }, s*2.0f, 1.2f, Color{124, 76, 22});
+    , { s*.0f, s*3.0f }, { s*.0f, s*-2.0f }, s*2.0f, 1.2f, Color{142,115, 25});
   auto bidLeArT = m_CreateCapsule(wid, c.x - s*3.0f, c.y + s*.0f
-    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{124, 76, 22});
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{142,115, 25});
   auto bidLeArB = m_CreateCapsule(wid, c.x - s*3.0f, c.y + s*4.0f
-    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{124, 76, 22});
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{142,115, 25});
   auto bidRaArT = m_CreateCapsule(wid, c.x + s*3.0f, c.y + s*.0f
-    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{124, 76, 22});
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{142,115, 25});
   auto bidRaArB = m_CreateCapsule(wid, c.x + s*3.0f, c.y + s*4.0f
-    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{124, 76, 22});
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{142,115, 25});
   auto bidLeLeT = m_CreateCapsule(wid, c.x - s*1.0f, c.y + s*8.0f
-    , { s*.0f, s*4.0f }, { s*.0f, s*-4.0f }, s*1.0f, 2.0f, Color{124, 76, 22});
+    , { s*.0f, s*4.0f }, { s*.0f, s*-4.0f }, s*1.0f, 2.0f, Color{142,115, 25});
   auto bidLeLeB = m_CreateCapsule(wid, c.x - s*1.0f, c.y + s*14.5f
-    , { s*.0f, s*3.5f }, { s*.0f, s*-3.5f }, s*1.0f, 2.0f, Color{124, 76, 22});
+    , { s*.0f, s*3.5f }, { s*.0f, s*-3.5f }, s*1.0f, 2.0f, Color{142,115, 25});
   auto bidRaLeT = m_CreateCapsule(wid, c.x + s*1.0f, c.y + s*8.0f
-    , { s*.0f, s*4.0f }, { s*.0f, s*-4.0f }, s*1.0f, 2.0f, Color{124, 76, 22});
+    , { s*.0f, s*4.0f }, { s*.0f, s*-4.0f }, s*1.0f, 2.0f, Color{142,115, 25});
   auto bidRaLeB = m_CreateCapsule(wid, c.x + s*1.0f, c.y + s*14.5f
-    , { s*.0f, s*3.5f }, { s*.0f, s*-3.5f }, s*1.0f, 2.0f, Color{124, 76, 22});
+    , { s*.0f, s*3.5f }, { s*.0f, s*-3.5f }, s*1.0f, 2.0f, Color{142,115, 25});
   auto bidFootL = m_CreateBox(wid, c.x - s*1.5f, c.y + s*19.0f
-    , { s*3.0f, s*1.0f }, 1000.0f, Color{124, 76, 22});
+    , { s*3.0f, s*1.0f }, 1000.0f, Color{142,115, 25});
   auto bidFootR = m_CreateBox(wid, c.x + s*1.5f, c.y + s*19.0f
-    , { s*3.0f, s*1.0f }, 1000.0f, Color{124, 76, 22});
+    , { s*3.0f, s*1.0f }, 1000.0f, Color{142,115, 25});
 
   vbodies.push_back(bidUHead); //  0 testa
   vbodies.push_back(bidTorso); //  1 corpo

@@ -19,8 +19,8 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_actor_puppet_h
-#define stemcapsulax_actor_puppet_h
+#ifndef stemcapsulax_actor_damper_h
+#define stemcapsulax_actor_damper_h
 
 #include "stemcapsulax_actor_box2d.h"
 #include "stemcapsulax_box2d_proxy.h"
@@ -35,32 +35,19 @@
  * CLASS DECLARATION
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
-  class ActorPuppet : public ActorBox2D {
+  class ActorDamper : public ActorBox2D {
   public:
-    /* potenza di due così si possono mettere in OR */
-    enum class Behaviour : u64 {
-        kOPENLEGS   = 0x00000000000000001LLU
-      , kOPENARMS   = 0x00000000000000002LLU
-      , kJUMP       = 0x00000000000000004LLU
-      , kTREMBLE    = 0x00000000000000008LLU
-      , kMOVELEGS   = 0x00000000000000010LLU
-      , kLEFTARMUP  = 0x00000000000000020LLU
-      , kRIGHTARMUP = 0x00000000000000040LLU
-    };
-
-    explicit ActorPuppet(b2WorldId, const b2Vec2& center, f32 scale = 1.0f
-      , const std::string& name = {});
-    ActorPuppet(const ActorPuppet&)              = delete;
-    ActorPuppet(ActorPuppet&&)                   = delete;
-    ActorPuppet& operator=(const ActorPuppet&)   = delete;
-    ActorPuppet& operator=(ActorPuppet&&)        = delete;
-    virtual ~ActorPuppet();
-
-    void moveRelative(f32 x, f32 y);
+    explicit ActorDamper(b2WorldId, const b2Vec2& center, f32 scalex = 1.0f
+      , f32 scaley = 1.0f, const std::string& name = {});
+    ActorDamper(const ActorDamper&)              = delete;
+    ActorDamper(ActorDamper&&)                   = delete;
+    ActorDamper& operator=(const ActorDamper&)   = delete;
+    ActorDamper& operator=(ActorDamper&&)        = delete;
+    virtual ~ActorDamper();
 
     void update() override;
-    void behave(u64,const std::vector<f32>&) override;
-    
+    void behave(u64, const std::vector<f32>&) override;
+
   private:
     class Impl; Impl* m_pImpl;
   };

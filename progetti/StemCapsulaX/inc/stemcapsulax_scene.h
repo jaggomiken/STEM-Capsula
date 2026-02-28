@@ -43,6 +43,7 @@ namespace stemcapsulax {
   class Scene {
   public:
     using TypeID = u32;
+    using ExternalTriggerCallback = std::function<void(u32)>;
 
     Scene();
     Scene(const Scene&)              = delete;
@@ -52,6 +53,8 @@ namespace stemcapsulax {
     virtual ~Scene();
 
     TaskRunner& runner();
+    void setExternalTriggerCallback(const ExternalTriggerCallback&);
+    ExternalTriggerCallback externalTriggerCallback() const;
 
     virtual void clear() = 0;
     virtual void trigger(uint32_t) = 0;

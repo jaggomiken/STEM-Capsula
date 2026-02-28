@@ -139,9 +139,10 @@ void stemcapsulax::LayeredScene::clear()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::LayeredScene::trigger(u32)
+void stemcapsulax::LayeredScene::trigger(u32 what)
 {
-  // niente da fare in questo metodo qui
+  auto etcb = externalTriggerCallback();
+  if (etcb) { etcb(what); }
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

@@ -31,6 +31,7 @@ public:
  ~Impl();
 
   TaskRunner m_runner;
+  ExternalTriggerCallback m_etcb;
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -50,6 +51,24 @@ stemcapsulax::Scene::~Scene()
 {
   delete m_pImpl;
   m_pImpl = nullptr;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::Scene::setExternalTriggerCallback(
+  const ExternalTriggerCallback& etcb)
+{
+  m_pImpl->m_etcb = etcb;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::Scene::ExternalTriggerCallback 
+  stemcapsulax::Scene::externalTriggerCallback() const
+{
+  return m_pImpl->m_etcb;
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

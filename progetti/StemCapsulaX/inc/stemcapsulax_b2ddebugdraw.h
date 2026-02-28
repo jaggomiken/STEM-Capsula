@@ -58,7 +58,7 @@ namespace stemcapsulax {
       m_dd = b2DefaultDebugDraw();
       m_dd.context = this;
       m_dd.drawShapes           = true;   // true
-      m_dd.drawJoints           = true;   // true
+      m_dd.drawJoints           = false;   // true
       m_dd.drawMass             = false;  // false
       m_dd.drawContacts         = false;   // true
       m_dd.useDrawingBounds     = false;  // se true, crea problemi
