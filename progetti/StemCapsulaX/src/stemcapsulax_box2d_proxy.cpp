@@ -256,7 +256,41 @@ void stemcapsulax::Box2DProxy::destroyInactiveBodies()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::Box2DProxy::createBodyConcaveGround()
+void stemcapsulax::Box2DProxy::createBodyGroundNoWalls(Color color)
+{
+  f32 ffractionofground = 8.0f, foffright = .0f;
+  f32 fgroundsizw = width() * 1.10f;
+  f32 fgroundsizh = 0.5f;
+  f32 fgroundposy = height() - fgroundsizh;
+  
+  b2BodyDef groundBodyDef = b2DefaultBodyDef();
+  groundBodyDef.rotation = b2MakeRot(0.0f * (B2_PI / 180.0f));
+  groundBodyDef.position = b2Vec2{
+      fgroundsizw / 2.0f + foffright
+    , fgroundposy };
+
+  // l'estensione di una forma box2d da specificare è metà dell'effettiva
+    b2BodyId groundId = b2CreateBody(worldId(), &groundBodyDef);
+   b2Polygon groundBox = b2MakeBox(fgroundsizw / 2.0f, fgroundsizh / 2.0f);
+  b2ShapeDef groundShapeDef = b2DefaultShapeDef();
+  groundShapeDef.density = 1000.0f;
+  groundShapeDef.enableContactEvents = true;
+  groundShapeDef.enableHitEvents = true;
+  groundShapeDef.material.customColor =
+      u32(color.a) << 24
+    | u32(color.r) << 16
+    | u32(color.g) <<  8
+    | u32(color.b);
+  b2CreatePolygonShape(groundId, &groundShapeDef, &groundBox);
+  std::printf("[BOX2DPROXY]: <GROUNDNOWALLS>: Put shape @ %.2f,%.2f\n"
+    , groundBodyDef.position.x, groundBodyDef.position.y);
+  m_pImpl->m_mapBodies.insert({ B2TOU64(groundId), { groundId, true }});
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::Box2DProxy::createBodyConcaveGround(Color color)
 {
   f32 ffractionofground = 8.0f, foffright = .0f;
   f32 fgroundsizw =
@@ -276,6 +310,11 @@ void stemcapsulax::Box2DProxy::createBodyConcaveGround()
   groundShapeDef.density = 1000.0f;
   groundShapeDef.enableContactEvents = true;
   groundShapeDef.enableHitEvents = true;
+  groundShapeDef.material.customColor =
+      u32(color.a) << 24
+    | u32(color.r) << 16
+    | u32(color.g) <<  8
+    | u32(color.b);
   b2Polygon dnleft = b2MakeOffsetBox(
       .5f, 20.0f
     , { -20.5f, 0.0f }, b2MakeRot(45.0f * DEG2RAD));
@@ -300,7 +339,7 @@ void stemcapsulax::Box2DProxy::createBodyConcaveGround()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::Box2DProxy::createBodyTestGround()
+void stemcapsulax::Box2DProxy::createBodyTestGround(Color color)
 {
   f32 ffractionofground = 8.0f, foffright = .0f;
   f32 fgroundsizw =
@@ -321,6 +360,11 @@ void stemcapsulax::Box2DProxy::createBodyTestGround()
   groundShapeDef.density = 1000.0f;
   groundShapeDef.enableContactEvents = true;
   groundShapeDef.enableHitEvents = true;
+  groundShapeDef.material.customColor =
+      u32(color.a) << 24
+    | u32(color.r) << 16
+    | u32(color.g) <<  8
+    | u32(color.b);
   b2CreatePolygonShape(groundId, &groundShapeDef, &groundBox);
   b2Polygon leftwall = b2MakeOffsetBox(
       .5f, 80.0f
@@ -345,7 +389,7 @@ void stemcapsulax::Box2DProxy::createBodyTestGround()
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::Box2DProxy::createBodyGroundRect(
-  f32 x, f32 y, f32 w, f32 h)
+  f32 x, f32 y, f32 w, f32 h, Color color)
 {
   b2BodyDef groundBodyDef = b2DefaultBodyDef();
   groundBodyDef.rotation = b2MakeRot(0.0f * (B2_PI / 180.0f));
@@ -358,6 +402,11 @@ void stemcapsulax::Box2DProxy::createBodyGroundRect(
   groundShapeDef.density = 1000.0f;
   groundShapeDef.enableContactEvents = true;
   groundShapeDef.enableHitEvents = true;
+  groundShapeDef.material.customColor =
+      u32(color.a) << 24
+    | u32(color.r) << 16
+    | u32(color.g) <<  8
+    | u32(color.b);
   b2CreatePolygonShape(groundId, &groundShapeDef, &groundBox);
   std::printf("[BOX2DPROXY]: <GROUND>: Put shape @ %.2f,%.2f\n"
     , groundBodyDef.position.x, groundBodyDef.position.y);
@@ -368,7 +417,7 @@ void stemcapsulax::Box2DProxy::createBodyGroundRect(
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::Box2DProxy::createBodyRectangle(
-  f32 x, f32 y, f32 w, f32 h)
+  f32 x, f32 y, f32 w, f32 h, Color color)
 {
   f32 bodyw = w, bodyh = h;
   b2BodyDef bodyDef = b2DefaultBodyDef();
@@ -384,6 +433,11 @@ void stemcapsulax::Box2DProxy::createBodyRectangle(
   shapeDef.density = .2f;
   shapeDef.material.restitution = 0.6f;
   shapeDef.material.friction = 0.3f;
+  shapeDef.material.customColor =
+      u32(color.a) << 24
+    | u32(color.r) << 16
+    | u32(color.g) <<  8
+    | u32(color.b);
   b2CreatePolygonShape(bodyId, &shapeDef, &dynamicBox);
   
   std::printf("[BOX2DPROXY]: <RECT>: Put shape @ %.2f,%.2f\n"
@@ -394,7 +448,7 @@ void stemcapsulax::Box2DProxy::createBodyRectangle(
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::Box2DProxy::createBodyCircle(f32 x, f32 y, f32 r)
+void stemcapsulax::Box2DProxy::createBodyCircle(f32 x, f32 y, f32 r, Color color)
 {
   b2BodyDef bodyDef = b2DefaultBodyDef();
   bodyDef.type      = b2_dynamicBody;
@@ -409,6 +463,11 @@ void stemcapsulax::Box2DProxy::createBodyCircle(f32 x, f32 y, f32 r)
   shapeDef.density = 1.0f;
   shapeDef.material.restitution = 0.3f;
   shapeDef.material.friction = 0.5f;
+  shapeDef.material.customColor =
+      u32(color.a) << 24
+    | u32(color.r) << 16
+    | u32(color.g) <<  8
+    | u32(color.b);
   b2CreateCircleShape(bodyId, &shapeDef, &circle);
   
   std::printf("[BOX2DPROXY]: <CIRCLE>: Put shape @ %.2f,%.2f\n"
@@ -420,7 +479,7 @@ void stemcapsulax::Box2DProxy::createBodyCircle(f32 x, f32 y, f32 r)
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::Box2DProxy::createBodyPolygon(
-  f32 x, f32 y, const b2Vec2* v, size_t count)
+  f32 x, f32 y, const b2Vec2* v, size_t count, Color color)
 {
   b2BodyDef bodyDef = b2DefaultBodyDef();
   bodyDef.type      = b2_dynamicBody;
@@ -436,6 +495,11 @@ void stemcapsulax::Box2DProxy::createBodyPolygon(
   shapeDef.density = 2.0f;
   shapeDef.material.restitution = 0.8f;
   shapeDef.material.friction = 0.5f;
+  shapeDef.material.customColor =
+      u32(color.a) << 24
+    | u32(color.r) << 16
+    | u32(color.g) <<  8
+    | u32(color.b);
   b2CreatePolygonShape(bodyId, &shapeDef, &poly);
 
   std::printf("[BOX2DPROXY]: <POLY>: Put shape @ %.2f,%.2f\n"
@@ -447,7 +511,7 @@ void stemcapsulax::Box2DProxy::createBodyPolygon(
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::Box2DProxy::createBodyCapsule(f32 x, f32 y
-  , const b2Vec2& p0, const b2Vec2& p1, f32 r)
+  , const b2Vec2& p0, const b2Vec2& p1, f32 r, Color color)
 {
   b2BodyDef bodyDef = b2DefaultBodyDef();
   bodyDef.type      = b2_dynamicBody;
@@ -462,6 +526,11 @@ void stemcapsulax::Box2DProxy::createBodyCapsule(f32 x, f32 y
   shapeDef.density = 3.0f;
   shapeDef.material.restitution = 0.8f;
   shapeDef.material.friction = 0.2f;
+  shapeDef.material.customColor =
+      u32(color.a) << 24
+    | u32(color.r) << 16
+    | u32(color.g) <<  8
+    | u32(color.b);
   b2CreateCapsuleShape(bodyId, &shapeDef, &capsule);
 
   std::printf("[BOX2DPROXY]: <CAPSULE>: Put shape @ %.2f,%.2f\n"

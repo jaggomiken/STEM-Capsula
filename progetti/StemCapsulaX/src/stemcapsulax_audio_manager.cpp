@@ -31,6 +31,7 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #define STEMCAPSULAX_AUDIOMANAGER_BUFSZ                                4096U
 #define STEMCAPSULAX_AUDIOMANAGER_FFTSZ                                4096U
+#define STEMCAPSULAX_AUDIOMANAGER_FRQHZ                               48000U
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * LOCAL FUNCTIONS
@@ -51,11 +52,11 @@ static struct AudioStreamCallbackStatus {
 struct FFTResultDataPackage {
   fftsimd::SpectrumResult res;
   f32 fL_Energy;
-  f32 fL_AmpMin;
-  f32 fL_AmpMax;
   f32 fR_Energy;
-  f32 fR_AmpMin;
-  f32 fR_AmpMax;
+  std::pair<f32,f32> pairFreqAmpMinLft;
+  std::pair<f32,f32> pairFreqAmpMaxLft;
+  std::pair<f32,f32> pairFreqAmpMinRgt;
+  std::pair<f32,f32> pairFreqAmpMaxRgt;
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -152,8 +153,9 @@ void stemcapsulax::AudioManager::update()
       const auto& item = m_pImpl->m_qfftres.front();
       if (m_pImpl->m_datacb) {
         m_pImpl->m_datacb(item.res.magL, item.res.magR
-          , item.fL_Energy, item.fL_AmpMax, item.fL_AmpMin
-          , item.fR_Energy, item.fR_AmpMax, item.fR_AmpMin);
+          , item.fL_Energy, item.fR_Energy
+          , item.pairFreqAmpMinLft, item.pairFreqAmpMaxLft
+          , item.pairFreqAmpMinRgt, item.pairFreqAmpMaxRgt);
       }
       m_pImpl->m_qfftres.pop();
     }
@@ -333,21 +335,50 @@ void stemcapsulax::AudioManager::Impl::m_ComputeEnergyForResult(
     const fftsimd::SpectrumResult& in
   , FFTResultDataPackage& dataout)
 {
+  // Dati N campioni della FFT, la frequenza corrispondente al campione k si
+  // calcola come fk = (k * fs) / N, dove fs è la frequenza di campionamento.
+  // In generale, fs = 2 * fny dove fny è la frequenza di Nyquist. Questo
+  // implica che la significatività fisica dei campioni FFT è dal campione
+  // k=0 al campione k=fny, quindi i primi N/2 campioni. Questo si applica
+  // a segnali reali, come quelli su cui lavora il nostro componente FFT.
+  // Ricordiamo che per k=0 si ha la componente DC.
+
+  f32 fs = f32(STEMCAPSULAX_AUDIOMANAGER_FRQHZ);
   dataout.fL_Energy = .0f;
-  dataout.fL_AmpMax = -std::numeric_limits<f32>::max();
-  dataout.fL_AmpMin =  std::numeric_limits<f32>::max();
-  for (auto value : in.magL) {
+  dataout.pairFreqAmpMaxLft = 
+    std::make_pair(.0f, -std::numeric_limits<f32>::max());
+  dataout.pairFreqAmpMinLft = 
+    std::make_pair(.0f,  std::numeric_limits<f32>::max());
+  size_t N = in.magL.size();
+  for (size_t k = 0;k < N / 2;++k) {
+    auto value = in.magL.at(k);
     dataout.fL_Energy += value * value;
-    dataout.fL_AmpMax = std::max<f32>(dataout.fL_AmpMax, value);
-    dataout.fL_AmpMin = std::min<f32>(dataout.fL_AmpMin, value);
+    if (value > dataout.pairFreqAmpMaxLft.second) {
+      dataout.pairFreqAmpMaxLft = std::make_pair(f32(k) * fs / f32(N)
+        , std::max(dataout.pairFreqAmpMaxLft.second, value));
+    }
+    if (value < dataout.pairFreqAmpMinLft.second) {
+      dataout.pairFreqAmpMinLft = std::make_pair(f32(k) * fs / f32(N)
+        , std::min(dataout.pairFreqAmpMaxLft.second, value));
+    }
   }
   dataout.fR_Energy = .0f;
-  dataout.fR_AmpMax = -std::numeric_limits<f32>::max();
-  dataout.fR_AmpMin =  std::numeric_limits<f32>::max();
-  for (auto value : in.magR) { 
+  dataout.pairFreqAmpMaxRgt = 
+    std::make_pair(.0f, -std::numeric_limits<f32>::max());
+  dataout.pairFreqAmpMinRgt = 
+    std::make_pair(.0f,  std::numeric_limits<f32>::max());
+  N = in.magR.size();    
+  for (size_t k = 0;k < N / 2;++k) {
+    auto value = in.magR.at(k);
     dataout.fR_Energy += value * value;
-    dataout.fR_AmpMax = std::max<f32>(dataout.fR_AmpMax, value);
-    dataout.fR_AmpMin = std::min<f32>(dataout.fR_AmpMin, value);
+    if (value > dataout.pairFreqAmpMaxRgt.second) {
+      dataout.pairFreqAmpMaxRgt = std::make_pair(f32(k) * fs / f32(N)
+        , std::max(dataout.pairFreqAmpMaxRgt.second, value));
+    }
+    if (value < dataout.pairFreqAmpMinRgt.second) {
+      dataout.pairFreqAmpMinRgt = std::make_pair(f32(k) * fs / f32(N)
+        , std::min(dataout.pairFreqAmpMaxRgt.second, value));
+    }
   }
 }
 

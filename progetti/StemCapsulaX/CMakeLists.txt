@@ -109,6 +109,8 @@ set(TSK
   tasks/stemcapsulax_task_growing_circle.cpp
   tasks/stemcapsulax_task_energy_circle.h
   tasks/stemcapsulax_task_energy_circle.cpp
+  tasks/stemcapsulax_task_mouse_pan_zoom.h
+  tasks/stemcapsulax_task_mouse_pan_zoom.cpp
 )
 set(DIRECTOR
   # Only one director implementation shall be enabled here
@@ -118,7 +120,6 @@ set(DIRECTOR
 target_include_directories(${TARGET} PUBLIC inc ext ext/extras tasks)
      target_link_libraries(${TARGET} PRIVATE 
         raylib box2d::box2d Threads::Threads OpenGL::GL)
-add_compile_options(-mavx2)
 if (APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET 26.1)
   target_link_libraries(${TARGET} PRIVATE "-framework IOKit")

@@ -39,10 +39,11 @@ namespace stemcapsulax {
   public:
     /* potenza di due così si possono mettere in OR */
     enum class Behaviour : u64 {
-        kJUMP     = 1
-      , kOPENARMS = 2
-      , kOPENLEGS = 4
-      , kTREMBLE  = 8
+        kOPENLEGS = 0x00000000000000001LLU
+      , kOPENARMS = 0x00000000000000002LLU
+      , kJUMP     = 0x00000000000000004LLU
+      , kTREMBLE  = 0x00000000000000008LLU
+      , kMOVELEGS = 0x00000000000000010LLU
     };
 
     explicit ActorPuppet(b2WorldId, const b2Vec2& center, f32 scale = 1.0f
@@ -53,9 +54,11 @@ namespace stemcapsulax {
     ActorPuppet& operator=(ActorPuppet&&)        = delete;
     virtual ~ActorPuppet();
 
+    void applyTransform(f32 x, f32 y, f32 angle);
+
     void update() override;
     void behave(u64,const std::vector<f32>&) override;
-
+    
   private:
     class Impl; Impl* m_pImpl;
   };

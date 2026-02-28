@@ -40,11 +40,12 @@ namespace stemcapsulax {
           const std::vector<f32>& vleft
         , const std::vector<f32>& vrght
         , f32 fL_Energy
-        , f32 fL_AmpMax
-        , f32 fL_AmpMin
         , f32 fR_Energy
-        , f32 fR_AmpMax
-        , f32 fR_AmpMin)>;
+        , std::pair<f32,f32> pairFreqAmpMinLft
+        , std::pair<f32,f32> pairFreqAmpMaxLft
+        , std::pair<f32,f32> pairFreqAmpMinRgt
+        , std::pair<f32,f32> pairFreqAmpMaxRgt
+      )>;
 
     struct StatusData {
       u32 uNTotalFrames;         // numero totale di frame

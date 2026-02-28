@@ -29,6 +29,7 @@
 #include "stemcapsulax_task_crosshair.h"
 #include "stemcapsulax_task_growing_circle.h"
 #include "stemcapsulax_task_energy_circle.h"
+#include "stemcapsulax_task_mouse_pan_zoom.h"
 #include "stemcapsulax_box2d_proxy.h"
 #include "stemcapsulax_actor_puppet.h"
 #include "stemcapsulax_status.h"
@@ -83,14 +84,17 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
     , { cnv.fWorldWidth / 2.0f - 10.0f, cnv.fWorldHeight / 2.0f }, 1.2f
     , "Pup3" };
   static ActorPuppet pup4{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f + 10.0f, cnv.fWorldHeight / 2.0f }, 1.2f
+    , { cnv.fWorldWidth / 2.0f -  0.0f, cnv.fWorldHeight / 2.0f }, 1.3f
     , "Pup4" };
   static ActorPuppet pup5{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f + 30.0f, cnv.fWorldHeight / 2.0f }, 1.1f
+    , { cnv.fWorldWidth / 2.0f + 10.0f, cnv.fWorldHeight / 2.0f }, 1.2f
     , "Pup5" };
   static ActorPuppet pup6{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f + 40.0f, cnv.fWorldHeight / 2.0f }, 1.0f
+    , { cnv.fWorldWidth / 2.0f + 30.0f, cnv.fWorldHeight / 2.0f }, 1.1f
     , "Pup6" };
+  static ActorPuppet pup7{lab2d.worldId()
+    , { cnv.fWorldWidth / 2.0f + 40.0f, cnv.fWorldHeight / 2.0f }, 1.0f
+    , "Pup7" };
 
   lab2d.actorAdd(&pup1);
   lab2d.actorAdd(&pup2);
@@ -98,10 +102,28 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
   lab2d.actorAdd(&pup4);
   lab2d.actorAdd(&pup5);
   lab2d.actorAdd(&pup6);
+  lab2d.actorAdd(&pup7);
 
   static f32 yoff = 200.0f;
   static i32 x_p = 0, y_p = cnv.fScreenHeight - yoff;
   static i32 x_inc = cnv.fScreenWidth / 6;
+
+  // automa a stati finiti per gestire la coreografia
+  enum class CoStatus : u32 {
+      kUNDEFINED
+    , kLEFTARMUP
+    , kRIGHTARMUP
+    , kOPENLEGS
+    , kCLOSELEGS
+    , kMOVELEGS
+    , kWAITFOR
+  };
+
+  static struct CoAutomataContext {
+    CoStatus cst = CoStatus::kUNDEFINED;
+    CoStatus cstNextAfterWaitFor = CoStatus::kUNDEFINED;
+    f32 fWaitFor = .0f, fWaitForStart = .0f;
+  } coactx;
 
   // configura la callback nel gestore audio
   // questa callback viene chiamata nel main loop ad ogni update
@@ -109,31 +131,64 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
       const std::vector<f32>& vleft
     , const std::vector<f32>& vrght
     , f32 fL_Energy
-    , f32 fL_AmpMax
-    , f32 fL_AmpMin
     , f32 fR_Energy
-    , f32 fR_AmpMax
-    , f32 fR_AmpMin) 
+    , std::pair<f32,f32> pairFreqAmpMinLft
+    , std::pair<f32,f32> pairFreqAmpMaxLft
+    , std::pair<f32,f32> pairFreqAmpMinRgt
+    , std::pair<f32,f32> pairFreqAmpMaxRgt) 
   {
+#if 1
     auto& st = stemcapsulax::Status::GetInstance();
     i32 fps = st.data().sysinf.iFPS;
 
     f32 fTot = fL_Energy + fR_Energy;
-    f32 freqA = 64.0f, freqB = 123.0f;
-    f32 yA = yoff * std::cosf(2 * M_PI * freqA * st.data().sysinf.fSecondsElapsed);
-    f32 yB = yoff * std::sinf(2 * M_PI * freqB * st.data().sysinf.fSecondsElapsed);
+    f32 fDeltaTime = .0f;
 
-    lab2d.enumerate([&](Actor* pA) {
-      pA->behave(u64(ActorPuppet::Behaviour::kJUMP)
-        , { 10000.0f * fL_Energy, 10000.0f * fR_Energy });
-    });
-
+    switch (coactx.cst) {
+      case CoStatus::kUNDEFINED:
+        coactx.cst = CoStatus::kWAITFOR;
+        coactx.fWaitFor = 2.0f; 
+        coactx.fWaitForStart = st.data().sysinf.fSecondsElapsed;
+        coactx.cstNextAfterWaitFor = CoStatus::kOPENLEGS;
+        break;
+      case CoStatus::kOPENLEGS:
+        std::fprintf(stdout, "[AMCB]: OPENLEGS\n");
+        lab2d.enumerate([&](Actor* pA) {
+          pA->behave(u64(ActorPuppet::Behaviour::kOPENLEGS), {});
+        });
+        coactx.cst = CoStatus::kWAITFOR;
+        coactx.fWaitFor = .5f;
+        coactx.fWaitForStart = st.data().sysinf.fSecondsElapsed;
+        coactx.cstNextAfterWaitFor = CoStatus::kMOVELEGS;
+        break;
+      case CoStatus::kWAITFOR:
+        fDeltaTime = st.data().sysinf.fSecondsElapsed - coactx.fWaitForStart;
+        if (fDeltaTime >= coactx.fWaitFor) {
+          coactx.cst = coactx.cstNextAfterWaitFor;
+        } else {
+          coactx.cst = CoStatus::kWAITFOR;
+        }
+        break;
+      case CoStatus::kMOVELEGS:
+        lab2d.enumerate([&](Actor* pA) {
+          pA->behave(u64(ActorPuppet::Behaviour::kMOVELEGS)
+            , { 29000.0f * fTot, 29000.0f * fTot });
+        });
+        break;
+    }
     std::fprintf(stdout
-      , "[AMCB]: TOT=%f L=%.6f (MIN=%f,MAX=%f) R=%.6f (MIN=%f,MAX=%f) X=%d YA=%d YB=%d\r"
-      , fTot
-      , fL_Energy, fL_AmpMin, fL_AmpMax, fR_Energy, fR_AmpMin, fR_AmpMax
-      , x_p, i32(yA), i32(yB));
+      , "[AMCB]: ST=%02u TOT=%f L=%.6f "
+        "(MIN=[%f,%f],MAX=[%f,%f]) "
+        "R=%.6f (MIN=[%f,%f],MAX=[%f,%f])\r"
+      , u32(coactx.cst), fTot
+      , fL_Energy
+      , pairFreqAmpMinLft.first, pairFreqAmpMinLft.second
+      , pairFreqAmpMaxLft.first, pairFreqAmpMaxLft.second
+      , fR_Energy
+      , pairFreqAmpMinRgt.first, pairFreqAmpMinRgt.second
+      , pairFreqAmpMaxRgt.first, pairFreqAmpMaxRgt.second);
     std::fflush(stdout);
+#endif
   };
   AudioManager::GetInstance().registerDataCallback(fnam);
 
@@ -146,6 +201,7 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
   tr.taskAdd(CreateTask_CrossHair());
   tr.taskAdd(CreateTask_GrowingCircle(fnGrowingCircle));
   tr.taskAdd(CreateTask_EnergyCircle(fnExplosion));
+  tr.taskAdd(CreateTask_MousePanZoom(lab2d.camera()));
 
   // aggiunge la scena al gestore
   auto& sm = SceneManager::GetInstance();

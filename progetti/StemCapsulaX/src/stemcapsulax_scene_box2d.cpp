@@ -129,7 +129,7 @@ void stemcapsulax::SceneBox2D::trigger(uint32_t what)
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::SceneBox2D::show()
 {
-  m_pImpl->m_proxy.createBodyConcaveGround();
+  m_pImpl->m_proxy.createBodyConcaveGround(Color{255,255,0});
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -192,7 +192,7 @@ void stemcapsulax::SceneBox2D::update()
     auto mp = GetScreenToWorld2D(GetMousePosition(), m_pImpl->m_camera);
     auto& cnv = Conv::GetInstance();
     m_pImpl->m_proxy.createBodyGroundRect(cnv.x_s2w(mp.x), cnv.y_s2w(mp.y)
-      , 1.0f, 1.0f);
+      , 1.0f, 1.0f, Color{255,120,0});
   }
   
   // Gestisci L-CTRL per impostazione raggio del cerchio
@@ -224,7 +224,7 @@ void stemcapsulax::SceneBox2D::update()
       auto mp = GetScreenToWorld2D(GetMousePosition(), m_pImpl->m_camera);
       auto& cnv = Conv::GetInstance();
       m_pImpl->m_proxy.createBodyCircle(cnv.x_s2w(mp.x), cnv.y_s2w(mp.y)
-        , m_pImpl->m_fCircleRadius);
+        , m_pImpl->m_fCircleRadius, Color{200,120, 80});
       m_pImpl->m_bIncreaseRadius = false;
     }
     if (IsKeyDown(KEY_LEFT_ALT)) {

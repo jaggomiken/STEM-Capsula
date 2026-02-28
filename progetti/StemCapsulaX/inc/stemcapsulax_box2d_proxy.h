@@ -85,13 +85,14 @@ namespace stemcapsulax {
     void update(); // esegue step e fisica
     void destroyInactiveBodies();
 
-    void createBodyTestGround();
-    void createBodyConcaveGround();
-    void createBodyGroundRect(f32 x, f32 y, f32 w, f32 h);
-    void createBodyRectangle(f32 x, f32 y, f32 w, f32 h);
-    void createBodyCircle(f32 x, f32 y, f32 r);
-    void createBodyPolygon(f32 x, f32 y, const b2Vec2*, size_t count);
-    void createBodyCapsule(f32 x, f32 y, const b2Vec2& p0, const b2Vec2& p1, f32 r);
+    void createBodyTestGround(Color);
+    void createBodyConcaveGround(Color);
+    void createBodyGroundNoWalls(Color);
+    void createBodyGroundRect(f32 x, f32 y, f32 w, f32 h,Color);
+    void createBodyRectangle(f32 x, f32 y, f32 w, f32 h,Color);
+    void createBodyCircle(f32 x, f32 y, f32 r,Color);
+    void createBodyPolygon(f32 x, f32 y, const b2Vec2*, size_t count,Color);
+    void createBodyCapsule(f32 x, f32 y, const b2Vec2& p0, const b2Vec2& p1, f32 r,Color);
     void createExplosion(f32 x, f32 y, f32 energy);
     void createBodyFromImage(const std::string&);
     void removeBodiesOutsideRect(f32 x0, f32 y0, f32 x1, f32 y1);

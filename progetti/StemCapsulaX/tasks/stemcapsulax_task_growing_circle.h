@@ -19,6 +19,9 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+#ifndef stemcapsulax_task_growing_circle_h
+#define stemcapsulax_task_growing_circle_h
+
 #include "stemcapsulax_task_runner.h"
 #include <functional>
 
@@ -37,3 +40,5 @@
 namespace stemcapsulax {
   TaskRunner::Task CreateTask_GrowingCircle(const std::function<void(f32)>&);
 }
+
+#endif // stemcapsulax_task_growing_circle_h

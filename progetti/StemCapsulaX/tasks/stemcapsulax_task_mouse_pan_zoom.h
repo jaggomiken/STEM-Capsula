@@ -19,21 +19,21 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_task_crosshair_h
-#define stemcapsulax_task_crosshair_h
+#ifndef stemcapsulax_task_mouse_pan_zoom_h
+#define stemcapsulax_task_mouse_pan_zoom_h
 
- #include "stemcapsulax_task_runner.h"
+#include "stemcapsulax_task_runner.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * Questo task mostra un cursore a croce fullscreen in corrispondenza della
- * posizione corrente del mouse.
+ * Questo task consente di controllare la camera2d di un layer 2d per fare
+ * il pan del contenuto del layer.
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * STEMCAPSULAX TASK CREATOR
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
-  TaskRunner::Task CreateTask_CrossHair();
+  TaskRunner::Task CreateTask_MousePanZoom(Camera2D&);
 }
 
-#endif // stemcapsulax_task_crosshair_h
+#endif // stemcapsulax_task_mouse_pan_zoom_h

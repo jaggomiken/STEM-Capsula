@@ -19,7 +19,10 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#include "stemcapsulax_task_runner.h"
+#ifndef stemcapsulax_task_energy_circle_h
+#define stemcapsulax_task_energy_circle_h
+
+ #include "stemcapsulax_task_runner.h"
 #include <functional>
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -37,3 +40,5 @@
 namespace stemcapsulax {
   TaskRunner::Task CreateTask_EnergyCircle(const std::function<void(f32)>&);
 }
+
+#endif // stemcapsulax_task_energy_circle_h

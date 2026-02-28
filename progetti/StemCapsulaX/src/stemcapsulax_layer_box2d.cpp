@@ -62,7 +62,7 @@ stemcapsulax::LayerBox2D::~LayerBox2D()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayerBox2D::circleAt(f32 x, f32 y, f32 radius)
 {
-  m_pImpl->m_b2proxy.createBodyCircle(x, y, radius);
+  m_pImpl->m_b2proxy.createBodyCircle(x, y, radius, Color{124, 76, 22});
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -118,7 +118,7 @@ void stemcapsulax::LayerBox2D::clear()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayerBox2D::show()
 {
-  m_pImpl->m_b2proxy.createBodyTestGround();
+  m_pImpl->m_b2proxy.createBodyGroundNoWalls(Color{124, 76, 22});
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

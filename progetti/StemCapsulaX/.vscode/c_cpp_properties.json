@@ -7,7 +7,8 @@
                 "${workspaceFolder}/inc/**",
                 "${workspaceFolder}/ext/**",
                 "${workspaceFolder}/tasks/**",
-                "${workspaceFolder}/directors/**"
+                "${workspaceFolder}/directors/**",
+                "${env:HOME}/Esperimenti/00_IacoSDK/include/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -19,6 +20,26 @@
             "cppStandard": "c++17",
             "intelliSenseMode": "windows-gcc-x64",
             "compilerPath": "C:/msys64/ucrt64/bin/g++.exe"
+        },
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/inc/**",
+                "${workspaceFolder}/ext/**",
+                "${workspaceFolder}/tasks/**",
+                "${workspaceFolder}/directors/**",
+                "${env:HOME}/Esperimenti/00_IacoSDK/include/**"
+            ],
+            "defines": [],
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "macos-clang-arm64",
+            "mergeConfigurations": true,
+            "recursiveIncludes": {},
+            "compilerPath": "/usr/bin/clang",
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true
+            }
         }
     ],
     "version": 4
