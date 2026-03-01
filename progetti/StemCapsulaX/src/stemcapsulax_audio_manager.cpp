@@ -32,6 +32,7 @@
 #define STEMCAPSULAX_AUDIOMANAGER_BUFSZ                                4096U
 #define STEMCAPSULAX_AUDIOMANAGER_FFTSZ                                4096U
 #define STEMCAPSULAX_AUDIOMANAGER_FRQHZ                               48000U
+#define STEMCAPSULAX_AUDIOMANAGER_REALTIME                                1U
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * LOCAL FUNCTIONS
@@ -149,6 +150,14 @@ void stemcapsulax::AudioManager::update()
   m_pImpl->m_data.uFTQueueSizeInSamples = u32(gASCS.qdata.size());
   { std::lock_guard<std::mutex> guard{ m_pImpl->m_mtxqfftres };
     m_pImpl->m_data.uNFFTReadyResults = u32(m_pImpl->m_qfftres.size());
+#if STEMCAPSULAX_AUDIOMANAGER_REALTIME == 1
+    if (m_pImpl->m_qfftres.size() >= 2) {
+      std::fprintf(stdout, "[AUDIOMANAGER]: REALTIME, discarding queue...\n");
+      while (m_pImpl->m_qfftres.size() > 1) {
+        m_pImpl->m_qfftres.pop();
+      }
+    }
+#endif    
     if (!m_pImpl->m_qfftres.empty()) {
       const auto& item = m_pImpl->m_qfftres.front();
       if (m_pImpl->m_datacb) {

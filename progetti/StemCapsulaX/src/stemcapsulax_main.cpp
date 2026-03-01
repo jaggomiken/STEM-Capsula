@@ -48,7 +48,7 @@ i32 main(i32 argc, char* argv[])
     APP_NAME " " APP_VERSION " by prof. <Michele Iacobellis>"
   };
   std::string strMessg {
-    "(press ESC to exit, F3 show/hide HUD, F5 show/hide GUI)"
+    "(press ESC to exit, F3 show/hide HUD, F5 show/hide GUI, 0-9 trigger, ENTER start)"
   };
 
   auto strfontpath = stemcapsulax::fontpath("NovaMono-Regular.ttf");
@@ -161,7 +161,17 @@ i32 main(i32 argc, char* argv[])
  * -------------------------------------------------------------------------- */
   bool bExitLoop = false, bShowExitDialog = false;
   bool bShowHUD  = true, bShowGUI = true;
-  
+
+/* --------------------------------------------------------------------------
+ * ACTIONKEYS (gestione dei tasti da 0 a 9 per il trigger)
+ * -------------------------------------------------------------------------- */
+  struct ActionKey { i32 iKey; u32 uSceneValue; };
+  ActionKey aactions[] = {
+      {  KEY_ZERO, 0 }, {  KEY_ONE, 1 }, { KEY_TWO, 2 }, { KEY_THREE, 3 }
+    , {  KEY_FOUR, 4 }, { KEY_FIVE, 5 }, { KEY_SIX, 6 }, { KEY_SEVEN, 7 }
+    , { KEY_EIGHT, 8 }, { KEY_NINE, 9 }
+  };
+
 /* --------------------------------------------------------------------------
  * MAINLOOP (gestione degli eventi e disegno della finestra)
  * -------------------------------------------------------------------------- */
@@ -172,6 +182,17 @@ i32 main(i32 argc, char* argv[])
     if (IsKeyPressed(KEY_ESCAPE)) { bShowExitDialog = true; }
     if (IsKeyPressed(KEY_F3)) { bShowHUD = !bShowHUD; }
     if (IsKeyPressed(KEY_F5)) { bShowGUI = !bShowGUI; }
+    if (IsKeyPressed(KEY_ENTER)) { aum.playMainWave(true); }
+    if (IsKeyPressed(KEY_SPACE)) { 
+      if (IsCursorHidden()) { ShowCursor(); } else { HideCursor(); }
+    }
+    for (size_t k = 0;k < STEMCAPSULAX_ARRAY_SIZE(aactions);++k) {
+      if (IsKeyPressed(aactions[k].iKey)) {
+        if (sm.hasCurrentScene()) {
+          sm.currentScene().trigger(aactions[k].uSceneValue);
+        }
+      }
+    }
 
     /* ----------------------------------------------------------------------
      | GETRAYLIBINFO (prende informazioni da RAYLIB e aggiorna stato)

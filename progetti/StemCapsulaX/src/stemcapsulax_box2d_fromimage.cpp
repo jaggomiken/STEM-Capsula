@@ -86,7 +86,7 @@ bool stemcapsulax::Box2DBodyFromImage::bodyCreate(b2WorldId wid
       w = m_pImpl->m_image.width
     , h = m_pImpl->m_image.height;
 
-  f32 ww = 1.f, wh = 1.f, spx = .1f, spy = .1f;
+  f32 ww = .5f, wh = .5f, spx = .1f, spy = .1f;
   f32 density = .1f;
   f32 wx_ini = offx - ((ww + spx) * w) / 2.0f, wx = wx_ini
     , wy = offy - (wh * h) / 2.0f;

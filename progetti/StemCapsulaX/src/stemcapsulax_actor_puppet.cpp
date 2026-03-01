@@ -30,9 +30,13 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 class stemcapsulax::ActorPuppet::Impl {
 public:
-  Impl(b2WorldId wid, const b2Vec2& center, f32 scale);
+  Impl(b2WorldId wid, const b2Vec2& center, f32 scale, Options);
  ~Impl();
 
+   b2BodyId m_CreateGround(b2WorldId wid, f32 x, f32 y
+    , const b2Vec2& size, f32 dens, Color);
+   b2BodyId m_CreateGroundWWalls(b2WorldId wid, f32 x, f32 y
+    , const b2Vec2& size, f32 dens, f32 wallh, Color);
   b2BodyId m_CreateBox(b2WorldId wid, f32 x, f32 y
     , const b2Vec2& size, f32 dens, Color);
   b2BodyId m_CreateCapsule(b2WorldId wid, f32 x, f32 y
@@ -42,17 +46,18 @@ public:
 
   std::vector<b2BodyId> vbodies;
   std::vector<b2JointId> vjoints;
+  Options m_opt;
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::ActorPuppet::ActorPuppet(b2WorldId wid, const b2Vec2& center
-  , f32 scale, const std::string& name)
+  , f32 scale, const std::string& name, Options opt)
 : ActorBox2D  { wid, name }
 , m_pImpl     {   nullptr }
 {
-  m_pImpl = new(std::nothrow) Impl{wid, center, scale };
+  m_pImpl = new(std::nothrow) Impl{wid, center, scale, opt};
   STEMCAPSULAX_CAPTURE_CPU(nullptr == m_pImpl, "Cannot allocate");
 }
 
@@ -70,12 +75,12 @@ stemcapsulax::ActorPuppet::~ActorPuppet()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::ActorPuppet::moveRelative(f32 x, f32 y)
 {
-  float timeStep = 1.0f / 60.0f;
-  auto trcur = b2Body_GetTransform(m_pImpl->vbodies[1]);
-  b2Vec2 targetPosition = {trcur.p.x + x, trcur.p.y + y};
-   b2Rot targetRotation = b2MakeRot(.0f);
-  b2Transform target = {targetPosition, targetRotation};
-  b2Body_SetTargetTransform(m_pImpl->vbodies[1], target, timeStep); // torso
+  if (Options::kNOGROUNDBASE != m_pImpl->m_opt) {
+    b2Body_SetLinearVelocity(m_pImpl->vbodies.back(), {x,y});
+  } else {
+    std::fprintf(stdout
+      , "[PUPPET]: moveRelative() not supported for NOGROUNDBASE.\n");
+  }
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -119,8 +124,10 @@ void stemcapsulax::ActorPuppet::update()
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::ActorPuppet::Impl::Impl(b2WorldId wid
-  , const b2Vec2& c, f32 s /* scala */)
+  , const b2Vec2& c, f32 s /* scala */, Options opt)
 {
+  m_opt = opt;
+
   auto bidUHead = m_CreateCapsule(wid, c.x + s*.0f, c.y - s*5.5f
     , { s*.0f, s*1.0f }, { s*.0f, s*-1.0f }, s*1.0f, 1.0f, Color{142,115, 25});
   auto bidTorso = m_CreateCapsule(wid, c.x + s*.0f, c.y + s*.0f
@@ -183,6 +190,17 @@ stemcapsulax::ActorPuppet::Impl::Impl(b2WorldId wid
   vjoints.push_back(jidRLB);
   vjoints.push_back(jidFTL);
   vjoints.push_back(jidFTR);
+
+  if (Options::kGROUNDBASENOWALLS == opt) {
+    auto gndid = m_CreateGround(wid, c.x + s*.0f, c.y + s*20.0f
+      , { s*1.5f*8.0f, 1.0f }, 10000.0f, {124, 76, 22});
+    vbodies.push_back(gndid);
+  }
+  else if (Options::kGROUNDBASEWWALLS == opt) {
+    auto gndid = m_CreateGroundWWalls(wid, c.x + s*.0f, c.y + s*20.0f
+      , { s*2.0f*8.0f, 1.0f }, 10000.0f, s*9.0f, {124, 76, 22});
+    vbodies.push_back(gndid);      
+  }
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -191,6 +209,70 @@ stemcapsulax::ActorPuppet::Impl::Impl(b2WorldId wid
 stemcapsulax::ActorPuppet::Impl::~Impl()
 {
 
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+b2BodyId stemcapsulax::ActorPuppet::Impl::m_CreateGround(b2WorldId wid
+  , f32 x, f32 y, const b2Vec2& size, f32 density, Color c)
+{
+  b2BodyDef bd = b2DefaultBodyDef();
+  bd.type = b2_kinematicBody;
+  bd.angularDamping = 0.6f;
+  bd.position = b2Vec2{ x, y };
+  bd.rotation = b2MakeRot(0.0f * (B2_PI / 180.0f));
+  b2BodyId bodyId = b2CreateBody(wid, &bd);
+  b2Polygon box = b2MakeBox(size.x / 2.0f, size.y / 2.0f);
+  b2ShapeDef sd = b2DefaultShapeDef();
+  sd.enableContactEvents = true;
+  sd.enableHitEvents = true;
+  sd.density = density;
+  sd.material.restitution = 0.8f;
+  sd.material.friction = 0.1f;
+  sd.material.customColor =
+      u32(c.a) << 24
+    | u32(c.r) << 16
+    | u32(c.g) <<  8
+    | u32(c.b);
+  b2CreatePolygonShape(bodyId, &sd, &box);
+  return bodyId;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+b2BodyId stemcapsulax::ActorPuppet::Impl::m_CreateGroundWWalls(b2WorldId wid
+  , f32 x, f32 y, const b2Vec2& size, f32 density, f32 wall_h, Color c)
+{
+  b2BodyDef bd = b2DefaultBodyDef();
+  bd.type = b2_kinematicBody;
+  bd.angularDamping = 0.6f;
+  bd.position = b2Vec2{ x, y };
+  bd.rotation = b2MakeRot(0.0f * (B2_PI / 180.0f));
+  b2BodyId bodyId = b2CreateBody(wid, &bd);
+  b2Polygon box = b2MakeBox(size.x / 2.0f, size.y / 2.0f);
+  b2ShapeDef sd = b2DefaultShapeDef();
+  sd.enableContactEvents = true;
+  sd.enableHitEvents = true;
+  sd.density = density;
+  sd.material.restitution = 0.8f;
+  sd.material.friction = 0.1f;
+  sd.material.customColor =
+      u32(c.a) << 24
+    | u32(c.r) << 16
+    | u32(c.g) <<  8
+    | u32(c.b);
+  b2CreatePolygonShape(bodyId, &sd, &box);
+  b2Polygon leftwall = b2MakeOffsetBox(
+      .5f, wall_h / 2.0f
+    , { - (size.x / 2.0f) + .5f, -wall_h / 2.0f }, b2MakeRot(.0f));
+  b2CreatePolygonShape(bodyId, &sd, &leftwall);
+  b2Polygon rightwall = b2MakeOffsetBox(
+      .5f, wall_h / 2.0f
+    , { + (size.x / 2.0f) - .5f, -wall_h / 2.0f }, b2MakeRot(.0f));
+  b2CreatePolygonShape(bodyId, &sd, &rightwall);
+  return bodyId;
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

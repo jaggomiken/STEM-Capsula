@@ -48,8 +48,15 @@ namespace stemcapsulax {
       , kRIGHTARMUP = 0x00000000000000040LLU
     };
 
+    /* Opzioni */
+    enum class Options : u08 {
+        kNOGROUNDBASE
+      , kGROUNDBASENOWALLS
+      , kGROUNDBASEWWALLS
+    };
+
     explicit ActorPuppet(b2WorldId, const b2Vec2& center, f32 scale = 1.0f
-      , const std::string& name = {});
+      , const std::string& name = {}, Options = Options::kNOGROUNDBASE);
     ActorPuppet(const ActorPuppet&)              = delete;
     ActorPuppet(ActorPuppet&&)                   = delete;
     ActorPuppet& operator=(const ActorPuppet&)   = delete;

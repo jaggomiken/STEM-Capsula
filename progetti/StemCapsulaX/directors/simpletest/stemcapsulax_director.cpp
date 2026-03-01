@@ -48,6 +48,12 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * STATIC FUNCTIONS
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+static void RemoveBodiesOutsideRect(f32 x0, f32 y0, f32 x1, f32 y1
+  , std::vector<b2BodyId>& vbodies);
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * STATIC METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
@@ -77,62 +83,46 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
 
   auto& cnv = Conv::GetInstance();
 
-  // crea gli attori
-#if 1
-  f32 fpuph = 46.0f;
-  static ActorPuppet pup1{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f - 50.0f, cnv.fWorldHeight - fpuph }, 1.0f
-    , "Pup1" };
-  static ActorPuppet pup2{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f - 35.0f, cnv.fWorldHeight - fpuph }, 1.1f
-    , "Pup2" };
-  static ActorPuppet pup3{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f - 20.0f, cnv.fWorldHeight - fpuph }, 1.2f
-    , "Pup3" };
-  static ActorPuppet pup4{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f -  0.0f, cnv.fWorldHeight - fpuph }, 1.3f
-    , "Pup4" };
-  static ActorPuppet pup5{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f + 20.0f, cnv.fWorldHeight - fpuph }, 1.2f
-    , "Pup5" };
-  static ActorPuppet pup6{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f + 35.0f, cnv.fWorldHeight - fpuph }, 1.1f
-    , "Pup6" };
-  static ActorPuppet pup7{lab2d.worldId()
-    , { cnv.fWorldWidth / 2.0f + 50.0f, cnv.fWorldHeight - fpuph }, 1.0f
-    , "Pup7" };
-#endif
+  // crea gli attori puppets
+  u32 np = 7;
+  f32 fpuph = 84.0f, fseg = cnv.fWorldWidth / 7.0f, pupoff = 10.0f;
+  const f32 ascales[] = { 1.0f, 1.1f, 1.2f, 1.3f, 1.2f, 1.1f, 1.0f };
+  f32 fpupallw = np * (fseg + pupoff);
+  static std::vector<ActorPuppet*> vpuppets;
+  for (size_t k = 0; k < size_t(np);++k) {
+    char name[64]; std::snprintf(name, sizeof(name), "Pup%zu", k);
+    auto* pup = new(std::nothrow) ActorPuppet{lab2d.worldId()
+      , { ((cnv.fWorldWidth + fpupallw) / 2.0f) - (k * (fseg + pupoff)) - 10.0f
+        , cnv.fWorldHeight - fpuph }, ascales[k]
+      , name, ActorPuppet::Options::kGROUNDBASEWWALLS };
+    vpuppets.push_back(pup);
+  }
+
+  // crea gli attori dampers
   static std::vector<ActorDamper*> vdampers;
   u32 nd = 24;
   f32 fdamperw = 2.0f, off = 4.1f, fdampallw = nd * (fdamperw + off);
   for (size_t k = 0;k < nd;++k) {
     char name[64]; std::snprintf(name, sizeof(name), "Dam%zu", k);
     auto* pdam = new(std::nothrow) ActorDamper{lab2d.worldId()
-    , { ((cnv.fWorldWidth + fdampallw) / 2.0f) - (k * (fdamperw + off)), cnv.fWorldHeight - 5.0f }, 1.0f, 1.0f
-    , name };
+    , { ((cnv.fWorldWidth + fdampallw) / 2.0f) - (k * (fdamperw + off)) - 3.0f
+      , cnv.fWorldHeight - 5.0f }, 1.0f, 1.0f, name };
     vdampers.push_back(pdam);
   }
 
   // aggiungi gli attori ai layer
-#if 1
-  lab2d.actorAdd(&pup1);
-  lab2d.actorAdd(&pup2);
-  lab2d.actorAdd(&pup3);
-  lab2d.actorAdd(&pup4);
-  lab2d.actorAdd(&pup5);
-  lab2d.actorAdd(&pup6);
-  lab2d.actorAdd(&pup7);
-#endif  
+  for (auto* ppup : vpuppets) { lab2d.actorAdd(ppup); }
   for (auto* pdam : vdampers) { lab2d.actorAdd(pdam); }
   lab2d.camera().zoom = .6f;
 
-  // funzione trigger esternal per la scena
+  // funzione trigger esterna per la scena con vettore dei body
   static std::vector<b2BodyId> vbodies;
-  auto fnExtTrg = [](u32 what) {
+  auto fnExtTrg = [&cnv](u32 what) {
     char fn[128]; std::snprintf(fn, sizeof(fn), "%02u.png", what);
     stemcapsulax::Box2DBodyFromImage bfi;
     if (bfi.loadImage(stemcapsulax::imagepath(fn))) {
-      if (!bfi.bodyCreate(lab2d.worldId(), .0f, .0f, vbodies)) {
+      if (!bfi.bodyCreate(lab2d.worldId()
+        , cnv.fWorldWidth / 2.0f, -cnv.fWorldHeight / 2.0f, vbodies)) {
         std::printf("[ERROR]: Cannot create bodies from image!\n");
       }
     }
@@ -156,9 +146,13 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
     f32 fWaitFor = .0f, fWaitForStart = .0f;
   } coactx;
 
+  // valore medio dell'energia totale da confrontare con il valore istantaneo
+  static f32 fenergyaccum = .0f, fenergyavg = .0f;
+  static f32 fnumcycles = .0f;
+
   // configura la callback nel gestore audio
   // questa callback viene chiamata nel main loop ad ogni update
-  auto fnam = [&cnv, nd]( 
+  auto fnam = [&cnv, nd, np]( 
       const std::vector<f32>& vleft
     , const std::vector<f32>& vrght
     , f32 fL_Energy
@@ -168,18 +162,38 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
     , std::pair<f32,f32> pairFreqAmpMinRgt
     , std::pair<f32,f32> pairFreqAmpMaxRgt) 
   {
-#if 1
     auto& st = stemcapsulax::Status::GetInstance();
     i32 fps = st.data().sysinf.iFPS;
 
     f32 fTot = fL_Energy + fR_Energy;
     f32 fDeltaTime = .0f;
 
+    fnumcycles   += 1.0f;
+    fenergyaccum += fTot;
+    fenergyavg = fenergyaccum / fnumcycles;
+
     size_t N = std::min<size_t>(vleft.size(),vrght.size()) / 2;
     for (size_t k = 0;k < N;++k) {
       size_t damperidx = k % nd;
       vdampers[damperidx]->behave(0, { vleft[k] + vrght[k] });
     }
+
+    size_t szLK = 
+      size_t((f32(N) * pairFreqAmpMaxLft.first) / (48000.0f / 2.0f));
+    size_t szRK = 
+      size_t((f32(N) * pairFreqAmpMaxRgt.first) / (48000.0f / 2.0f));
+
+    size_t szPupLK = szLK % np;
+    size_t szPupRK = szRK % np;
+
+    // L'animazione delle piattaforma funziona calcolando il valor medio mobile
+    // dell'energia totale e il segno della velocità verticale viene stabilito
+    // dal fatto che l'energia istantanea sia superiore o inferiore alla media.
+    // Il valore effettivo della velocità è invece stabilito dall'ampiezza del
+    // coseno della frequenza massima per L e R (anche no).
+    f32 fact = -20.0f * (fTot - fenergyavg);
+    vpuppets.at(szPupLK)->moveRelative(.0f, fact);
+    vpuppets.at(szPupRK)->moveRelative(.0f, fact);
 
     switch (coactx.cst) {
       case CoStatus::kUNDEFINED:
@@ -229,6 +243,8 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
       default:
         break;
     }
+    RemoveBodiesOutsideRect(-100, -200, 250, 250, vbodies);
+#if 0    
     std::fprintf(stdout
       , "[AMCB]: ST=%02u TOT=%f L=%.6f "
         "(MIN=[%f,%f],MAX=[%f,%f]) "
@@ -251,7 +267,7 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
   scene.layerAdd(&lab2d);  // disegnato per ultimo (in primo piano)
   // configura i task di scena
   auto& tr = scene.runner();
-  tr.taskAdd(CreateTask_CrossHair());
+  // tr.taskAdd(CreateTask_CrossHair());
   tr.taskAdd(CreateTask_GrowingCircle(fnGrowingCircle));
   tr.taskAdd(CreateTask_EnergyCircle(fnExplosion));
   tr.taskAdd(CreateTask_MousePanZoom(lab2d.camera()));
@@ -261,4 +277,33 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
   sm.addScene(&scene);
   sm.setCurrentSceneByIndex(0);
   sm.currentScene().show();
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * STATIC FUNCTIONS
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+static void RemoveBodiesOutsideRect(f32 x0, f32 y0, f32 x1, f32 y1
+  , std::vector<b2BodyId>& vbodies)
+{
+  std::vector<b2BodyId> vtoremove;
+  for (size_t k = 0;k < vbodies.size();++k) {
+    auto& b = vbodies.at(k);
+    if (b2Body_IsValid(b)) {
+      auto pos = b2Body_GetPosition(b);
+      if ((pos.x >= x0) && (pos.x <= x1) && (pos.y >= y0) && (pos.y <= y1)) {
+        // OK
+      } else {
+        vtoremove.push_back(b);
+        vbodies[k] = b2_nullBodyId;
+      }
+    }
+  }
+  for (auto& b : vtoremove) { b2DestroyBody(b); }
+  
+#if 1
+  if (!vtoremove.empty()) {
+    std::fprintf(stdout
+      , "[BOX2DPROXY]: Body destroyed %zu\n",vtoremove.size());
+  }
+#endif  
 }

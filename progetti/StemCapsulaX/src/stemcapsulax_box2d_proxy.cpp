@@ -258,14 +258,14 @@ void stemcapsulax::Box2DProxy::destroyInactiveBodies()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::Box2DProxy::createBodyGroundNoWalls(Color color)
 {
-  f32 fgroundsizw =  width() * 3.0f;
+  f32 fgroundsizw = width() * 1.5f;
   f32 fgroundsizh = 0.5f;
   f32 fgroundposy = height() - fgroundsizh;
   
   b2BodyDef groundBodyDef = b2DefaultBodyDef();
   groundBodyDef.rotation = b2MakeRot(0.0f * (B2_PI / 180.0f));
   groundBodyDef.position = b2Vec2{
-       fgroundsizw / 2.0f - width()
+       fgroundsizw / 2.0f - (fgroundsizw / 6.0f)
     ,  fgroundposy };
 
   // l'estensione di una forma box2d da specificare è metà dell'effettiva
