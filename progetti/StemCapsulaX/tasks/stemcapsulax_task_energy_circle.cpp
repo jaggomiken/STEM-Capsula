@@ -52,7 +52,7 @@ stemcapsulax::TaskRunner::Task
     if (IsKeyDown(KEY_LEFT_ALT)) {
       pT->m_bDrawEnergyRange = true;
       if (pT->m_bIncreaseEnergy) {
-        pT->m_fExplosionEnergy += 80.0f * (1.0f / GetFPS());
+        pT->m_fExplosionEnergy += 500.0f * (1.0f / GetFPS());
       }
     } else {
       pT->m_fExplosionEnergy = .0f;

@@ -37,7 +37,8 @@ namespace stemcapsulax {
   public:
     using DataCallback = 
       std::function<void(
-          const std::vector<f32>& vleft
+          f32 fpercdone
+        , const std::vector<f32>& vleft
         , const std::vector<f32>& vrght
         , f32 fL_Energy
         , f32 fR_Energy

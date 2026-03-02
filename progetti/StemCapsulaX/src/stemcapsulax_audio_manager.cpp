@@ -161,7 +161,9 @@ void stemcapsulax::AudioManager::update()
     if (!m_pImpl->m_qfftres.empty()) {
       const auto& item = m_pImpl->m_qfftres.front();
       if (m_pImpl->m_datacb) {
-        m_pImpl->m_datacb(item.res.magL, item.res.magR
+        f32 fperc = 100.0f * f32(m_pImpl->m_data.uNStreamedSamples) 
+          / f32(2.0f * m_pImpl->m_data.uNTotalFrames);
+        m_pImpl->m_datacb(fperc, item.res.magL, item.res.magR
           , item.fL_Energy, item.fR_Energy
           , item.pairFreqAmpMinLft, item.pairFreqAmpMaxLft
           , item.pairFreqAmpMinRgt, item.pairFreqAmpMaxRgt);

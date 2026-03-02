@@ -153,7 +153,8 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
   // configura la callback nel gestore audio
   // questa callback viene chiamata nel main loop ad ogni update
   auto fnam = [&cnv, nd, np]( 
-      const std::vector<f32>& vleft
+      f32 fperc
+    , const std::vector<f32>& vleft
     , const std::vector<f32>& vrght
     , f32 fL_Energy
     , f32 fR_Energy
@@ -167,6 +168,7 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
 
     f32 fTot = fL_Energy + fR_Energy;
     f32 fDeltaTime = .0f;
+    f32 fpspeedinc = 0.05f * std::cosf(fDeltaTime);
 
     fnumcycles   += 1.0f;
     fenergyaccum += fTot;
@@ -192,9 +194,20 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
     // Il valore effettivo della velocità è invece stabilito dall'ampiezza del
     // coseno della frequenza massima per L e R (anche no).
     f32 fact = -20.0f * (fTot - fenergyavg);
-    vpuppets.at(szPupLK)->moveRelative(.0f, fact);
-    vpuppets.at(szPupRK)->moveRelative(.0f, fact);
+    if (fperc <= 99.0f) {
+      vpuppets.at(szPupLK)->moveRelative(.0f, fact + fpspeedinc);
+      vpuppets.at(szPupRK)->moveRelative(.0f, fact + fpspeedinc);
+    } else {
+      // falli precipitare...
+      for (auto* p : vpuppets) {
+        p->moveRelative(.0f, +10.0f);
+      }
+    }
 
+    // Gestisce lo zoom della camera sulla base dell'energia totale audio
+    lab2d.camera().zoom = .49f + (fTot / 20.0f);
+
+    // Gestisce l'automa a stati finiti per i movimenti dei puppet
     switch (coactx.cst) {
       case CoStatus::kUNDEFINED:
         coactx.cst = CoStatus::kWAITFOR;
@@ -244,18 +257,20 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
         break;
     }
     RemoveBodiesOutsideRect(-100, -200, 250, 250, vbodies);
-#if 0    
+#if 0
     std::fprintf(stdout
-      , "[AMCB]: ST=%02u TOT=%f L=%.6f "
+      , "[AMCB]: ZOOM=%f ST=%02u TOT=%f L=%.6f "
         "(MIN=[%f,%f],MAX=[%f,%f]) "
-        "R=%.6f (MIN=[%f,%f],MAX=[%f,%f])\r"
+        "R=%.6f (MIN=[%f,%f],MAX=[%f,%f]) SOUNDPERC:%.2f%%\r"
+      , lab2d.camera().zoom
       , u32(coactx.cst), fTot
       , fL_Energy
       , pairFreqAmpMinLft.first, pairFreqAmpMinLft.second
       , pairFreqAmpMaxLft.first, pairFreqAmpMaxLft.second
       , fR_Energy
       , pairFreqAmpMinRgt.first, pairFreqAmpMinRgt.second
-      , pairFreqAmpMaxRgt.first, pairFreqAmpMaxRgt.second);
+      , pairFreqAmpMaxRgt.first, pairFreqAmpMaxRgt.second
+      , fperc);
     std::fflush(stdout);
 #endif
   };
