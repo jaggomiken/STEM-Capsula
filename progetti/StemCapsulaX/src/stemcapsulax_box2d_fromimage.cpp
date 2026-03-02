@@ -94,8 +94,10 @@ bool stemcapsulax::Box2DBodyFromImage::bodyCreate(b2WorldId wid
   for (size_t y = 0;y < h;++y) {
     for (size_t x = 0;x < w;++x) {
       Color c = *(m_pImpl->m_pColors + (w * y) + x);
-      auto bid = m_pImpl->m_CreateBody(c, density, wx, wy, ww, wh, wid);
-      vout.push_back(bid);
+      if (c.a > 0) {
+        auto bid = m_pImpl->m_CreateBody(c, density, wx, wy, ww, wh, wid);
+        vout.push_back(bid);
+      }
       wx += (ww + spx);
     }
     wy += (wh + spy);

@@ -162,7 +162,8 @@ void stemcapsulax::SceneBox2D::draw(RenderTexture2D& rtex)
     BeginMode2D(m_pImpl->m_camera);
     BeginShaderMode(m_pImpl->m_shaderCur);
     if (bDebugDraw) {
-      m_pImpl->m_debugdraw.drawWorld(m_pImpl->m_proxy.worldId());
+      m_pImpl->m_debugdraw.drawWorld(m_pImpl->m_proxy.worldId()
+        , m_pImpl->m_camera);
     }
     EndShaderMode();
     EndMode2D();

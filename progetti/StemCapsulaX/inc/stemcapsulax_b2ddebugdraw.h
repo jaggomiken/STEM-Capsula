@@ -53,7 +53,10 @@ namespace stemcapsulax {
     f32 fScreenWidth;
     f32 fScreenHeight;
     buffer<Vector2,8192> v2buffer;
-    
+    Camera2D m_cam;
+    Vector2 m_camorig;
+    Vector2 m_camstop;
+
     RaylibBox2DDebugDraw() noexcept {
       m_dd = b2DefaultDebugDraw();
       m_dd.context = this;
@@ -82,7 +85,12 @@ namespace stemcapsulax {
       m_dd.DrawStringFcn       = &RaylibBox2DDebugDraw::m_DrawString;
     }
 
-    void drawWorld(b2WorldId wid) noexcept { b2World_Draw(wid, &m_dd); }
+    void drawWorld(b2WorldId wid, const Camera2D& cam) noexcept { 
+      m_cam = cam;
+      m_camorig = GetScreenToWorld2D({.0f, .0f}, m_cam);
+      m_camstop = GetScreenToWorld2D({ fScreenWidth, fScreenHeight}, m_cam);
+      b2World_Draw(wid, &m_dd); 
+    }
 
   private:
     static void
@@ -146,7 +154,12 @@ namespace stemcapsulax {
       std::printf("[B2DDD]: DrawCircle (radius=%f)\n", radius);
 #endif
       auto* clz = reinterpret_cast<RaylibBox2DDebugDraw*>(context);
-      DrawCircleLines(TX(center.x), TY(center.y), TX(radius), RC(color));
+      auto c = Vector2{ TX(center.x), TY(center.y) };
+      if (   (c.x >= clz->m_camorig.x) && (c.y >= clz->m_camorig.y)
+          && (c.x <= clz->m_camstop.x) && (c.y <= clz->m_camstop.y)) 
+      {
+        DrawCircleLines(c.x, c.y, TX(radius), RC(color));
+      }
     }
     static void
       m_DrawSolidCircle(b2Transform transform
@@ -161,8 +174,12 @@ namespace stemcapsulax {
       auto rc = b2TransformPoint(transform, { radius, .0f });
       auto cn = Vector2{ TX(pc.x), TY(pc.y) };
       auto rn = Vector2{ TX(rc.x), TY(rc.y) };
-      DrawCircle(cn.x, cn.y, TX(radius), Fade(c, 0.7f));
-      DrawLineV(cn, rn, c);
+      if (   (cn.x >= clz->m_camorig.x) && (cn.y >= clz->m_camorig.y)
+          && (cn.x <= clz->m_camstop.x) && (cn.y <= clz->m_camstop.y)) 
+      {
+        DrawCircle(cn.x, cn.y, TX(radius), Fade(c, 0.7f));
+        DrawLineV(cn, rn, c);
+      }
     }
     static void
       m_DrawSolidCapsule(b2Vec2 p1, b2Vec2 p2, float radius

@@ -33,7 +33,7 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #define APP_VERSION                                                  "1.2.0"
 #define APP_NAME                                              "STEMCAPSULAX"
-#define APP_WAIT_FOR_SYNC                                                  1
+#define APP_WAIT_FOR_SYNC                                                  0
 #define APP_FULLSCREEN                                                     0
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -57,7 +57,7 @@ i32 main(i32 argc, char* argv[])
 /* --------------------------------------------------------------------------
  * INIT DI RAYLIB (detect del monitor, costruzione finestra e font)
  * -------------------------------------------------------------------------- */
-  i32 ww = 1080, wh = 1200, fps = 60; // se fps altissimo, si abbasserà nel loop
+  i32 ww = 1080, wh = 1920, fps = 600; // se fps altissimo, si abbasserà nel loop
   SetConfigFlags(FLAG_MSAA_4X_HINT
 #if APP_WAIT_FOR_SYNC == 1  
     | FLAG_VSYNC_HINT
@@ -137,7 +137,9 @@ i32 main(i32 argc, char* argv[])
   static stemcapsulax::GUI gui;
   auto rtexForScene = LoadRenderTexture(ww, wh); // texture per la scena
   auto rtexForHUD   = LoadRenderTexture(ww, wh); // texture per lo HUD
- 
+  SetTextureFilter(rtexForScene.texture, TEXTURE_FILTER_BILINEAR);
+  SetTextureFilter(rtexForHUD.texture, TEXTURE_FILTER_BILINEAR);
+
 /* --------------------------------------------------------------------------
  * STATUS INIT (prepara lo stato globale del sistema)
  * -------------------------------------------------------------------------- */

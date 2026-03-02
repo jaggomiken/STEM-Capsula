@@ -203,7 +203,7 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
         coactx.cstNextAfterWaitFor = CoStatus::kOPENLEGS;
         break;
       case CoStatus::kOPENLEGS:
-        std::fprintf(stdout, "[AMCB]: OPENLEGS\n");
+        // std::fprintf(stdout, "[AMCB]: OPENLEGS\n");
         lab2d.enumerate([&](Actor* pA) {
           pA->behave(u64(ActorPuppet::Behaviour::kOPENLEGS), {});
         });
@@ -226,14 +226,14 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
             , { fTot, fTot });
         });
         if (pairFreqAmpMaxLft.first >= 500.0f) {
-          std::fprintf(stdout, "[AMCB]: LEFTARMUP\n");
+          // std::fprintf(stdout, "[AMCB]: LEFTARMUP\n");
           lab2d.enumerate([&](Actor* pA) {
             pA->behave(u64(ActorPuppet::Behaviour::kLEFTARMUP)
               , { pairFreqAmpMaxLft.second });
           });
         }
         if (pairFreqAmpMaxRgt.first >= 500.0f) {
-          std::fprintf(stdout, "[AMCB]: RIGHTARMUP\n");
+          // std::fprintf(stdout, "[AMCB]: RIGHTARMUP\n");
           lab2d.enumerate([&](Actor* pA) {
             pA->behave(u64(ActorPuppet::Behaviour::kRIGHTARMUP)
               , { pairFreqAmpMaxRgt.second });
@@ -300,7 +300,7 @@ static void RemoveBodiesOutsideRect(f32 x0, f32 y0, f32 x1, f32 y1
   }
   for (auto& b : vtoremove) { b2DestroyBody(b); }
   
-#if 1
+#if 0
   if (!vtoremove.empty()) {
     std::fprintf(stdout
       , "[BOX2DPROXY]: Body destroyed %zu\n",vtoremove.size());

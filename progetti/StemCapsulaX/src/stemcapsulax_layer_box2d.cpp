@@ -170,7 +170,8 @@ void stemcapsulax::LayerBox2D::draw(RenderTexture2D& rtex)
     pA->draw(rtex);
   });
   if (bDebugDraw) {
-    m_pImpl->m_debugdraw.drawWorld(m_pImpl->m_b2proxy.worldId());
+    m_pImpl->m_debugdraw.drawWorld(m_pImpl->m_b2proxy.worldId()
+      , m_pImpl->m_camera);
   }
   EndMode2D();
 

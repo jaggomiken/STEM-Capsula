@@ -34,6 +34,15 @@ public:
   std::string m_strImagePath;
   Image m_image;
   Texture m_texture;
+  
+  Shader m_shader;
+  i32 m_iLocSeconds;
+  i32 m_iLocFreqX;
+  i32 m_iLocFreqY;
+  i32 m_iLocAmpX;
+  i32 m_iLocAmpY;
+  i32 m_iLocSpeedX;
+  i32 m_iLocSpeedY;
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -124,10 +133,15 @@ void stemcapsulax::LayerBackground::draw(RenderTexture2D& rtex)
 {
   auto& st = Status::GetInstance();
   auto& dt = st.data();
+  f32 secs = dt.sysinf.fSecondsElapsed;
+  SetShaderValue(m_pImpl->m_shader, m_pImpl->m_iLocSeconds
+    , &secs, SHADER_UNIFORM_FLOAT);
+  BeginShaderMode(m_pImpl->m_shader);    
   DrawTexture(m_pImpl->m_texture
     , (dt.sysinf.iWindowWidth  / 2) - (m_pImpl->m_texture.width  / 2)
     , (dt.sysinf.iWindowHeight / 2) - (m_pImpl->m_texture.height / 2)
     , WHITE);
+  EndShaderMode();
   auto& tr = runner();
   tr.enumerate([=, &tr, &rtex](TaskRunner::Task& task) {
     if (task.draw) { task.draw(tr, task, rtex); }
@@ -139,7 +153,32 @@ void stemcapsulax::LayerBackground::draw(RenderTexture2D& rtex)
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::LayerBackground::Impl::Impl()
 {
+  // alcune di queste variabili andranno spostate nella classe
+  m_shader = LoadShader(0, shaderpath("raylib_wave.fs").c_str());
+  m_iLocSeconds = GetShaderLocation(m_shader, "seconds");
+  m_iLocFreqX   = GetShaderLocation(m_shader, "freqX");
+  m_iLocFreqY   = GetShaderLocation(m_shader, "freqY");
+  m_iLocAmpX    = GetShaderLocation(m_shader, "ampX");
+  m_iLocAmpY    = GetShaderLocation(m_shader, "ampY");
+  m_iLocSpeedX  = GetShaderLocation(m_shader, "speedX");
+  m_iLocSpeedY  = GetShaderLocation(m_shader, "speedY");
 
+  f32 freqX  = 25.0f;
+  f32 freqY  = 25.0f;
+  f32 ampX   =  5.0f;
+  f32 ampY   =  5.0f;
+  f32 speedX =  2.0f;
+  f32 speedY =  2.0f;
+
+  f32 ss[] = { f32(GetScreenWidth()), f32(GetScreenHeight()) };
+  SetShaderValue(m_shader, GetShaderLocation(m_shader, "size")
+    , &ss, SHADER_UNIFORM_VEC2);
+  SetShaderValue(m_shader,  m_iLocFreqX,  &freqX, SHADER_UNIFORM_FLOAT);
+  SetShaderValue(m_shader,  m_iLocFreqY,  &freqY, SHADER_UNIFORM_FLOAT);
+  SetShaderValue(m_shader,   m_iLocAmpX,   &ampX, SHADER_UNIFORM_FLOAT);
+  SetShaderValue(m_shader,   m_iLocAmpY,   &ampY, SHADER_UNIFORM_FLOAT);
+  SetShaderValue(m_shader, m_iLocSpeedX, &speedX, SHADER_UNIFORM_FLOAT);
+  SetShaderValue(m_shader, m_iLocSpeedY, &speedY, SHADER_UNIFORM_FLOAT);
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -147,5 +186,5 @@ stemcapsulax::LayerBackground::Impl::Impl()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::LayerBackground::Impl::~Impl()
 {
-
+  UnloadShader(m_shader);
 }
