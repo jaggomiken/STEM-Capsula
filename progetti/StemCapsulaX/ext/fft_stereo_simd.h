@@ -66,12 +66,12 @@ static inline __m128 cmul2_sse(__m128 a, __m128 w) {
   // a = [ar0, ai0, ar1, ai1]
   // w = [wr0, wi0, wr1, wi1] (usually same twiddle replicated, but we support both)
   __m128 arar_aiai = _mm_moveldup_ps(a);      // [ar0, ar0, ar1, ar1]
-  __m128 aiai_...  = _mm_movehdup_ps(a);      // [ai0, ai0, ai1, ai1]
+  __m128 aiai      = _mm_movehdup_ps(a);      // [ai0, ai0, ai1, ai1]
   __m128 wrwi_wrwi = w;                       // [wr0, wi0, wr1, wi1]
-  __m128 wiw_r...  = _mm_shuffle_ps(w, w, _MM_SHUFFLE(2,3,0,1)); // [wi0, wr0, wi1, wr1]
+  __m128 wiw_r = _mm_shuffle_ps(w, w, _MM_SHUFFLE(2,3,0,1)); // [wi0, wr0, wi1, wr1]
 
   __m128 ac_ad = _mm_mul_ps(arar_aiai, wrwi_wrwi);
-  __m128 bd_bc = _mm_mul_ps(aiai_...,  wiw_r...);
+  __m128 bd_bc = _mm_mul_ps(aiai, wiw_r);
 
   // real = ac - bd ; imag = ad + bc
   // With the chosen shuffles, this becomes:
@@ -232,6 +232,13 @@ static inline SpectrumResult spectrum_stereo_48k_float32(
   if (!is_pow2(N) || N < 2) {
     return out; // empty
   }
+
+  // Debug
+#if 0  
+  std::fprintf(stdout, "[SAMPLES IN: %5zu]: ", N);
+  for (size_t k = 0;k < N;++k) { std::fprintf(stdout, "%f ", inputInterleavedLR[k]); }
+  std::fprintf(stdout, "\n\n\n");
+#endif  
 
   // Separate channels and (optional) window.
   std::vector<float> L(N), R(N);

@@ -318,8 +318,11 @@ stemcapsulax::AudioManager::Impl::Impl()
       
       // nutri il processore FFT
       if (vinput.size() >= STEMCAPSULAX_AUDIOMANAGER_FFTSZ) {
-        FFTResultDataPackage rdt;
-        rdt.res = fftsimd::spectrum_stereo_48k_float32(vinput.data(), 4096, true);
+        const size_t szNHALF = STEMCAPSULAX_AUDIOMANAGER_FFTSZ / 2;
+        FFTResultDataPackage rdt; // notare il 2048 !
+        rdt.res = fftsimd::spectrum_stereo_48k_float32(vinput.data(), szNHALF, true);
+        STEMCAPSULAX_CAPTURE_CPU(rdt.res.magL.empty(), "Empty FFT L");
+        STEMCAPSULAX_CAPTURE_CPU(rdt.res.magR.empty(), "Empty FFT R");
         m_ComputeEnergyForResult(rdt.res, rdt);
         { std::lock_guard<std::mutex> guard{ m_mtxqfftres };
           m_qfftres.push(rdt); }

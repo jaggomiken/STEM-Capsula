@@ -48,6 +48,12 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * MACROS
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+#define STEMCAPSULAX_DIRECTOR_ZOOM_BY_MUSIC                                0
+#define STEMCAPSULAX_DIRECTOR_PRINT_STATS                                  1
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * STATIC FUNCTIONS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 static void RemoveBodiesOutsideRect(f32 x0, f32 y0, f32 x1, f32 y1
@@ -83,8 +89,19 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
 
   auto& cnv = Conv::GetInstance();
 
+  // prepara i colori per i puppets
+  const std::vector<Color> apcolors[] = {
+      {{ 0, 56,184 }, {142,115, 25},{142,115, 25},{  0,146, 70},{142,115, 25},{142,115, 25},{206, 43, 55},{255,255,255},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25}}
+    , {{ 0, 56,184 }, {255,255,255},{142,115, 25},{189,  0, 41},{142,115, 25},{189,  0, 41},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25}}
+    , {{ 0, 56,184 }, {142,115, 25},{142,115, 25},{142,115, 25},{  0, 38, 84},{206, 17, 38},{142,115, 25},{142,115, 25},{142,115, 25},{255,255,255},{142,115, 25},{142,115, 25}}
+    , {{ 0, 56,184 }, {142,115, 25},{180, 18, 64},{  3, 45, 97},{255,255,255},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25}}
+    , {{ 0, 56,184 }, {201,  7, 42},{  0, 27,105},{142,115, 25},{255,255,255},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25}}
+    , {{ 0, 56,184 }, {142,115, 25},{142,115, 25},{142,115, 25},{222,  0,  0},{255,207,  0},{142,115, 25},{142,115, 25},{142,115, 25},{  1,  1,  1},{142,115, 25},{142,115, 25}}
+    , {{ 0, 56,184 }, {214, 39, 24},{255,255,255},{255,255,255},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25}}
+  };
+
   // crea gli attori puppets
-  u32 np = 7;
+  u32 np = 7; // Per ridurre il numero di attori, agire su questa variabile (orig 7)
   f32 fpuph = 84.0f, fseg = cnv.fWorldWidth / 7.0f, pupoff = 10.0f;
   const f32 ascales[] = { 1.0f, 1.1f, 1.2f, 1.3f, 1.2f, 1.1f, 1.0f };
   f32 fpupallw = np * (fseg + pupoff);
@@ -94,13 +111,14 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
     auto* pup = new(std::nothrow) ActorPuppet{lab2d.worldId()
       , { ((cnv.fWorldWidth + fpupallw) / 2.0f) - (k * (fseg + pupoff)) - 10.0f
         , cnv.fWorldHeight - fpuph }, ascales[k]
-      , name, ActorPuppet::Options::kGROUNDBASEWWALLS };
+      , name, ActorPuppet::Options::kGROUNDBASEWWALLS
+      , apcolors[k] };
     vpuppets.push_back(pup);
   }
 
   // crea gli attori dampers
   static std::vector<ActorDamper*> vdampers;
-  u32 nd = 24;
+  u32 nd = 24; // Per ridurre il numero di dumper agire su questa variabile (orig 24)
   f32 fdamperw = 2.0f, off = 4.1f, fdampallw = nd * (fdamperw + off);
   for (size_t k = 0;k < nd;++k) {
     char name[64]; std::snprintf(name, sizeof(name), "Dam%zu", k);
@@ -205,7 +223,9 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
     }
 
     // Gestisce lo zoom della camera sulla base dell'energia totale audio
+#if STEMCAPSULAX_DIRECTOR_ZOOM_BY_MUSIC == 1    
     lab2d.camera().zoom = .49f + (fTot / 20.0f);
+#endif    
 
     // Gestisce l'automa a stati finiti per i movimenti dei puppet
     switch (coactx.cst) {
@@ -257,7 +277,7 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
         break;
     }
     RemoveBodiesOutsideRect(-100, -200, 250, 250, vbodies);
-#if 0
+#if STEMCAPSULAX_DIRECTOR_PRINT_STATS == 1
     std::fprintf(stdout
       , "[AMCB]: ZOOM=%f ST=%02u TOT=%f L=%.6f "
         "(MIN=[%f,%f],MAX=[%f,%f]) "

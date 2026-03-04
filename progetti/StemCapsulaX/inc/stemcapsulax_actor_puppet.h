@@ -55,8 +55,10 @@ namespace stemcapsulax {
       , kGROUNDBASEWWALLS
     };
 
-    explicit ActorPuppet(b2WorldId, const b2Vec2& center, f32 scale = 1.0f
-      , const std::string& name = {}, Options = Options::kNOGROUNDBASE);
+    ActorPuppet(b2WorldId, const b2Vec2& center, f32 scale = 1.0f
+      , const std::string& name = {}
+      , Options = Options::kNOGROUNDBASE
+      , const std::vector<Color>& vcolors = {});
     ActorPuppet(const ActorPuppet&)              = delete;
     ActorPuppet(ActorPuppet&&)                   = delete;
     ActorPuppet& operator=(const ActorPuppet&)   = delete;

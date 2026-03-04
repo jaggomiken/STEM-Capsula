@@ -30,7 +30,8 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 class stemcapsulax::ActorPuppet::Impl {
 public:
-  Impl(b2WorldId wid, const b2Vec2& center, f32 scale, Options);
+  Impl(b2WorldId wid, const b2Vec2& center, f32 scale
+    , Options, const std::vector<Color>& vcolors);
  ~Impl();
 
    b2BodyId m_CreateGround(b2WorldId wid, f32 x, f32 y
@@ -53,11 +54,12 @@ public:
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::ActorPuppet::ActorPuppet(b2WorldId wid, const b2Vec2& center
-  , f32 scale, const std::string& name, Options opt)
+  , f32 scale, const std::string& name, Options opt
+  , const std::vector<Color>& vcolors)
 : ActorBox2D  { wid, name }
 , m_pImpl     {   nullptr }
 {
-  m_pImpl = new(std::nothrow) Impl{wid, center, scale, opt};
+  m_pImpl = new(std::nothrow) Impl{wid, center, scale, opt, vcolors};
   STEMCAPSULAX_CAPTURE_CPU(nullptr == m_pImpl, "Cannot allocate");
 }
 
@@ -124,34 +126,44 @@ void stemcapsulax::ActorPuppet::update()
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::ActorPuppet::Impl::Impl(b2WorldId wid
-  , const b2Vec2& c, f32 s /* scala */, Options opt)
+  , const b2Vec2& c, f32 s /* scala */, Options opt
+  , const std::vector<Color>& vcolors_in)
 {
   m_opt = opt;
 
+  auto vcolors = vcolors_in;
+  if (vcolors.size() < 12) {
+    std::fprintf(stderr
+      , "[PUPPET]: Vector of colors shall have 12 colors!\n");
+    for (size_t k = vcolors.size();k < 12;++k) {
+      vcolors.push_back(Color{142,115, 25});
+    }
+  }
+
   auto bidUHead = m_CreateCapsule(wid, c.x + s*.0f, c.y - s*5.5f
-    , { s*.0f, s*1.0f }, { s*.0f, s*-1.0f }, s*1.0f, 1.0f, Color{142,115, 25});
+    , { s*.0f, s*1.0f }, { s*.0f, s*-1.0f }, s*1.0f, 1.0f, vcolors.at( 0));
   auto bidTorso = m_CreateCapsule(wid, c.x + s*.0f, c.y + s*.0f
-    , { s*.0f, s*3.0f }, { s*.0f, s*-2.0f }, s*2.0f, 1.2f, Color{142,115, 25});
+    , { s*.0f, s*3.0f }, { s*.0f, s*-2.0f }, s*2.0f, 1.2f, vcolors.at( 1));
   auto bidLeArT = m_CreateCapsule(wid, c.x - s*3.0f, c.y + s*.0f
-    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{142,115, 25});
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, vcolors.at( 2));
   auto bidLeArB = m_CreateCapsule(wid, c.x - s*3.0f, c.y + s*4.0f
-    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{142,115, 25});
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, vcolors.at( 3));
   auto bidRaArT = m_CreateCapsule(wid, c.x + s*3.0f, c.y + s*.0f
-    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{142,115, 25});
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, vcolors.at( 4));
   auto bidRaArB = m_CreateCapsule(wid, c.x + s*3.0f, c.y + s*4.0f
-    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, Color{142,115, 25});
+    , { s*.0f, s*2.0f }, { s*.0f, s*-2.0f }, s*1.0f, 1.0f, vcolors.at( 5));
   auto bidLeLeT = m_CreateCapsule(wid, c.x - s*1.0f, c.y + s*8.0f
-    , { s*.0f, s*4.0f }, { s*.0f, s*-4.0f }, s*1.0f, 2.0f, Color{142,115, 25});
+    , { s*.0f, s*4.0f }, { s*.0f, s*-4.0f }, s*1.0f, 2.0f, vcolors.at( 6));
   auto bidLeLeB = m_CreateCapsule(wid, c.x - s*1.0f, c.y + s*14.5f
-    , { s*.0f, s*3.5f }, { s*.0f, s*-3.5f }, s*1.0f, 2.0f, Color{142,115, 25});
+    , { s*.0f, s*3.5f }, { s*.0f, s*-3.5f }, s*1.0f, 2.0f, vcolors.at( 7));
   auto bidRaLeT = m_CreateCapsule(wid, c.x + s*1.0f, c.y + s*8.0f
-    , { s*.0f, s*4.0f }, { s*.0f, s*-4.0f }, s*1.0f, 2.0f, Color{142,115, 25});
+    , { s*.0f, s*4.0f }, { s*.0f, s*-4.0f }, s*1.0f, 2.0f, vcolors.at( 8));
   auto bidRaLeB = m_CreateCapsule(wid, c.x + s*1.0f, c.y + s*14.5f
-    , { s*.0f, s*3.5f }, { s*.0f, s*-3.5f }, s*1.0f, 2.0f, Color{142,115, 25});
+    , { s*.0f, s*3.5f }, { s*.0f, s*-3.5f }, s*1.0f, 2.0f, vcolors.at( 9));
   auto bidFootL = m_CreateBox(wid, c.x - s*1.5f, c.y + s*19.0f
-    , { s*3.0f, s*1.0f }, 1000.0f, Color{142,115, 25});
+    , { s*3.0f, s*1.0f }, 1000.0f, vcolors.at(10));
   auto bidFootR = m_CreateBox(wid, c.x + s*1.5f, c.y + s*19.0f
-    , { s*3.0f, s*1.0f }, 1000.0f, Color{142,115, 25});
+    , { s*3.0f, s*1.0f }, 1000.0f, vcolors.at(11));
 
   vbodies.push_back(bidUHead); //  0 testa
   vbodies.push_back(bidTorso); //  1 corpo

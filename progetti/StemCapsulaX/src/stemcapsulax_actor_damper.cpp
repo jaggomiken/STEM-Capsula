@@ -71,8 +71,10 @@ stemcapsulax::ActorDamper::~ActorDamper()
 void stemcapsulax::ActorDamper::behave(u64, const std::vector<f32>& v)
 {
   f32 f = v.size() >= 1 ? v.at(0) : 1.0f;
-  f32 fscale = 50000.0f;
-  b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[0], { .0f, -f*fscale }, true);
+  f32 fscale = 50000.0f, val = -std::logf(f);
+  b2Body_ApplyLinearImpulseToCenter(m_pImpl->vbodies[0]
+    , { .0f, -val*fscale }, true);
+  // std::fprintf(stdout, "[DAMPER %s]: %f\n", name().c_str(), f);
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
