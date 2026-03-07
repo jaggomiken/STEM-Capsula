@@ -65,6 +65,41 @@ stemcapsulax::TaskRunner& stemcapsulax::Layer::runner()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+const stemcapsulax::Actor* 
+  stemcapsulax::Layer::actorByName(const std::string& name) const
+{
+  STEMCAPSULAX_CAPTURE_CPU(name.empty(), "Name is empty");
+  if (0 != m_pImpl->m_mapActors.count(name)) {
+    return m_pImpl->m_mapActors.at(name);
+  }
+  return nullptr;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+stemcapsulax::Actor* 
+  stemcapsulax::Layer::actorByName(const std::string& name)
+{
+  STEMCAPSULAX_CAPTURE_CPU(name.empty(), "Name is empty");
+  if (0 != m_pImpl->m_mapActors.count(name)) {
+    return m_pImpl->m_mapActors.at(name);
+  }
+  return nullptr;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+bool stemcapsulax::Layer::actorExists(const std::string& name) const
+{
+  STEMCAPSULAX_CAPTURE_CPU(name.empty(), "Name is empty");
+  return (0 != m_pImpl->m_mapActors.count(name));
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 bool stemcapsulax::Layer::actorAdd(Actor* pA)
 {
   STEMCAPSULAX_CAPTURE_CPU(nullptr == pA, "Pointer to actor is NULL");

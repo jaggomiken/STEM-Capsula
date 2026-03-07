@@ -34,6 +34,13 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * FORWARD DECLARATION
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+namespace stemcapsulax {
+ class Layer;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * CLASS DECLARATION
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
@@ -57,7 +64,7 @@ namespace stemcapsulax {
     virtual void show() = 0;
     virtual void hide() = 0;
     virtual void update() = 0;
-    virtual void draw(RenderTexture2D&) = 0;
+    virtual void draw(RenderTexture2D&, Layer&) = 0;
     virtual void control(const ControlData&) = 0;
     virtual void behave(u64,const std::vector<f32>&) = 0;
 

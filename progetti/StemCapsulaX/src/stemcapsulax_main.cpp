@@ -31,10 +31,14 @@
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * MACROS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#define APP_VERSION                                                  "1.2.0"
+#define APP_VERSION                                                  "1.2.1"
 #define APP_NAME                                              "STEMCAPSULAX"
-#define APP_WAIT_FOR_SYNC                                                  0
+#define APP_WAIT_FOR_SYNC                                                  1
 #define APP_FULLSCREEN                                                     0
+#define APP_W                                                           1080
+#define APP_H                                                           1920
+#define APP_FPS                                                           60
+#define APP_DEBUGDRAW_ENABLE                                           false
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * ENTRY POINT
@@ -57,7 +61,7 @@ i32 main(i32 argc, char* argv[])
 /* --------------------------------------------------------------------------
  * INIT DI RAYLIB (detect del monitor, costruzione finestra e font)
  * -------------------------------------------------------------------------- */
-  i32 ww = 1080, wh = 1920, fps = 600; // se fps altissimo, si abbasserà nel loop
+  i32 ww = APP_W, wh = APP_H, fps = APP_FPS; // se fps altissimo, si abbasserà nel loop
   SetConfigFlags(FLAG_MSAA_4X_HINT
 #if APP_WAIT_FOR_SYNC == 1  
     | FLAG_VSYNC_HINT
@@ -106,7 +110,7 @@ i32 main(i32 argc, char* argv[])
  * SYSTEMINFO (prepara le informazioni di sistema)
  * -------------------------------------------------------------------------- */
   stemcapsulax::SystemInfo sysinf;
-  sysinf.bIsFullScreen   = true;
+  sysinf.bIsFullScreen   = (0 != APP_FULLSCREEN) ? true : false;
   sysinf.iWindowWidth    = ww;
   sysinf.iWindowHeight   = wh;
   sysinf.iFPS            = 0;
@@ -145,7 +149,7 @@ i32 main(i32 argc, char* argv[])
  * -------------------------------------------------------------------------- */
   auto& sta = stemcapsulax::Status::GetInstance();
   sta.data().bSimulationPaused = false;
-  sta.data().bDrawDebugEnabled = true;
+  sta.data().bDrawDebugEnabled = APP_DEBUGDRAW_ENABLE;
   sta.data().sysinf            = sysinf; // scrivi sysinf iniziale
 
 /* --------------------------------------------------------------------------

@@ -75,4 +75,4 @@ namespace stemcapsulax {
   };
 }
 
-#endif // stemcapsulax_scene_h
+#endif // stemcapsulax_actor_puppet_h

@@ -50,6 +50,7 @@ set(SRC
   src/stemcapsulax_actor_box2d.cpp
   src/stemcapsulax_actor_puppet.cpp
   src/stemcapsulax_actor_damper.cpp
+  src/stemcapsulax_actor_b2d_image.cpp
   # Add here your files
 )
 set(INC 
@@ -76,6 +77,7 @@ set(INC
   inc/stemcapsulax_actor_box2d.h
   inc/stemcapsulax_actor_puppet.h
   inc/stemcapsulax_actor_damper.h
+  inc/stemcapsulax_actor_b2d_image.h
   # Add here your files
 )
 set(EXT

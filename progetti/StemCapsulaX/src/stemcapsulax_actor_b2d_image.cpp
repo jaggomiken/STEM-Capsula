@@ -19,35 +19,48 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#include "stemcapsulax_actor_box2d.h"
+#include "stemcapsulax_actor_b2d_image.h"
+#include "stemcapsulax_status.h"
+#include "stemcapsulax_box2d_fromimage.h"
+#include "stemcapsulax_layer_box2d.h"
+#include "stemcapsulax_b2ddebugdraw.h"
+#include <vector>
+#define _USE_MATH_DEFINES 
+#include <cmath>
+#include <rlgl.h>
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * PRIVATE IMPLEMENTATION CLASS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-class stemcapsulax::ActorBox2D::Impl {
+class stemcapsulax::ActorB2DImage::Impl {
 public:
-  Impl();
+  Impl(b2WorldId wid, const b2Vec2& center, f32 scale);
  ~Impl();
 
   b2WorldId m_wid;
+  b2Vec2 m_center;
+  f32 m_fScale;
+  std::vector<b2BodyId> vbodies;
+
+  Shader m_shader;
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::ActorBox2D::ActorBox2D(b2WorldId wid, const std::string& name)
-: Actor  {    name }
-, m_pImpl{ nullptr }
+stemcapsulax::ActorB2DImage::ActorB2DImage(b2WorldId wid, const b2Vec2& center
+  , f32 scale, const std::string& name)
+: ActorBox2D  { wid, name }
+, m_pImpl     {   nullptr }
 {
-  m_pImpl = new(std::nothrow) Impl{};
+  m_pImpl = new(std::nothrow) Impl{wid, center, scale};
   STEMCAPSULAX_CAPTURE_CPU(nullptr == m_pImpl, "Cannot allocate");
-  m_pImpl->m_wid = wid;
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::ActorBox2D::~ActorBox2D()
+stemcapsulax::ActorB2DImage::~ActorB2DImage()
 {
   delete m_pImpl;
   m_pImpl = nullptr;
@@ -56,39 +69,26 @@ stemcapsulax::ActorBox2D::~ActorBox2D()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-b2WorldId stemcapsulax::ActorBox2D::worldId() const
+bool stemcapsulax::ActorB2DImage::createFromImage(const std::string& fn)
 {
-  return m_pImpl->m_wid;
+  Box2DBodyFromImage bfi;
+  if (bfi.loadImage(fn)) {
+    if (!bfi.bodyCreate(m_pImpl->m_wid
+      , m_pImpl->m_center.x, m_pImpl->m_center.y, m_pImpl->vbodies)) {
+      std::printf("[ERROR]: Cannot create bodies from image!\n");
+      return false;
+    }
+    std::printf("[ACTORB2DIMAGE]: OK, %zu bodies created.\n"
+      , m_pImpl->vbodies.size());
+    return true;
+  }
+  return false;
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::Actor::TypeID stemcapsulax::ActorBox2D::type() const
-{
-  return TypeID(1);
-}
-
-/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * METHOD
- * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::ActorBox2D::behave(u64 what, const std::vector<f32>&)
-{
-
-}
-
-/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * METHOD
- * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::ActorBox2D::show()
-{
-
-}
-
-/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * METHOD
- * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::ActorBox2D::hide()
+void stemcapsulax::ActorB2DImage::behave(u64 what, const std::vector<f32>& v)
 {
 
 }
@@ -96,40 +96,60 @@ void stemcapsulax::ActorBox2D::hide()
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::ActorBox2D::update()
+void stemcapsulax::ActorB2DImage::update()
 {
-
+  
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::ActorBox2D::draw(RenderTexture2D&, Layer&)
+void stemcapsulax::ActorB2DImage::draw(RenderTexture2D& rtex, Layer& layer)
 {
-
+  auto& camera = static_cast<LayerBox2D&>(layer).camera();
+  auto p0 = GetScreenToWorld2D({ .0f, .0f }, camera);
+  auto p1 = GetScreenToWorld2D({ 
+      f32(rtex.texture.width)
+    , f32(rtex.texture.height) }, camera);
+  BeginShaderMode(m_pImpl->m_shader);
+  auto& cnv = Conv::GetInstance();
+  const f32 r = cnv.x_w2s(.5f);
+  for (const auto& body : m_pImpl->vbodies) {
+    b2ShapeId shp[1];
+    auto pos = b2Body_GetPosition(body);
+    auto isc = b2Body_GetShapeCount(body);
+    b2Body_GetShapes(body, shp, 1);
+    auto mat = b2Shape_GetSurfaceMaterial(shp[0]);
+    auto coo = b2Vec2{ cnv.x_w2s(pos.x), cnv.y_w2s(pos.y) };
+    if (  (coo.x >= p0.x) && (coo.x <= p1.x) 
+       && (coo.y >= p0.y) && (coo.y <= p1.y)) 
+    {
+      DrawCircle(coo.x, coo.y, r, RC(mat.customColor));
+    }
+  }
+  EndShaderMode();
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-void stemcapsulax::ActorBox2D::control(const ControlData&)
+stemcapsulax::ActorB2DImage::Impl::Impl(b2WorldId wid
+  , const b2Vec2& c, f32 s /* scala */)
+  : m_wid    { wid }
+  , m_center {   c }
+  , m_fScale {   s }
 {
-
+  m_shader = LoadShader(
+      shaderpath("actor_b2d_image_330.vs").c_str()
+    , shaderpath("actor_b2d_image_330.fs").c_str());
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::ActorBox2D::Impl::Impl()
-: m_wid{ b2_nullWorldId }
+stemcapsulax::ActorB2DImage::Impl::~Impl()
 {
-
-}
-
-/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * METHOD
- * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-stemcapsulax::ActorBox2D::Impl::~Impl()
-{
-  m_wid = b2_nullWorldId;
+  for (auto& b : vbodies) { b2DestroyBody(b); }
+  vbodies.clear();
+  UnloadShader(m_shader);
 }

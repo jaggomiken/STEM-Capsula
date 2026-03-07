@@ -55,6 +55,9 @@ namespace stemcapsulax {
     virtual ~Layer();
 
     TaskRunner& runner();
+    const Actor* actorByName(const std::string&) const;
+          Actor* actorByName(const std::string&);
+    bool actorExists(const std::string&) const;
     bool actorAdd(Actor*); // false in caso di errore
     bool actorRemove(const std::string&); // false in caso di errore
     size_t actorCout() const;

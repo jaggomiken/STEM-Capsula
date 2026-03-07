@@ -36,6 +36,7 @@
 #include "stemcapsulax_box2d_proxy.h"
 #include "stemcapsulax_actor_puppet.h"
 #include "stemcapsulax_actor_damper.h"
+#include "stemcapsulax_actor_b2d_image.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * Il Director decide quali scene creare (sempre come static) e registrare
@@ -51,7 +52,7 @@
  * MACROS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #define STEMCAPSULAX_DIRECTOR_ZOOM_BY_MUSIC                                0
-#define STEMCAPSULAX_DIRECTOR_PRINT_STATS                                  1
+#define STEMCAPSULAX_DIRECTOR_PRINT_STATS                                  0
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * STATIC FUNCTIONS
@@ -101,7 +102,7 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
   };
 
   // crea gli attori puppets
-  u32 np = 7; // Per ridurre il numero di attori, agire su questa variabile (orig 7)
+  u32 np = 2; // Per ridurre il numero di attori, agire su questa variabile (orig 7)
   f32 fpuph = 84.0f, fseg = cnv.fWorldWidth / 7.0f, pupoff = 10.0f;
   const f32 ascales[] = { 1.0f, 1.1f, 1.2f, 1.3f, 1.2f, 1.1f, 1.0f };
   f32 fpupallw = np * (fseg + pupoff);
@@ -134,15 +135,23 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
   lab2d.camera().zoom = .6f;
 
   // funzione trigger esterna per la scena con vettore dei body
-  static std::vector<b2BodyId> vbodies;
   auto fnExtTrg = [&cnv](u32 what) {
     char fn[128]; std::snprintf(fn, sizeof(fn), "%02u.png", what);
-    stemcapsulax::Box2DBodyFromImage bfi;
-    if (bfi.loadImage(stemcapsulax::imagepath(fn))) {
-      if (!bfi.bodyCreate(lab2d.worldId()
-        , cnv.fWorldWidth / 2.0f, -cnv.fWorldHeight / 2.0f, vbodies)) {
-        std::printf("[ERROR]: Cannot create bodies from image!\n");
-      }
+    if (lab2d.actorExists(fn)) {
+      auto* pA = lab2d.actorByName(fn);
+      lab2d.actorRemove(fn);
+      delete pA;
+    }
+    ActorB2DImage* pA = new(std::nothrow) ActorB2DImage{
+        lab2d.worldId()
+      , {cnv.fWorldWidth / 2.0f, -cnv.fWorldHeight / 2.0f}
+      , 1.0f, fn
+    };
+    STEMCAPSULAX_CAPTURE_CPU(nullptr == pA, "Cannot allocate");
+    if (pA->createFromImage(stemcapsulax::imagepath(fn))) {
+      lab2d.actorAdd(pA);
+    } else {
+      std::fprintf(stderr, "[DIRECTOR]: Could not load image actor!\n");
     }
   };
   scene.setExternalTriggerCallback(fnExtTrg);
@@ -276,7 +285,7 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
       default:
         break;
     }
-    RemoveBodiesOutsideRect(-100, -200, 250, 250, vbodies);
+
 #if STEMCAPSULAX_DIRECTOR_PRINT_STATS == 1
     std::fprintf(stdout
       , "[AMCB]: ZOOM=%f ST=%02u TOT=%f L=%.6f "

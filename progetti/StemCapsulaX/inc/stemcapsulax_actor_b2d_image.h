@@ -19,43 +19,40 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_actor_box2d_h
-#define stemcapsulax_actor_box2d_h
+#ifndef stemcapsulax_actor_b2d_image_h
+#define stemcapsulax_actor_b2d_image_h
 
-#include "stemcapsulax_actor.h"
+#include "stemcapsulax_actor_box2d.h"
+#include "stemcapsulax_box2d_proxy.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * Questa classe rappresenta un attore che è composto da corpi (body) di
- * Box2D e quindi è soggetto alla sua fisica. Può essere aggiunto ad un
- * layer di tipo Box2D.
+ * Questa classe rappresenta un attore che è composto da corpi box2d ciascuno
+ * corrispondente ad un pixel di un'immagine caricata da disco.
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * CLASS DECLARATION
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
-  class ActorBox2D : public Actor {
+  class ActorB2DImage : public ActorBox2D {
   public:
-    explicit ActorBox2D(b2WorldId, const std::string& name = {});
-    ActorBox2D(const ActorBox2D&)              = delete;
-    ActorBox2D(ActorBox2D&&)                   = delete;
-    ActorBox2D& operator=(const ActorBox2D&)   = delete;
-    ActorBox2D& operator=(ActorBox2D&&)        = delete;
-    virtual ~ActorBox2D();
+    ActorB2DImage(b2WorldId, const b2Vec2& center, f32 scale = 1.0f
+      , const std::string& name = {});
+    ActorB2DImage(const ActorB2DImage&)              = delete;
+    ActorB2DImage(ActorB2DImage&&)                   = delete;
+    ActorB2DImage& operator=(const ActorB2DImage&)   = delete;
+    ActorB2DImage& operator=(ActorB2DImage&&)        = delete;
+    virtual ~ActorB2DImage();
 
-    b2WorldId worldId() const;
-
-    TypeID type() const override;
-    void show() override;
-    void hide() override;
+    bool createFromImage(const std::string&);
+    
     void update() override;
-    void draw(RenderTexture2D&, Layer&) override;
-    void control(const ControlData&) override;
     void behave(u64,const std::vector<f32>&) override;
+    void draw(RenderTexture2D&, Layer&) override;
 
   private:
     class Impl; Impl* m_pImpl;
   };
 }
 
-#endif // stemcapsulax_actor_box2d_h
+#endif // stemcapsulax_actor_b2d_image_h

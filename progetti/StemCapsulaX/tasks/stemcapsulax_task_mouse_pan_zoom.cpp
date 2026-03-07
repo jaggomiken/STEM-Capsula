@@ -40,7 +40,7 @@ stemcapsulax::TaskRunner::Task
   task.draw      = {};
   task.update    = [&camera](TaskRunner& r, TaskRunner::Task& t) {
     camera.zoom = expf(logf(camera.zoom) + (f32(GetMouseWheelMove()) * 0.1f));
-    if      (camera.zoom > 3.0f) { camera.zoom = 4.0f; }
+    if      (camera.zoom > 3.0f) { camera.zoom = 3.0f; }
     else if (camera.zoom < 0.1f) { camera.zoom = 0.1f; }
     if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
       auto dt = Vector2Scale(GetMouseDelta(), -1.0f / camera.zoom);

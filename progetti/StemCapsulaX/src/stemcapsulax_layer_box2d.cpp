@@ -167,7 +167,7 @@ void stemcapsulax::LayerBox2D::draw(RenderTexture2D& rtex)
 
   BeginMode2D(m_pImpl->m_camera);
   enumerate([=, &rtex](Actor* pA) {
-    pA->draw(rtex);
+    pA->draw(rtex, *this);
   });
   if (bDebugDraw) {
     m_pImpl->m_debugdraw.drawWorld(m_pImpl->m_b2proxy.worldId()

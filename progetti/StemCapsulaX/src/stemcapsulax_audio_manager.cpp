@@ -316,7 +316,8 @@ stemcapsulax::AudioManager::Impl::Impl()
         }
       }
       
-      // nutri il processore FFT
+      // nutri il processore FFT (attenzione, perché lavora su 4096 campioni
+      // stereo, cioè 2048 campioni per canale)
       if (vinput.size() >= STEMCAPSULAX_AUDIOMANAGER_FFTSZ) {
         const size_t szNHALF = STEMCAPSULAX_AUDIOMANAGER_FFTSZ / 2;
         FFTResultDataPackage rdt; // notare il 2048 !
@@ -357,7 +358,7 @@ void stemcapsulax::AudioManager::Impl::m_ComputeEnergyForResult(
   // a segnali reali, come quelli su cui lavora il nostro componente FFT.
   // Ricordiamo che per k=0 si ha la componente DC.
 
-  f32 fs = f32(STEMCAPSULAX_AUDIOMANAGER_FRQHZ);
+  const f32 fs = f32(STEMCAPSULAX_AUDIOMANAGER_FRQHZ);
   dataout.fL_Energy = .0f;
   dataout.pairFreqAmpMaxLft = 
     std::make_pair(.0f, -std::numeric_limits<f32>::max());
