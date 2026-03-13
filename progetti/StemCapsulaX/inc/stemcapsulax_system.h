@@ -141,6 +141,8 @@ namespace stemcapsulax {
      i32 iFPS;            // framerate aggiornato
      f32 fSecondsElapsed; // somma dei frame-time
     bool bIsFullScreen;
+     f32 fHiDpiScaleX;    // per supportare HiDPI (macOS o Windows)
+     f32 fHiDpiScaleY;    // per supportare HiDPI (macOS o Windows)
     std::string strWindowTitle;
     std::string strTopMessage;
     std::string strBotMessage;

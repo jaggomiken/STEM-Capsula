@@ -34,6 +34,7 @@
 #define APP_VERSION                                                  "1.2.1"
 #define APP_NAME                                              "STEMCAPSULAX"
 #define APP_WAIT_FOR_SYNC                                                  1
+#define APP_ENABLE_HIDPI                                                   1
 #define APP_FULLSCREEN                                                     0
 #define APP_W                                                           1080
 #define APP_H                                                           1920
@@ -65,7 +66,10 @@ i32 main(i32 argc, char* argv[])
   SetConfigFlags(FLAG_MSAA_4X_HINT
 #if APP_WAIT_FOR_SYNC == 1  
     | FLAG_VSYNC_HINT
-#endif    
+#endif
+#if APP_ENABLE_HIDPI == 1
+    | FLAG_WINDOW_HIGHDPI
+#endif
   );
   InitWindow(ww, wh, strTitle.c_str());
   i32 cur_m = GetCurrentMonitor()
@@ -89,7 +93,7 @@ i32 main(i32 argc, char* argv[])
 /* --------------------------------------------------------------------------
  * INIT DI IMGUI (configurazione dello style e font per ImGui)
  * -------------------------------------------------------------------------- */
-  rlImGuiSetup(true /* Dark Theme */);
+  rlImGuiSetup(true /* Tema Dark */);
   ImGuiStyle& style = ImGui::GetStyle();
   style.FontSizeBase    = 24.0f;
   style.WindowRounding  =  3;
@@ -115,6 +119,8 @@ i32 main(i32 argc, char* argv[])
   sysinf.iWindowHeight   = wh;
   sysinf.iFPS            = 0;
   sysinf.fSecondsElapsed = .0f;
+  sysinf.fHiDpiScaleX    = GetWindowScaleDPI().x;
+  sysinf.fHiDpiScaleY    = GetWindowScaleDPI().y;
   sysinf.strWindowTitle  = strTitle;
   sysinf.strTopMessage   = strMessg;
   sysinf.font            = font;
