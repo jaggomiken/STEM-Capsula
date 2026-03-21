@@ -170,6 +170,8 @@ namespace stemcapsulax {
          T data[N];
     size_t count;
     size_t size;
+    size_t countInBytes() const { return sizeof(T) * count; }
+    size_t  sizeInBytes() const { return sizeof(T) * size; }
     bool setItemAt(size_t k, const T& value) {
       if (k >= size) { return false; }
       data[k] = value;

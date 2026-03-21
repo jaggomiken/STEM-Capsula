@@ -186,6 +186,10 @@ std::string stemcapsulax::AudioManager::mainWaveFilename() const
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 bool stemcapsulax::AudioManager::loadMainWave(const std::string& filename)
 {
+  if (filename.empty()) {
+    std::printf("[AUDIOMANAGER]: No audio file to load.\n");
+    return false;
+  }
   // Imposta lo stato dell'oggetto e istruisce RAYLIB sullo stream
   m_pImpl->m_strMainWaveFilename = filename;
   m_pImpl->m_waveMain = LoadWave(filename.c_str());
@@ -244,6 +248,7 @@ bool stemcapsulax::AudioManager::loadMainWave(const std::string& filename)
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::AudioManager::playMainWave(bool bPlayOrPause)
 {
+  if (m_pImpl->m_strMainWaveFilename.empty()) { return; }
   if (bPlayOrPause == m_pImpl->m_bMainWavePlaying) { return; }
   m_pImpl->m_bMainWavePlaying = bPlayOrPause;
   std::printf("[AUDIOMANAGER]: Main Wave %s\n"
@@ -253,6 +258,14 @@ void stemcapsulax::AudioManager::playMainWave(bool bPlayOrPause)
   } else {
     PauseAudioStream(m_pImpl->m_streamMainWave);
   }
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+bool stemcapsulax::AudioManager::isMainWavePlayable() const
+{
+  return !m_pImpl->m_strMainWaveFilename.empty();
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -280,6 +293,7 @@ stemcapsulax::AudioManager::Impl::Impl()
 , m_bExitThread     { false }
 , m_bThreadStarted  { false }
 {
+  m_data.uNTotalFrames         = 0;
   m_data.uFTQueueSizeInSamples = 0;
   m_data.uNFTProcessedSamples  = 0;
   m_data.uNStreamedSamples     = 0;

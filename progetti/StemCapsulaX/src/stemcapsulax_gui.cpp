@@ -154,9 +154,14 @@ void stemcapsulax::GUI::Impl::draw()
     ImGui::Separator();
     ImGui::TextUnformatted("Audio Manager");
     ImGui::Separator();
-    bool bAudioPlaying = am.isMainWavePlaying();
-    if (ImGui::Checkbox("Main Wave playing", &bAudioPlaying)) {
-      am.playMainWave(bAudioPlaying);
+    bool bCanPlay = am.isMainWavePlayable();
+    if (bCanPlay) {
+      bool bAudioPlaying = am.isMainWavePlaying();
+      if (ImGui::Checkbox("Main Wave playing", &bAudioPlaying)) {
+        am.playMainWave(bAudioPlaying);
+      }
+    } else {
+      ImGui::TextUnformatted("No audio file specified.");
     }
     ImGui::Text("                          Total Samples: %-9u"
       , dt.sdAudioManager.uNTotalFrames);

@@ -37,6 +37,7 @@
 #include "stemcapsulax_actor_puppet.h"
 #include "stemcapsulax_actor_damper.h"
 #include "stemcapsulax_actor_b2d_image.h"
+#include "stemcapsulax_actor_b2d_lab.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * Il Director decide quali scene creare (sempre come static) e registrare
@@ -53,12 +54,6 @@
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #define STEMCAPSULAX_DIRECTOR_ZOOM_BY_MUSIC                                0
 #define STEMCAPSULAX_DIRECTOR_PRINT_STATS                                  0
-
-/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * STATIC FUNCTIONS
- * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-static void RemoveBodiesOutsideRect(f32 x0, f32 y0, f32 x1, f32 y1
-  , std::vector<b2BodyId>& vbodies);
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * STATIC METHOD
@@ -100,6 +95,13 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
     , {{ 0, 56,184 }, {142,115, 25},{142,115, 25},{142,115, 25},{222,  0,  0},{255,207,  0},{142,115, 25},{142,115, 25},{142,115, 25},{  1,  1,  1},{142,115, 25},{142,115, 25}}
     , {{ 0, 56,184 }, {214, 39, 24},{255,255,255},{255,255,255},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25},{142,115, 25}}
   };
+
+  // crea l'attore laboratorio
+#if 0  
+  auto* actlab = new(std::nothrow) ActorB2DLab{lab2d.worldId()
+    , { cnv.fWorldWidth / 2.0f, cnv.fWorldHeight / 2.0f }, 1.0f, "LAB" };
+  lab2d.actorAdd(actlab);
+#endif
 
   // crea gli attori puppets
   u32 np = 2; // Per ridurre il numero di attori, agire su questa variabile (orig 7)
@@ -321,33 +323,4 @@ void stemcapsulax::Director::PrepareAll(int argc, char* argv[])
   sm.addScene(&scene);
   sm.setCurrentSceneByIndex(0);
   sm.currentScene().show();
-}
-
-/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * STATIC FUNCTIONS
- * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-static void RemoveBodiesOutsideRect(f32 x0, f32 y0, f32 x1, f32 y1
-  , std::vector<b2BodyId>& vbodies)
-{
-  std::vector<b2BodyId> vtoremove;
-  for (size_t k = 0;k < vbodies.size();++k) {
-    auto& b = vbodies.at(k);
-    if (b2Body_IsValid(b)) {
-      auto pos = b2Body_GetPosition(b);
-      if ((pos.x >= x0) && (pos.x <= x1) && (pos.y >= y0) && (pos.y <= y1)) {
-        // OK
-      } else {
-        vtoremove.push_back(b);
-        vbodies[k] = b2_nullBodyId;
-      }
-    }
-  }
-  for (auto& b : vtoremove) { b2DestroyBody(b); }
-  
-#if 0
-  if (!vtoremove.empty()) {
-    std::fprintf(stdout
-      , "[BOX2DPROXY]: Body destroyed %zu\n",vtoremove.size());
-  }
-#endif  
 }

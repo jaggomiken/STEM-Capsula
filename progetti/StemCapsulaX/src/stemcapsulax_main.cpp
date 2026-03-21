@@ -40,6 +40,10 @@
 #define APP_H                                                           1920
 #define APP_FPS                                                           60
 #define APP_DEBUGDRAW_ENABLE                                           false
+#if defined(WIN32)
+# undef APP_ENABLE_HIDPI
+# define APP_ENABLE_HIDPI 0
+#endif
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * ENTRY POINT

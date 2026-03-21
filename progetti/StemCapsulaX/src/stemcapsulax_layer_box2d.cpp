@@ -147,13 +147,6 @@ void stemcapsulax::LayerBox2D::update()
   tr.enumerate([=, &tr](TaskRunner::Task& task) {
     if (task.update) { task.update(tr, task); }
   });
-
-  /*
-   * Cancella da Box2D tutti i body che non sono più visibili, con il fine
-   * di ridurre la quantità di calcoli e migliorare il framerate. Si deve
-   * stabilire come gestire questo rettangolo.
-   */
-  m_pImpl->m_b2proxy.removeBodiesOutsideRect(-1000, -400, 1000, 600);
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

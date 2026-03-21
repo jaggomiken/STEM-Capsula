@@ -72,6 +72,7 @@ namespace stemcapsulax {
     bool loadMainWave(const std::string&);
     void playMainWave(bool);
     bool isMainWavePlaying() const;
+    bool isMainWavePlayable() const;
 
     const StatusData& statusData() const;
 

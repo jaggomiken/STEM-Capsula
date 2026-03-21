@@ -67,6 +67,10 @@ namespace stemcapsulax {
 namespace stemcapsulax {
   class Box2DProxy {
   public:
+    static void 
+      RemoveBodiesOutsideRect(f32 x0, f32 y0, f32 x1, f32 y1
+        , std::vector<b2BodyId>& vbodies);
+
     Box2DProxy();
    ~Box2DProxy();
 

@@ -28,6 +28,11 @@
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * MACROS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+#define STEMCAPSULAX_BOX2DPROXY_PRINT_REMOVED                              0
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * MACROS
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #define STEMCAPSULAX_TASKEXEC_MAX_TASKS                                  256
 #define STEMCAPSULAX_SYSTEM_THREADS_NUM                                    2
 #define STEMCAPSULAX_MAX_THREADS_NUM   \
@@ -115,6 +120,35 @@ static u64 B2TOU64(b2BodyId b) {
 static void* b2CallbackEnqueueTask(b2TaskCallback* task
   , int32_t itemCount, int32_t minRange, void* pTaskCtx, void* pUserCtx);
 static void  b2CallbackFinishTask(void* pTask, void* pUserCtx);
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * STATIC METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::Box2DProxy::RemoveBodiesOutsideRect(
+  f32 x0, f32 y0, f32 x1, f32 y1, std::vector<b2BodyId>& vbodies)
+{
+  std::vector<b2BodyId> vtoremove;
+  for (size_t k = 0;k < vbodies.size();++k) {
+    auto& b = vbodies.at(k);
+    if (b2Body_IsValid(b)) {
+      auto pos = b2Body_GetPosition(b);
+      if ((pos.x >= x0) && (pos.x <= x1) && (pos.y >= y0) && (pos.y <= y1)) {
+        // OK
+      } else {
+        vtoremove.push_back(b);
+        vbodies[k] = b2_nullBodyId;
+      }
+    }
+  }
+  for (auto& b : vtoremove) { b2DestroyBody(b); }
+  
+#if STEMCAPSULAX_BOX2DPROXY_PRINT_REMOVED == 1
+  if (!vtoremove.empty()) {
+    std::fprintf(stdout
+      , "[RemoveBodiesOutsideRect]: Body destroyed %zu\n",vtoremove.size());
+  }
+#endif  
+}
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * METHOD
