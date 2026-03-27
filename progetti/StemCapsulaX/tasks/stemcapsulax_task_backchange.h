@@ -19,39 +19,25 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_actor_damper_h
-#define stemcapsulax_actor_damper_h
+#ifndef stemcapsulax_task_backchange_h
+#define stemcapsulax_task_backchange_h
 
-#include "stemcapsulax_actor_box2d.h"
-#include "stemcapsulax_box2d_proxy.h"
+#include "stemcapsulax_task_runner.h"
+#include "stemcapsulax_layer_background.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * Questa classe rappresenta un attore che è composto da corpi (body) di
- * Box2D e quindi è soggetto alla sua fisica. Può essere aggiunto ad un
- * layer di tipo Box2D.
+ * Questo task consente di controllare la camera2d di un layer 2d per fare
+ * il pan del contenuto del layer.
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * CLASS DECLARATION
+ * STEMCAPSULAX TASK CREATOR
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 namespace stemcapsulax {
-  class ActorDamper : public ActorBox2D {
-  public:
-    explicit ActorDamper(b2WorldId, const b2Vec2& center, f32 scalex = 1.0f
-      , f32 scaley = 1.0f, const std::string& name = {});
-    ActorDamper(const ActorDamper&)              = delete;
-    ActorDamper(ActorDamper&&)                   = delete;
-    ActorDamper& operator=(const ActorDamper&)   = delete;
-    ActorDamper& operator=(ActorDamper&&)        = delete;
-    virtual ~ActorDamper();
-
-    void update() override;
-    void behave(u64, const std::vector<f32>&) override;
-    void draw(RenderTexture2D&, Layer&) override;
-
-  private:
-    class Impl; Impl* m_pImpl;
-  };
+  TaskRunner::Task CreateTask_BackChange(LayerBackground*
+    , const std::string& imgpath
+    , const std::string& fnprefix
+    , i32& uImgNum_inout);
 }
 
-#endif // stemcapsulax_actor_damper_h
+#endif // stemcapsulax_task_backchange_h

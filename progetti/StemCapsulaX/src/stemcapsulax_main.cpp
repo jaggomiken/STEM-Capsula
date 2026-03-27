@@ -31,7 +31,7 @@
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * MACROS
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#define APP_VERSION                                                  "1.2.1"
+#define APP_VERSION                                                  "1.3.0"
 #define APP_NAME                                              "STEMCAPSULAX"
 #define APP_WAIT_FOR_SYNC                                                  1
 #define APP_ENABLE_HIDPI                                                   1

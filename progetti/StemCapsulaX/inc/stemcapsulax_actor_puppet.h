@@ -69,6 +69,7 @@ namespace stemcapsulax {
 
     void update() override;
     void behave(u64,const std::vector<f32>&) override;
+    void draw(RenderTexture2D&, Layer&) override;
     
   private:
     class Impl; Impl* m_pImpl;

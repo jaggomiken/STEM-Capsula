@@ -19,39 +19,44 @@
  * along with STEMCAPSULAX. If not, see <http://www.gnu.org/licenses/>.
  * 
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-#ifndef stemcapsulax_actor_damper_h
-#define stemcapsulax_actor_damper_h
-
-#include "stemcapsulax_actor_box2d.h"
+#include "stemcapsulax_task_backchange.h"
+#include "stemcapsulax_director.h"
+#include "stemcapsulax_status.h"
+#include "stemcapsulax_audio_manager.h"
+#include "stemcapsulax_task_runner.h"
+#include "stemcapsulax_scene_manager.h"
+#include "stemcapsulax_scene_layered.h"
 #include "stemcapsulax_box2d_proxy.h"
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * Questa classe rappresenta un attore che è composto da corpi (body) di
- * Box2D e quindi è soggetto alla sua fisica. Può essere aggiunto ad un
- * layer di tipo Box2D.
+ * STATIC METHOD
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-
-/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- * CLASS DECLARATION
- * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
-namespace stemcapsulax {
-  class ActorDamper : public ActorBox2D {
-  public:
-    explicit ActorDamper(b2WorldId, const b2Vec2& center, f32 scalex = 1.0f
-      , f32 scaley = 1.0f, const std::string& name = {});
-    ActorDamper(const ActorDamper&)              = delete;
-    ActorDamper(ActorDamper&&)                   = delete;
-    ActorDamper& operator=(const ActorDamper&)   = delete;
-    ActorDamper& operator=(ActorDamper&&)        = delete;
-    virtual ~ActorDamper();
-
-    void update() override;
-    void behave(u64, const std::vector<f32>&) override;
-    void draw(RenderTexture2D&, Layer&) override;
-
-  private:
-    class Impl; Impl* m_pImpl;
+stemcapsulax::TaskRunner::Task 
+  stemcapsulax::CreateTask_BackChange(LayerBackground* pL
+    , const std::string& imgpath
+    , const std::string& fnprefix
+    , i32& iImgNum_inout)
+{
+  TaskRunner::Task task;
+  task.name      = "00_BackChange";
+  task.pUserData = nullptr;
+  task.draw      = {};
+  task.update    = [pL, &iImgNum_inout, imgpath, fnprefix]
+    (TaskRunner& r, TaskRunner::Task& t) {
+    bool bchange = false;
+    if (IsKeyPressed(KEY_LEFT)) {
+      iImgNum_inout--; bchange = true;
+    }
+    if (IsKeyPressed(KEY_RIGHT)) {
+      iImgNum_inout++; bchange = true;
+    }
+    if (bchange) {
+      if (iImgNum_inout < 0) { iImgNum_inout = 0; }
+      static thread_local char tmp[8192];
+      std::snprintf(tmp, sizeof(tmp), "%s/%s_%02u.png"
+      , imgpath.c_str(), fnprefix.c_str(), iImgNum_inout);
+      pL->setImagePath(imagepath(tmp));
+    }
   };
+  return task;
 }
-
-#endif // stemcapsulax_actor_damper_h

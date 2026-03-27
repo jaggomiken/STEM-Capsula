@@ -77,6 +77,9 @@ stemcapsulax::Layer::TypeID stemcapsulax::LayerBackground::type() const
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayerBackground::setImagePath(const std::string& fn)
 {
+  if (!m_pImpl->m_strImagePath.empty()) {
+    UnloadTexture(m_pImpl->m_texture);
+  }
   m_pImpl->m_image = LoadImage(fn.c_str());
   m_pImpl->m_strImagePath = fn;
   m_pImpl->m_texture = LoadTextureFromImage(m_pImpl->m_image);
@@ -165,8 +168,8 @@ stemcapsulax::LayerBackground::Impl::Impl()
 
   f32 freqX  = 25.0f;
   f32 freqY  = 25.0f;
-  f32 ampX   =  5.0f;
-  f32 ampY   =  5.0f;
+  f32 ampX   =  1.0f;
+  f32 ampY   =  1.0f;
   f32 speedX =  2.0f;
   f32 speedY =  2.0f;
 

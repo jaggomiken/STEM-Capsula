@@ -253,7 +253,7 @@ stemcapsulax::ActorB2DImage::Impl::Impl(b2WorldId wid
 
   // Popola il vettore dei punti e dei colori per la forma di base
   auto& cnv = Conv::GetInstance();
-  m_GenerateCirclePoints(m_center, s*cnv.x_w2s(.5f));
+  m_GenerateCirclePoints({0.0f, 0.0f}, s*cnv.x_w2s(.5f));
 
   // Preleva l'indirizzo dell'attributo delle trasformazioni
   m_shader.locs[SHADER_LOC_VERTEX_INSTANCE_TX] = 

@@ -117,6 +117,8 @@ set(TSK
   tasks/stemcapsulax_task_energy_circle.cpp
   tasks/stemcapsulax_task_mouse_pan_zoom.h
   tasks/stemcapsulax_task_mouse_pan_zoom.cpp
+  tasks/stemcapsulax_task_backchange.h
+  tasks/stemcapsulax_task_backchange.cpp
 )
 set(DIRECTOR
   # Only one director implementation shall be enabled here
