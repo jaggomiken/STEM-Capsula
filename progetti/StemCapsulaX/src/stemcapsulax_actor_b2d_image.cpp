@@ -42,6 +42,9 @@ public:
   b2Vec2 m_center;
   f32 m_fScale;
   std::vector<b2BodyId> vbodies;
+  b2Vec2 m_vTL; // punti per clipping
+  b2Vec2 m_vBT; // punti per clipping
+  bool m_bCameraReady;
 
   static constexpr size_t SEGS  = 32;
   static constexpr size_t NVERTS = SEGS * 3;
@@ -153,8 +156,12 @@ void stemcapsulax::ActorB2DImage::update()
     , m_pImpl->m_bufTransfo.data
     , m_pImpl->m_bufTransfo.countInBytes(), 0);
 
-  Box2DProxy::RemoveBodiesOutsideRect(
-    -200, -200, 500, 500, m_pImpl->vbodies);
+  if (m_pImpl->m_bCameraReady) {
+    Box2DProxy::RemoveBodiesOutsideRect(
+        m_pImpl->m_vTL.x, m_pImpl->m_vTL.y
+      , m_pImpl->m_vBT.x, m_pImpl->m_vBT.y
+      , m_pImpl->vbodies);
+  }
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -162,15 +169,15 @@ void stemcapsulax::ActorB2DImage::update()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::ActorB2DImage::draw(RenderTexture2D& rtex, Layer& layer)
 {
-#if 0 // non usato per ora  
   auto& camera = static_cast<LayerBox2D&>(layer).camera();
   auto p0 = GetScreenToWorld2D({ .0f, .0f }, camera);
   auto p1 = GetScreenToWorld2D({ 
       f32(rtex.texture.width)
     , f32(rtex.texture.height) }, camera);
-#endif 
-
   auto& cnv = Conv::GetInstance();
+  m_pImpl->m_vTL = b2Vec2{ cnv.x_s2w(p0.x), cnv.y_s2w(p0.y) };
+  m_pImpl->m_vBT = b2Vec2{ cnv.x_s2w(p1.x), cnv.y_s2w(p1.y) };
+  m_pImpl->m_bCameraReady = true;
   BeginShaderMode(m_pImpl->m_shader);
 
 #if 0 // questo funziona
@@ -243,9 +250,10 @@ void stemcapsulax::ActorB2DImage::draw(RenderTexture2D& rtex, Layer& layer)
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 stemcapsulax::ActorB2DImage::Impl::Impl(b2WorldId wid
   , const b2Vec2& c, f32 s /* scala */)
-  : m_wid    { wid }
-  , m_center {   c }
-  , m_fScale {   s }
+  : m_wid         {   wid }
+  , m_center      {     c }
+  , m_fScale      {     s }
+  , m_bCameraReady{ false }
 {
   m_shader = LoadShader(
       shaderpath("actor_b2d_image_330.vs").c_str()

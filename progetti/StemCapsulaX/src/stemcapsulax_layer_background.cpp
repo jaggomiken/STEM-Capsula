@@ -22,6 +22,7 @@
 #include "stemcapsulax_layer_background.h"
 #include "stemcapsulax_status.h"
 #include "stemcapsulax_system.h"
+#include <future>
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * PRIVATE IMPLEMENTATION CLASS
@@ -31,6 +32,7 @@ public:
   Impl();
  ~Impl();
 
+  std::string m_strImagePathReq;
   std::string m_strImagePath;
   Image m_image;
   Texture m_texture;
@@ -43,6 +45,9 @@ public:
   i32 m_iLocAmpY;
   i32 m_iLocSpeedX;
   i32 m_iLocSpeedY;
+
+  std::future<Image> m_futImageLoading;
+  void m_LoadImage(const Image&);
 };
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -77,13 +82,13 @@ stemcapsulax::Layer::TypeID stemcapsulax::LayerBackground::type() const
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayerBackground::setImagePath(const std::string& fn)
 {
-  if (!m_pImpl->m_strImagePath.empty()) {
-    UnloadTexture(m_pImpl->m_texture);
-  }
-  m_pImpl->m_image = LoadImage(fn.c_str());
-  m_pImpl->m_strImagePath = fn;
-  m_pImpl->m_texture = LoadTextureFromImage(m_pImpl->m_image);
-  UnloadImage(m_pImpl->m_image);
+  m_pImpl->m_strImagePathReq = fn;
+  m_pImpl->m_futImageLoading = std::async(std::launch::async
+    , [=]() -> Image 
+  {
+    auto image = LoadImage(fn.c_str());
+    return image;
+  });
 }
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -123,6 +128,14 @@ void stemcapsulax::LayerBackground::hide()
  * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 void stemcapsulax::LayerBackground::update()
 {
+  if (m_pImpl->m_futImageLoading.valid()) {
+    if (std::future_status::ready ==  
+      m_pImpl->m_futImageLoading.wait_for(std::chrono::milliseconds(0)))
+    {
+      m_pImpl->m_LoadImage(m_pImpl->m_futImageLoading.get());
+    }
+  }
+
   auto& tr = runner();
   tr.enumerate([=, &tr](TaskRunner::Task& task) {
     if (task.update) { task.update(tr, task); }
@@ -190,4 +203,17 @@ stemcapsulax::LayerBackground::Impl::Impl()
 stemcapsulax::LayerBackground::Impl::~Impl()
 {
   UnloadShader(m_shader);
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ * METHOD
+ * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+void stemcapsulax::LayerBackground::Impl::m_LoadImage(const Image& img)
+{
+  if (!m_strImagePath.empty()) { UnloadTexture(m_texture); }
+  m_strImagePath = m_strImagePathReq;
+  m_image        = img;
+  m_texture      = LoadTextureFromImage(m_image);
+  UnloadImage(m_image);
+  m_strImagePathReq = {};
 }
