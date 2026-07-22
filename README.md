@@ -85,7 +85,7 @@ programma_fine
 # LCG (Lezioni di Computer Grafica)
 
 <p align="center">
-<img src="images/lcg-00.png" width="100%">
+<img src="images/lcg-00.png" width="60%">
 </p>
 
 ## Abstract
