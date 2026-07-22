@@ -41,11 +41,11 @@ Un luogo di lavoro condiviso per tutti coloro che vogliano cimentarsi nella cost
 ### Approfondimento
 
 <p align="justify">
-  *+DILLO XL** è rilasciato secondo una licenza opensource GPL ed è disponibile nel branch devel di questo repository, all'interno della cartella Progetti. È scritto in C++17 ed è multi piattaforma, cioè il suo sorgente compila e viene eseguito su Windows, Linux e macOS, dunque è un sorgente scritto per essere portabile. Il progetto si basa sul sistema di meta-build CMake e può essere compilato su Windows all'interno di MSYS-UCRT64, su Linux (mediante GCC) e su macOS (mediante Clang). Qui sotto un tipico sorgente *DILLO*:
+  **DILLO XL** è rilasciato secondo una licenza opensource GPL ed è disponibile nel branch devel di questo repository, all'interno della cartella Progetti. È scritto in C++17 ed è multi piattaforma, cioè il suo sorgente compila e viene eseguito su Windows, Linux e macOS, dunque è un sorgente scritto per essere portabile. Il progetto si basa sul sistema di meta-build CMake e può essere compilato su Windows all'interno di MSYS-UCRT64, su Linux (mediante GCC) e su macOS (mediante Clang). Qui sotto un tipico sorgente *DILLO*:
 </p>
 
-'''cpp
-	#include "dilloxl"
+```
+  #include "dilloxl"
 
 	//
 	// Il mio primo programma che fa volare il drone Tello.
@@ -74,7 +74,7 @@ Un luogo di lavoro condiviso per tutti coloro che vogliano cimentarsi nella cost
 		messaggia_oggetto( plinio, vai_giu_cm, (50) )
 		messaggia_oggetto( plinio, atterra, (0) )
 	programma_fine
-'''
+```
 
 <p align="center">
 ➡ **Apri il progetto**
