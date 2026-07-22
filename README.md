@@ -120,7 +120,7 @@ programma_fine
 # STEMCAPSULA-X (Laboratorio 2D/3D)
 
 <p align="center">
-<img src="images/stemcapsulax-00.jpg" width="100%">
+<img src="images/stemcapsulax-00.png" width="100%">
 </p>
 
 ## Abstract
