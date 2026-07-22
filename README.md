@@ -85,15 +85,13 @@ programma_fine
 # LCG (Lezioni di Computer Grafica)
 
 <p align="center">
-<img src="images/lcg-00.jpg" width="100%">
+<img src="images/lcg-00.png" width="100%">
 </p>
 
 ## Abstract
 
 <p align="justify">
-
-...
-
+**LCG (Lezioni di Computer Grafica)** è un software molto semplice scritto in C++17, il cui scopo è avvicinare gli studenti appassionati e con pregressa conoscenza del linguaggio C/C++ ai concetti della grafica 2D e 3D. Il software è tuttavia strutturato per funzionare non solo su un sistema desktop (Windows, Linux e macOS), ma anche all'interno di una macchina virtuale nel browser mediante la tecnologia Web Assembly. Nello specifico, è scritto per compilare e linkare con la toolchain fornita da *EMSCRIPTEN* e dunque è facilmente distribuibile come terna {HTML, WASM, JavaScript} e quindi disponibile per la distribuzione via HTTP e l'esecuzione in un qualunque browser moderno. Per apprezzare una dimostrazione funzionante, benché non con tutte le funzionalità pianificate, è possibile cliccare al seguente link <a href="https://www.gammasix.eu/STEM-Capsula/lcg.html" target="_blank" rel="noopener noreferrer">LCG</a>.
 </p>
 
 | Problema | Soluzione | Tecnologie |
