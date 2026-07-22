@@ -10,7 +10,7 @@
 
 ---
 
-# L'idea
+# Cosa è STEM Capsula
 
 <p align="justify">
 Un luogo di lavoro condiviso per tutti coloro che vogliano cimentarsi nella costruzione di idee e di complessi di senso, nel perimetro appena visibile di Scienza, Tecnologia, Engineering e Matematica, con il prezioso aiuto dell'informatica e la ricchezza e libertà espressiva dell'Arte. Non c'è cosa più difficile che comunicare con gli umani. Non si è mai certi di aver costruito il discorso secondo una struttura di senso che sia inequivocabile, comprensibile, criticabile. Pur tuttavia, questo è lo sforzo che siamo chiamati a fare. I ragazzi possono, vogliono, devono imparare a organizzare le parole e le frasi, organizzare i numeri, organizzare i simboli più complessi, organizzare le azioni del corpo, organizzare la voce e il canto, organizzare il pensiero. Tutto nel linguaggio e nel pensiero è una continua cascata di analogie... 
@@ -18,11 +18,11 @@ Un luogo di lavoro condiviso per tutti coloro che vogliano cimentarsi nella cost
 
 ---
 
-# I progetti
+# I PROGETTI ATTIVI
 
 ---
 
-# DILLO XL
+# DILLO XL (pensiero computazionale applicato)
 
 <p align="center">
 <img src="images/dilloxl-00.png" width="100%">
@@ -41,20 +41,64 @@ Un luogo di lavoro condiviso per tutti coloro che vogliano cimentarsi nella cost
 ### Approfondimento
 
 <p align="justify">
-
-Paragrafo più lungo.
-
-Puoi raccontare le idee,
-le scelte progettuali,
-le difficoltà,
-i risultati.
-
+  *+DILLO XL** è rilasciato secondo una licenza opensource GPL ed è disponibile nel branch devel di questo repository, all'interno della cartella Progetti. È scritto in C++17 ed è multi piattaforma, cioè il suo sorgente compila e viene eseguito su Windows, Linux e macOS, dunque è un sorgente scritto per essere portabile. Il progetto si basa sul sistema di meta-build CMake e può essere compilato su Windows all'interno di MSYS-UCRT64, su Linux (mediante GCC) e su macOS (mediante Clang). Qui sotto un tipico sorgente *DILLO*:
 </p>
 
+'''cpp
+	/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	 * DILLO EXTRA LARGE - DILLOXL
+	 * (C) 2024 Copyright by Michele Iacobellis
+	 * A project for students...
+	 * 
+	 * This file is part of DILLOXL.
+	 *
+	 * DILLOXL is free software: you can redistribute it and/or modify
+	 * it under the terms of the GNU General Public License as published by
+	 * the Free Software Foundation, either version 3 of the License, or
+	 * (at your option) any later version.
+	 *
+	 * DILLOXL is distributed in the hope that it will be useful,
+	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	 * GNU General Public License for more details.
+	 *
+	 * You should have received a copy of the GNU General Public License
+	 * along with DILLOXL. If not, see <http://www.gnu.org/licenses/>.
+	 * 
+	 * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+	#include "dilloxl"
+    
+	//
+	// Il mio primo programma che fa volare il drone Tello.
+	// Il tuo nome e cognome: <scrivi qui>
+	// La data di oggi: AAAA-MM-GG
+	//
+	programma_inizio
+		crea_oggetto_da_astrazione(Drone) dando_nome(plinio)
+		crea_oggetto_da_astrazione(numero_intero_positivo) dando_nome(passi)
+		passi = 0;
+		messaggia_oggetto( plinio, decolla, (0) )
+		fai_questo_finche_e_vero_che(passi < 3)
+			messaggia_oggetto( plinio, vai_avanti_cm, (50))
+			passi = passi + 1;
+		fine_questo
+		passi = 0;
+		fai_questo_finche_e_vero_che(passi < 3)
+			messaggia_oggetto( plinio, vai_indietro_cm, (50))
+			passi = passi + 1;
+		fine_questo
+		messaggia_oggetto( plinio, ruota_senso_orario_gradi, (90) )
+		messaggia_oggetto( plinio, ruota_senso_antiorario_gradi, (90) )
+		messaggia_oggetto( plinio, vai_a_sinistra_cm, (50) )
+		messaggia_oggetto( plinio, vai_a_destra_cm, (50) )
+		messaggia_oggetto( plinio, vai_su_cm, (50) )
+		messaggia_oggetto( plinio, vai_giu_cm, (50) )
+		messaggia_oggetto( plinio, atterra, (0) )
+	programma_fine
+'''
+
 <p align="center">
-
 ➡ **Apri il progetto**
-
 </p>
 
 ---
