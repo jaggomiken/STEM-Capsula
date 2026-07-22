@@ -31,9 +31,7 @@ Un luogo di lavoro condiviso per tutti coloro che vogliano cimentarsi nella cost
 ## Abstract
 
 <p align="justify">
-
 **DILLO XL** è prima di tutto un linguaggio didattico, il cui obiettivo è mettere gli studenti nelle condizioni di familiarizzare con il paradigma COMANDANTE/ESECUTORE tipico dei linguaggi di programmazione imperativi, in cui un comandante (l'umano) istruisce una macchina (l'esecutore), con il fine di fargli raggiungere un determinato obiettivo (o insieme di obiettivi) sulla base di una sequenza di istruzioni (un programma). Per ottenere questo obiettivo, DILLO XL sfrutta un meccanismo elementare: fornisce un insieme di primitive per pilotare un drone volante **TELLO EDU** della *Ryze Robotics* (ora DJI). Nello specifico, **DILLO XL** è alla fine un ambiente di sviluppo di software nel linguaggio *DILLO*, per controllare un drone volante ed, indirettamente, imparare sequenze, ripetizioni e selezioni, variabili e costanti, primitive matematiche e tecniche di controllo (seppur elementari) di sistemi di sensori/attuatori. Esso fornisce un doppio livello di indirezione: comandante -> esecutore (computer personale) che comanda -> drone (computer embedded).
-
 </p>
 
 | Problema | Soluzione | Tecnologie |
