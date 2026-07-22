@@ -24,6 +24,7 @@
 
 #include "stemcapsulax_priv.h"
 #include <chrono>
+#include <functional>
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * MACROS

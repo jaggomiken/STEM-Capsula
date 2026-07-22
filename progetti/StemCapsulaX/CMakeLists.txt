@@ -22,8 +22,9 @@
 #
 
 cmake_minimum_required(VERSION 3.26)
-project(STEMCAPSULAX VERSION 1.0.0 LANGUAGES CXX)
+project(STEMCAPSULAX VERSION 1.0.0 LANGUAGES C CXX)
 set(TARGET "stemcapsulax")
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 find_package( OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 find_package( raylib REQUIRED)
@@ -125,9 +126,10 @@ set(DIRECTOR
   directors/simpletest/stemcapsulax_director.cpp
 )
             add_executable(${TARGET} ${SRC} ${INC} ${EXT} ${TSK} ${DIRECTOR})
-target_include_directories(${TARGET} PUBLIC inc ext ext/extras tasks)
-     target_link_libraries(${TARGET} PRIVATE 
+target_include_directories(${TARGET} PUBLIC inc ext ext/extras tasks directors directors/simpletest)
+     target_link_libraries(${TARGET} PRIVATE
         raylib box2d::box2d Threads::Threads OpenGL::GL)
+              set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD 23)
 if (APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET 26.1)
   target_link_libraries(${TARGET} PRIVATE "-framework IOKit")

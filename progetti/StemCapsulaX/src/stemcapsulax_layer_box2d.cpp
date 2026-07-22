@@ -159,7 +159,7 @@ void stemcapsulax::LayerBox2D::draw(RenderTexture2D& rtex)
   bool bDebugDraw = st.data().bDrawDebugEnabled;
 
   BeginMode2D(m_pImpl->m_camera);
-  enumerate([=, &rtex](Actor* pA) {
+  enumerate([=, this, &rtex](Actor* pA) {
     pA->draw(rtex, *this);
   });
   if (bDebugDraw) {

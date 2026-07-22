@@ -23,6 +23,7 @@
 #define stemcapsulax_audio_manager_h
 
 #include "stemcapsulax_system.h"
+#include <functional>
 
 /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  * TYPES

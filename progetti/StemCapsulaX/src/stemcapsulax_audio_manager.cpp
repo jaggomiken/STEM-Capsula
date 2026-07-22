@@ -303,7 +303,7 @@ stemcapsulax::AudioManager::Impl::Impl()
   InitAudioDevice();
   SetAudioStreamBufferSizeDefault(STEMCAPSULAX_AUDIOMANAGER_BUFSZ);
   
-  m_threadFFT = std::thread([=]() {
+  m_threadFFT = std::thread([=, this]() {
     std::vector<f32> vinput;
     std::queue<f32> qstored;
     m_bThreadStarted = true;
