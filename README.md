@@ -142,20 +142,20 @@ programma_fine
 ### Approfondimento
 
 <p align="justify">
-	Nel video qui sotto possiamo vedere all'opera l'applicazione che mostra il una serie di Layer sovrapposti, il più evidente dei quali è integrato con il simulatore fisico Box2D. Nello specifico, il framework costruisce la classe Pupazzo e ne istanzia 7 versioni con colori e dimensioni differenti. Il pupazzo è formato da un certo numero di Body (concetto di Box2D) collegati tra loro da Joint (anche questo è concetto di Box2D). L'utente può esercitare una forza impulsiva (di tipo Explosion) per sollecitare il moto dei copri e verificarne le reazioni. Esiste poi una funzione che legge una PNG e la particellizza in una serie di Body piccoli colorati come i pixel dell'immagine, soggetti alla gravità e al regime di forze del sistema, ottendendo effetti cascata e rimbalzo.
+	Nel video qui sotto possiamo vedere all'opera l'applicazione che mostra il una serie di Layer sovrapposti, il più evidente dei quali è integrato con il simulatore fisico Box2D. Nello specifico, il framework costruisce la classe Pupazzo e ne istanzia 7 versioni con colori e dimensioni differenti. Il pupazzo è formato da un certo numero di Body (concetto di Box2D) collegati tra loro da Joint (anche questo è concetto di Box2D). L'utente può esercitare una forza impulsiva (di tipo Explosion) per sollecitare il moto dei copri e verificarne le reazioni. Esiste poi una funzione che legge una PNG e la particellizza in una serie di Body piccoli colorati come i pixel dell'immagine, soggetti alla gravità e al regime di forze del sistema, ottendendo effetti cascata e rimbalzo.<br>
+	<i>Il tuo browser potrebbe drasticamente ridurre il framerate di playback per questo video.</i>
 </p>
 
 <p align="center">
-	Il tuo browser potrebbe drasticamente ridurre il framerate di playback per questo video.
 <img src="images/stemcapsulax_demo_01.webp" width="900">
 </p>
 
 <p align="justify">
-	Nel video qui sotto possiamo vedere all'opera una versione precedente che forniva piccole funzionalità di creazione di oggetti Body (Box2D) dalle forme più disparate, disegnati a schermo mediante la funzionalità DebugDraw di Box2D e dunque ricca di elementi che mostrano gli aspetti interni della libreria di simulazione fisica. Un semplice banco di prova, da cui poi derivare un progetto vero e proprio.
+	Nel video qui sotto possiamo vedere all'opera una versione precedente che forniva piccole funzionalità di creazione di oggetti Body (Box2D) dalle forme più disparate, disegnati a schermo mediante la funzionalità DebugDraw di Box2D e dunque ricca di elementi che mostrano gli aspetti interni della libreria di simulazione fisica. Un semplice banco di prova, da cui poi derivare un progetto vero e proprio.<br>
+	<i>Il tuo browser potrebbe drasticamente ridurre il framerate di playback per questo video.</i>
 </p>
 
 <p align="center">
-	Il tuo browser potrebbe drasticamente ridurre il framerate di playback per questo video.
 <img src="images/stemcapsulax_demo_02.webp" width="900">
 </p>
 
