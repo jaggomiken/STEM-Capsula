@@ -21,8 +21,10 @@ CANALE YOUTUBE: <https://youtube.com/@stemcapsula><br>
 
 ---
 
-# I PROGETTI ATTIVI (-Nessuno Realizzato Mediante AI-)
+# I PROGETTI ATTIVI
 
+---
+	NB: Nessuno dei progetti software è stato realizzato mediante generatori di codice AI, dunque nessun vibe-coding applicato. Sono unicamente il frutto di un'attività di progettazione, design, concettualizzazione e scrittura di codice da parte dell'autore. Una sola funzione C è stata generata mediante ChatGPT, piuttosto che scaricata in forma di libreria da Internet: la trasformata di Fourier per l'analisi in frequenza del segnale audio, integrata in STEMCAPSULAX. Il progetto STEM CAPSULA promuove questo tipo di utilizzo della AI, cioè **richieste atomiche di funzioni elementari per svolgere compiti specifici perfettamente inquadrabili nelle conoscenze e competenze del designer, ma onerose in termini di tempo di sviluppo**.
 ---
 
 # DILLO XL (pensiero computazionale applicato)
