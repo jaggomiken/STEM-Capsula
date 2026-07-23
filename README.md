@@ -21,7 +21,7 @@ CANALE YOUTUBE: <https://youtube.com/@stemcapsula><br>
 
 ---
 
-# I PROGETTI ATTIVI
+# I PROGETTI ATTIVI (-Nessuno Realizzato Mediante AI-)
 
 ---
 
@@ -126,9 +126,7 @@ programma_fine
 ## Abstract
 
 <p align="justify">
-
-...
-
+	**STEMCAPSULA X** è un software, strutturato come un semplicissimo framework basilare, che consente di realizzare anche semplici giochi con grafica 2D e 3D. È nato come esperimento per provare la fantastica libreria RAYLIB, ma poi si è evoluto come banco di lavoro per costruire dimostratori e applicazioni per simulare la fisica del corpo rigido (mediante la libreria Box2D), l'analisi in frequenza per mettere insieme grafica e musica e, in futuro, la simulazione di mondi 3D mediante la vera novità di questo nostro 2026, che è Box3D, dal medesimo creatore di Box2D. Nella sua architettura, STEMCAPSULAX impiega una gerarchia di classi e alcuni design pattern tipici dei videogame, privilegiando la scrittura di codice rispetto alla manipolazione di file di dati (prettamente configuration-oriented). Il fine è, infatti, allenare ed esprimere le attitudini di codice e design degli studenti esperti. Anche questo software, come gli altri, si basa sul sistema di meta-build CMake, compila e poi gira su Windows, Linux e macOS, per cui la sua base di codice è scritta per Microsoft CL (Visual Studio), GCC e Clang. Nel tempo ha subito un'evoluzione sostanziale, per cui nei video dimostrativi qui presenti noterete alcune differenze nelle feature e nei comportamenti.
 </p>
 
 | Problema | Soluzione | Tecnologie |
@@ -138,9 +136,10 @@ programma_fine
 ### Approfondimento
 
 <p align="justify">
+</p>
 
-...
-
+<p align="center">
+<img src="images/stemcapsulax_demo_01.webp" width="900">
 </p>
 
 <p align="center">
