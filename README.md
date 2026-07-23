@@ -146,6 +146,7 @@ programma_fine
 </p>
 
 <p align="center">
+	Il tuo browser potrebbe drasticamente ridurre il framerate di playback per questo video.
 <img src="images/stemcapsulax_demo_01.webp" width="900">
 </p>
 
@@ -154,6 +155,7 @@ programma_fine
 </p>
 
 <p align="center">
+	Il tuo browser potrebbe drasticamente ridurre il framerate di playback per questo video.
 <img src="images/stemcapsulax_demo_02.webp" width="900">
 </p>
 
