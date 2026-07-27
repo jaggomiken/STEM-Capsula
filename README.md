@@ -52,7 +52,6 @@ Un luogo di lavoro condiviso per tutti coloro che vogliano cimentarsi nella cost
 | Imparare a programmare                  | Linguaggio Semplice | DILLO              |
 | Curva di apprendimento non ripidia      | IDE in DILLO XL     | DILLO XL           |
 | Evitare la noia                         | Fare Missioni       | DILLO XL           |
-|-----------------------------------------|---------------------|--------------------|
 
 ### Approfondimento
 
