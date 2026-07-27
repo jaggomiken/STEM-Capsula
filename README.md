@@ -196,8 +196,9 @@ Qui sotto l'albero del progetto. Si notino le cartelle **emscripten** e **glad**
 </p>
 
 <center>
-	<a href="https://youtu.be/ROBTR-evI-8?si=SdF-rA8eMRpE2i_Y"><img src="images/YT_STEMCAPSULA_ShortSCX_01.png" width="40%"></a>
-	<a href="https://youtu.be/JuBiuiJIhGI?si=pZv9nSxwEy_Dqccw"><img src="images/YT_STEMCAPSULA_ShortSCX_02.png" width="40%"></a>
+	<a href="https://youtu.be/ROBTR-evI-8?si=SdF-rA8eMRpE2i_Y"><img src="images/YT_STEMCAPSULA_ShortSCX_01.png" width="30%"></a>
+	&nbsp;
+	<a href="https://youtu.be/JuBiuiJIhGI?si=pZv9nSxwEy_Dqccw"><img src="images/YT_STEMCAPSULA_ShortSCX_02.png" width="30%"></a>
 </center>
 
 ---
