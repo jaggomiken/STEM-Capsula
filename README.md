@@ -16,12 +16,15 @@
 Un luogo di lavoro condiviso per tutti coloro che vogliano cimentarsi nella costruzione di idee e di complessi di senso, nel perimetro appena visibile di Scienza, Tecnologia, Engineering e Matematica, con il prezioso aiuto dell'informatica e la ricchezza e libertà espressiva dell'Arte. Non c'è cosa più difficile che comunicare con gli umani. Non si è mai certi di aver costruito il discorso secondo una struttura di senso che sia inequivocabile, comprensibile, criticabile. Pur tuttavia, questo è lo sforzo che siamo chiamati a fare. I ragazzi possono, vogliono, devono imparare a organizzare le parole e le frasi, organizzare i numeri, organizzare i simboli più complessi, organizzare le azioni del corpo, organizzare la voce e il canto, organizzare il pensiero. Tutto nel linguaggio e nel pensiero è una continua cascata di analogie... 
 </p>
 
-SITO UFFICIALE: <https://www.gammasix.eu/STEM-Capsula/><br>
-CANALE YOUTUBE: <https://youtube.com/@stemcapsula><br>
+| MEZZO          | URL 																		 |
+|----------------|-----------------------------------------|
+| SITO UFFICIALE | <https://www.gammasix.eu/STEM-Capsula/> |
+| CANALE YOUTUBE | <https://youtube.com/@stemcapsula>      |
+| SUBSTACK (WIP) | <https://stemcapsula.substack.com/>     |
 
 ---
 
-# I PROGETTI ATTIVI
+# I PROGETTI ATTIVI (branch devel)
 
 ---
 
@@ -40,18 +43,31 @@ CANALE YOUTUBE: <https://youtube.com/@stemcapsula><br>
 ## Abstract
 
 <p align="justify">
-**DILLO XL** è prima di tutto un linguaggio didattico, il cui obiettivo è mettere gli studenti nelle condizioni di familiarizzare con il paradigma COMANDANTE/ESECUTORE tipico dei linguaggi di programmazione imperativi, in cui un comandante (l'umano) istruisce una macchina (l'esecutore), con il fine di fargli raggiungere un determinato obiettivo (o insieme di obiettivi) sulla base di una sequenza di istruzioni (un programma). Per ottenere questo obiettivo, DILLO XL sfrutta un meccanismo elementare: fornisce un insieme di primitive per pilotare un drone volante **TELLO EDU** della *Ryze Robotics* (ora DJI). Nello specifico, **DILLO XL** è alla fine un ambiente di sviluppo di software nel linguaggio *DILLO*, per controllare un drone volante ed, indirettamente, imparare sequenze, ripetizioni e selezioni, variabili e costanti, primitive matematiche e tecniche di controllo (seppur elementari) di sistemi di sensori/attuatori. Esso fornisce un doppio livello di indirezione: comandante -> esecutore (computer personale) che comanda -> drone (computer embedded).
+**DILLO XL** è prima di tutto un runtime per il linguaggio didattico DILLO, il cui obiettivo è mettere gli studenti nelle condizioni di familiarizzare con il paradigma COMANDANTE/ESECUTORE tipico dei linguaggi di programmazione imperativi, in cui un comandante (l'umano) istruisce una macchina (l'esecutore), con il fine di fargli raggiungere un determinato obiettivo (o insieme di obiettivi) sulla base di una sequenza di istruzioni (un programma). Per ottenere questo obiettivo, DILLO XL sfrutta un meccanismo elementare: fornisce un insieme di primitive per pilotare un drone volante **TELLO EDU** della *Ryze Robotics* (ora DJI). Nello specifico, **DILLO XL** è alla fine un ambiente di sviluppo di software nel linguaggio *DILLO*, per controllare un drone volante e, indirettamente, imparare sequenze, ripetizioni e selezioni, variabili e costanti, primitive matematiche e tecniche di controllo (seppur elementari) di sistemi di sensori/attuatori. Esso fornisce un doppio livello di indirezione: comandante -> esecutore (computer personale) che comanda -> drone (computer embedded).
 </p>
 
-| Problema | Soluzione | Tecnologie |
-|----------|-----------|------------|
-| ... | ... | ... |
+| Problema                                | Soluzione           | Tecnologie         |
+|-----------------------------------------|---------------------|--------------------|
+| Acquisire l'Attenzione degli Studenti   | Uscire dall'aula    | Droni e Linguaggi  |
+| Trattenere l'Attenzione degli Studenti  | Programmare Droni   | Droni e Linguaggi  |
+| Imparare a programmare                  | Linguaggio Semplice | DILLO              |
+| Curva di apprendimento non ripidia      | IDE in DILLO XL     | DILLO XL           |
+| Evitare la noia                         | Fare Missioni       | DILLO XL           |
 
 ### Approfondimento
 
 <p align="justify">
-  **DILLO XL** è rilasciato secondo una licenza opensource GPL ed è disponibile nel branch devel di questo repository, all'interno della cartella Progetti. È scritto in C++17 ed è multi piattaforma, cioè il suo sorgente compila e viene eseguito su Windows, Linux e macOS, dunque è un sorgente scritto per essere portabile. Il progetto si basa sul sistema di meta-build CMake e può essere compilato su Windows all'interno di MSYS-UCRT64, su Linux (mediante GCC) e su macOS (mediante Clang). Qui sotto un tipico sorgente *DILLO*:
+  **DILLO XL** è rilasciato secondo una licenza opensource GPL ed è disponibile nel branch devel di questo repository, all'interno della cartella progetti. È scritto in C++17 ed è multi piattaforma, cioè il suo sorgente compila e viene eseguito su Windows, Linux e macOS, dunque è un sorgente scritto per essere portabile. Il progetto si basa sul sistema di meta-build CMake e può essere compilato su Windows all'interno di MSYS-UCRT64, su Linux (mediante GCC) e su macOS (mediante Clang). 
 </p>
+
+| Responsabilità Funzionale                            | Libreria
+|------------------------------------------------------|-------------------------------------------------|
+| Gestione delle finestre, del mouse e della tastiera  | GLFW (<https://www.glfw.org/>)									 |
+| Gestione della UI/UX 																 | Dear ImGui (<https://github.com/ocornut/imgui>) |
+| Decompressione flusso MPEG e generazione frame       | FFMPEG (<https://www.ffmpeg.org/>)              |
+| Interfacciamento Droni, Runtime DILLO, Controllo     | DILLO XL 																			 |
+
+Qui sotto un tipico sorgente *DILLO*:
 
 ```
 #include "dilloxl"
@@ -84,10 +100,20 @@ programma_inizio
 	messaggia_oggetto( plinio, atterra, (0) )
 programma_fine
 ```
+Qui di seguito l'albero del progetto, che è standardizzato per tutti gli altri progetti.
 
-<p align="center">
-➡ **Apri il progetto**
-</p>
+```
+.
+├── docs
+├── images
+└── progetti
+    ├── DilloXL
+    │   ├── ext
+    │   ├── fonts
+    │   ├── images
+    │   ├── inc
+    │   └── src
+```
 
 ---
 
@@ -100,26 +126,36 @@ programma_fine
 ## Abstract
 
 <p align="justify">
-**LCG (Lezioni di Computer Grafica)** è un software molto semplice scritto in C++17, il cui scopo è avvicinare gli studenti appassionati e con pregressa conoscenza del linguaggio C/C++ ai concetti della grafica 2D e 3D. Il software è tuttavia strutturato per funzionare non solo su un sistema desktop (Windows, Linux e macOS), ma anche all'interno di una macchina virtuale nel browser mediante la tecnologia Web Assembly. Nello specifico, è scritto per compilare e linkare con la toolchain fornita da *EMSCRIPTEN* e dunque è facilmente distribuibile come terna {HTML, WASM, JavaScript} e quindi disponibile per la distribuzione via HTTP e l'esecuzione in un qualunque browser moderno. Per apprezzare una dimostrazione funzionante, benché non con tutte le funzionalità pianificate, è possibile cliccare al seguente link <a href="https://www.gammasix.eu/STEM-Capsula/lcg.html" target="_blank" rel="noopener noreferrer">LCG</a>.
+**LCG (Lezioni di Computer Grafica)** è un software molto semplice scritto in C++17, il cui scopo è avvicinare gli studenti appassionati e con pregressa conoscenza del linguaggio C/C++ ai concetti fondamentali della grafica 2D e 3D. Il software è tuttavia strutturato per funzionare non solo su un sistema desktop (Windows, Linux e macOS), ma anche all'interno di una macchina virtuale nel browser mediante la tecnologia Web Assembly. Nello specifico, è scritto per compilare e linkare con la toolchain fornita da *EMSCRIPTEN* e dunque è facilmente distribuibile come terna {HTML, WASM, JavaScript} e quindi disponibile per la distribuzione via HTTP e l'esecuzione in un qualunque browser moderno. Per apprezzare una dimostrazione funzionante, benché non con tutte le funzionalità pianificate, è possibile cliccare al seguente link <a href="https://www.gammasix.eu/STEM-Capsula/lcg.html" target="_blank" rel="noopener noreferrer">LCG</a>.
 </p>
 
-| Problema | Soluzione | Tecnologie |
-|----------|-----------|------------|
-| ... | ... | ... |
 
 ### Approfondimento
 
 <p align="justify">
-
-...
-
+Il mio interesse per questo applicativo, che però mantengo in modo meno frequente rispetto agli altri, è proprio la possibilità di sviluppare e distribuire applicazioni scritte in C++17 all'interno di una pagine web standard, anche per dispositivi mobili, con una medesima codebase.
 </p>
 
-<p align="center">
+| Responsabilità Funzionale                            | Libreria
+|------------------------------------------------------|-------------------------------------------------|
+| Gestione delle finestre, del mouse e della tastiera  | GLFW (<https://www.glfw.org/>)									 |
+| Gestione della UI/UX 																 | Dear ImGui (<https://github.com/ocornut/imgui>) |
+| Toolchain di Compilazione per WEB-ASSEMBLY           | EMSCRIPTEN (<https://emscripten.org/>)          |
 
-➡ **Apri il progetto**
 
-</p>
+Qui sotto l'albero del progetto. Si notino le cartelle **emscripten** e **glad** per gestire rispettivamente la toolchain EMSCRIPTEN e la gestione delle estensioni OpenGL. La cartella *modules* contiene invece i moduli applicativi di LCG: lo sviluppatore può aggiungere proprie funzionalità e vederle comparire nell'area principale dell'applicazione, che si occuperà del rendering e della gestione dello I/O per ogni modulo compilato.
+
+
+```
+  ├── LezioniComputerGrafica
+    │   ├── data
+    │   ├── emscripten
+    │   ├── ext
+    │   │    └── glad
+    │   ├── inc
+    │   ├── modules
+    │   └── src
+```
 
 ---
 
@@ -132,17 +168,13 @@ programma_fine
 ## Abstract
 
 <p align="justify">
-	**STEMCAPSULA X** è un software, strutturato come un semplicissimo framework basilare, che consente di realizzare anche semplici giochi con grafica 2D e 3D. È nato come esperimento per provare la fantastica libreria RAYLIB, ma poi si è evoluto come banco di lavoro per costruire dimostratori e applicazioni per simulare la fisica del corpo rigido (mediante la libreria Box2D), l'analisi in frequenza per mettere insieme grafica e musica e, in futuro, la simulazione di mondi 3D mediante la vera novità di questo nostro 2026, che è Box3D, dal medesimo creatore di Box2D. Nella sua architettura, STEMCAPSULAX impiega una gerarchia di classi e alcuni design pattern tipici dei videogame, privilegiando la scrittura di codice rispetto alla manipolazione di file di dati (prettamente configuration-oriented). Il fine è, infatti, allenare ed esprimere le attitudini di codice e design degli studenti esperti. Anche questo software, come gli altri, si basa sul sistema di meta-build CMake, compila e poi gira su Windows, Linux e macOS, per cui la sua base di codice è scritta per Microsoft CL (Visual Studio), GCC e Clang. Nel tempo ha subito un'evoluzione sostanziale, per cui nei video dimostrativi qui presenti noterete alcune differenze nelle feature e nei comportamenti.
+	**STEMCAPSULA X** è un software, strutturato come un semplicissimo framework basilare, che consente di realizzare anche semplici giochi con grafica 2D e 3D. È nato come esperimento per provare la fantastica libreria RAYLIB, ma poi si è evoluto come banco di lavoro per costruire dimostratori e applicazioni per simulare la fisica del corpo rigido (mediante la libreria Box2D), l'analisi in frequenza per mettere insieme grafica e musica e, in futuro, la simulazione di mondi 3D mediante la vera novità di questo nostro 2026, che è Box3D, dal medesimo creatore di Box2D. Nella sua architettura, STEMCAPSULAX impiega una gerarchia di classi e alcuni design pattern tipici dei videogame, privilegiando la scrittura di codice invece che la manipolazione di file di dati (per cui non è configuration-oriented). Il fine è, infatti, allenare ed esprimere le attitudini di coding e design degli studenti esperti. Anche questo software, come gli altri, si basa sul sistema di meta-build CMake, compila e poi gira su Windows, Linux e macOS, per cui la sua base di codice è scritta per Microsoft CL (Visual Studio), GCC e Clang. Nel tempo ha subito un'evoluzione sostanziale, per cui nei video dimostrativi qui presenti noterete alcune differenze nelle feature e nei comportamenti.
 </p>
-
-| Problema | Soluzione | Tecnologie |
-|----------|-----------|------------|
-| ... | ... | ... |
 
 ### Approfondimento
 
 <p align="justify">
-	Nel video qui sotto possiamo vedere all'opera l'applicazione che mostra il una serie di Layer sovrapposti, il più evidente dei quali è integrato con il simulatore fisico Box2D. Nello specifico, il framework costruisce la classe Pupazzo e ne istanzia 7 versioni con colori e dimensioni differenti. Il pupazzo è formato da un certo numero di Body (concetto di Box2D) collegati tra loro da Joint (anche questo è concetto di Box2D). L'utente può esercitare una forza impulsiva (di tipo Explosion) per sollecitare il moto dei copri e verificarne le reazioni. Esiste poi una funzione che legge una PNG e la particellizza in una serie di Body piccoli colorati come i pixel dell'immagine, soggetti alla gravità e al regime di forze del sistema, ottendendo effetti cascata e rimbalzo.<br>
+	Nel video qui sotto possiamo vedere all'opera l'applicazione che mostra una serie di Layer sovrapposti, il più evidente dei quali è integrato con il simulatore fisico Box2D. Nello specifico, il framework costruisce la classe Pupazzo e ne istanzia 7 versioni con colori e dimensioni differenti. Il pupazzo è formato da un certo numero di Body (concetto di Box2D) collegati tra loro da Joint (anche questo è concetto di Box2D). L'utente può esercitare una forza impulsiva (di tipo Explosion) per sollecitare il moto dei copri e verificarne le reazioni. Esiste poi una funzione che legge una PNG e la particellizza in una serie di Body piccoli colorati come i pixel dell'immagine, soggetti alla gravità e al regime di forze del sistema, ottendendo effetti cascata e rimbalzo.<br>
 	<i>Il tuo browser potrebbe drasticamente ridurre il framerate di playback per questo video.</i>
 </p>
 
@@ -159,11 +191,15 @@ programma_fine
 <img src="images/stemcapsulax_demo_02.webp" width="900">
 </p>
 
-<p align="center">
-
-➡ **Apri il progetto**
-
+<p align="justify">
+	Sul canale YouTube STEM-Capsula ci sono alcuni video realizzati con il software STEMCAPSULAX in varie versioni. È il software stesso che gestisce ovviamente la musica per catturarne le caratteristiche e attivare i comportamenti dei puppet.
 </p>
+
+<center>
+	<a href="https://youtu.be/ROBTR-evI-8?si=SdF-rA8eMRpE2i_Y"><img src="images/YT_STEMCAPSULA_ShortSCX_01.png" width="30%"></a>
+	&nbsp;
+	<a href="https://youtu.be/JuBiuiJIhGI?si=pZv9nSxwEy_Dqccw"><img src="images/YT_STEMCAPSULA_ShortSCX_02.png" width="30%"></a>
+</center>
 
 ---
 
@@ -171,9 +207,12 @@ programma_fine
 
 <p align="center">
 
-| Linguaggio | Framework | Utilizzo |
-|------------|-----------|----------|
-| ... | ... | ... |
+| Responsabilità Funzionale                            | Libreria
+|------------------------------------------------------|-------------------------------------------------|
+| Gestione delle finestre, del mouse e della tastiera  | GLFW (<https://www.glfw.org/>)									 |
+| Gestione della UI/UX 																 | Dear ImGui (<https://github.com/ocornut/imgui>) |
+| Interfacciamento con GPU per grafica 2D/3D           | RAYLIB (<https://www.raylib.com/>)              |
+| Fisica del corpo rigido 2D                           | Box2D (<https://box2d.org/>)                    |
 
 </p>
 
@@ -182,26 +221,54 @@ programma_fine
 # Struttura del repository
 
 ```
-/
-│
-├── project1/
-├── project2/
-├── project3/
-├── images/
-├── docs/
-└── README.md
+.
+├── docs
+├── images
+└── progetti
+    ├── DilloXL
+    │   ├── ext
+    │   ├── fonts
+    │   ├── images
+    │   ├── inc
+    │   └── src
+    ├── LezioniComputerGrafica
+    │   ├── data
+    │   ├── emscripten
+    │   ├── ext
+    │   │   └── glad
+    │   ├── inc
+    │   ├── modules
+    │   └── src
+    ├── LezioniCxx
+    │   ├── fonts
+    │   ├── inc
+    │   └── src
+    └── StemCapsulaX
+        ├── directors
+        │   └── simpletest
+        ├── ext
+        │   └── extras
+        ├── fonts
+        ├── images
+        ├── inc
+        ├── shaders
+        ├── sounds
+        ├── src
+        └── tasks
 ```
 
 ---
 
 # Roadmap
 
-- [ ] ...
-- [ ] ...
-- [ ] ...
+- [ ] DILLO XL - I droni TELLO EDU sono ad oggi (Luglio 2026) pressoché irreperibili sul mercato, quindi c'è l'esigenza di trovare un drone equivalente da integrare.
+- [ ] LCG - Aggiungere un modulo supplementare che mostri come impiegare gli shader (bassa priorità)
+- [ ] STEM CAPSULA X - Integrare Box3D e dunque costruire un LayerBox3D funzionante
 
 ---
 
 # Contatti
 
-...
+<p align="justify">
+STEM CAPSULA è gestito da Michele Iacobellis, docente del Colamonico - Chiarulli, in provincia di Bari. Il sito web è https://www.gammasix.eu/STEM-Capsula/ e il canale YouTube, che affronta tematiche ulteriori rispetto al solo software, è https://youtube.com/@stemcapsula. Su SubStack: https://stemcapsula.substack.com/ (work in progress (Luglio 2026)).
+</p>
