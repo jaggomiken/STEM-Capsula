@@ -16,8 +16,12 @@
 Un luogo di lavoro condiviso per tutti coloro che vogliano cimentarsi nella costruzione di idee e di complessi di senso, nel perimetro appena visibile di Scienza, Tecnologia, Engineering e Matematica, con il prezioso aiuto dell'informatica e la ricchezza e libertà espressiva dell'Arte. Non c'è cosa più difficile che comunicare con gli umani. Non si è mai certi di aver costruito il discorso secondo una struttura di senso che sia inequivocabile, comprensibile, criticabile. Pur tuttavia, questo è lo sforzo che siamo chiamati a fare. I ragazzi possono, vogliono, devono imparare a organizzare le parole e le frasi, organizzare i numeri, organizzare i simboli più complessi, organizzare le azioni del corpo, organizzare la voce e il canto, organizzare il pensiero. Tutto nel linguaggio e nel pensiero è una continua cascata di analogie... 
 </p>
 
-SITO UFFICIALE: <https://www.gammasix.eu/STEM-Capsula/><br>
-CANALE YOUTUBE: <https://youtube.com/@stemcapsula><br>
+| MEZZO          | URL 																		 |
+|----------------|-----------------------------------------|
+| SITO UFFICIALE | <https://www.gammasix.eu/STEM-Capsula/> |
+|----------------|-----------------------------------------|
+| CANALE YOUTUBE | <https://youtube.com/@stemcapsula>      |
+|----------------|-----------------------------------------|
 
 ---
 
@@ -40,12 +44,21 @@ CANALE YOUTUBE: <https://youtube.com/@stemcapsula><br>
 ## Abstract
 
 <p align="justify">
-**DILLO XL** è prima di tutto un linguaggio didattico, il cui obiettivo è mettere gli studenti nelle condizioni di familiarizzare con il paradigma COMANDANTE/ESECUTORE tipico dei linguaggi di programmazione imperativi, in cui un comandante (l'umano) istruisce una macchina (l'esecutore), con il fine di fargli raggiungere un determinato obiettivo (o insieme di obiettivi) sulla base di una sequenza di istruzioni (un programma). Per ottenere questo obiettivo, DILLO XL sfrutta un meccanismo elementare: fornisce un insieme di primitive per pilotare un drone volante **TELLO EDU** della *Ryze Robotics* (ora DJI). Nello specifico, **DILLO XL** è alla fine un ambiente di sviluppo di software nel linguaggio *DILLO*, per controllare un drone volante ed, indirettamente, imparare sequenze, ripetizioni e selezioni, variabili e costanti, primitive matematiche e tecniche di controllo (seppur elementari) di sistemi di sensori/attuatori. Esso fornisce un doppio livello di indirezione: comandante -> esecutore (computer personale) che comanda -> drone (computer embedded).
+**DILLO XL** è prima di tutto un runtime per il linguaggio didattico DILLO, il cui obiettivo è mettere gli studenti nelle condizioni di familiarizzare con il paradigma COMANDANTE/ESECUTORE tipico dei linguaggi di programmazione imperativi, in cui un comandante (l'umano) istruisce una macchina (l'esecutore), con il fine di fargli raggiungere un determinato obiettivo (o insieme di obiettivi) sulla base di una sequenza di istruzioni (un programma). Per ottenere questo obiettivo, DILLO XL sfrutta un meccanismo elementare: fornisce un insieme di primitive per pilotare un drone volante **TELLO EDU** della *Ryze Robotics* (ora DJI). Nello specifico, **DILLO XL** è alla fine un ambiente di sviluppo di software nel linguaggio *DILLO*, per controllare un drone volante e, indirettamente, imparare sequenze, ripetizioni e selezioni, variabili e costanti, primitive matematiche e tecniche di controllo (seppur elementari) di sistemi di sensori/attuatori. Esso fornisce un doppio livello di indirezione: comandante -> esecutore (computer personale) che comanda -> drone (computer embedded).
 </p>
 
-| Problema | Soluzione | Tecnologie |
-|----------|-----------|------------|
-| ... | ... | ... |
+| Problema                                | Soluzione           | Tecnologie         |
+|-----------------------------------------|---------------------|--------------------|
+| Acquisire l'Attenzione degli Studenti   | Uscire dall'aula    | Droni e Linguaggi  |
+|-----------------------------------------|---------------------|--------------------|
+| Trattenere l'Attenzione degli Studenti  | Programmare Droni   | Droni e Linguaggi  |
+|-----------------------------------------|---------------------|--------------------|
+| Imparare a programmare                  | Linguaggio Semplice | DILLO              |
+|-----------------------------------------|---------------------|--------------------|
+| Curva di apprendimento non ripidia      | IDE in DILLO XL     | DILLO XL           |
+|-----------------------------------------|---------------------|--------------------|
+| Evitare la noia                         | Fare Missioni       | DILLO XL           |
+|-----------------------------------------|---------------------|--------------------|
 
 ### Approfondimento
 
@@ -84,10 +97,20 @@ programma_inizio
 	messaggia_oggetto( plinio, atterra, (0) )
 programma_fine
 ```
+Qui di seguito l'albero del progetto, che è standardizzato per tutti gli altri progetti.
 
-<p align="center">
-➡ **Apri il progetto**
-</p>
+```
+.
+├── docs
+├── images
+└── progetti
+    ├── DilloXL
+    │   ├── ext
+    │   ├── fonts
+    │   ├── images
+    │   ├── inc
+    │   └── src
+```
 
 ---
 
