@@ -191,6 +191,16 @@ Qui sotto l'albero del progetto. Si notino le cartelle **emscripten** e **glad**
 <img src="images/stemcapsulax_demo_02.webp" width="900">
 </p>
 
+<p align="justify">
+	Sul canale YouTube STEM-Capsula ci sono alcuni video realizzati con il software STEMCAPSULAX in varie versioni. È il software stesso che gestisce ovviamente la musica per catturarne le caratteristiche e attivare i comportamenti dei puppet.
+</p>
+
+<center>
+	<span>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ROBTR-evI-8?si=F1tj4fKhPdO_umiJ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></span>
+<span><iframe width="560" height="315" src="https://www.youtube.com/embed/JuBiuiJIhGI?si=1kk18QJp2UOUEEPt" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></span>
+</center>
+
 ---
 
 # Tecnologie
