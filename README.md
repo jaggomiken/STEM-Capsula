@@ -19,9 +19,7 @@ Un luogo di lavoro condiviso per tutti coloro che vogliano cimentarsi nella cost
 | MEZZO          | URL 																		 |
 |----------------|-----------------------------------------|
 | SITO UFFICIALE | <https://www.gammasix.eu/STEM-Capsula/> |
-|----------------|-----------------------------------------|
 | CANALE YOUTUBE | <https://youtube.com/@stemcapsula>      |
-|----------------|-----------------------------------------|
 
 ---
 
@@ -50,13 +48,9 @@ Un luogo di lavoro condiviso per tutti coloro che vogliano cimentarsi nella cost
 | Problema                                | Soluzione           | Tecnologie         |
 |-----------------------------------------|---------------------|--------------------|
 | Acquisire l'Attenzione degli Studenti   | Uscire dall'aula    | Droni e Linguaggi  |
-|-----------------------------------------|---------------------|--------------------|
 | Trattenere l'Attenzione degli Studenti  | Programmare Droni   | Droni e Linguaggi  |
-|-----------------------------------------|---------------------|--------------------|
 | Imparare a programmare                  | Linguaggio Semplice | DILLO              |
-|-----------------------------------------|---------------------|--------------------|
 | Curva di apprendimento non ripidia      | IDE in DILLO XL     | DILLO XL           |
-|-----------------------------------------|---------------------|--------------------|
 | Evitare la noia                         | Fare Missioni       | DILLO XL           |
 |-----------------------------------------|---------------------|--------------------|
 
