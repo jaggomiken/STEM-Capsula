@@ -260,5 +260,5 @@ Qui sotto l'albero del progetto. Si notino le cartelle **emscripten** e **glad**
 # Contatti
 
 <p align="justify">
-STEM CAPSULA è gestito da Michele Iacobellis, docente del Colamonico - Chiarulli, in provincia di Bari. Il sito web è <https://www.gammasix.eu/STEM-Capsula/> e il canale YouTube è <https://youtube.com/@stemcapsula>. Su SubStack: https://stemcapsula.substack.com/ (work in progress (Luglio 2026)).
+STEM CAPSULA è gestito da Michele Iacobellis, docente del Colamonico - Chiarulli, in provincia di Bari. Il sito web è https://www.gammasix.eu/STEM-Capsula/ e il canale YouTube è https://youtube.com/@stemcapsula. Su SubStack: https://stemcapsula.substack.com/ (work in progress (Luglio 2026)).
 </p>
