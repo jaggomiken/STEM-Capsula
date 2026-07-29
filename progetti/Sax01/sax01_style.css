@@ -1,0 +1,24 @@
+body {
+  background-color: black;
+}
+div#menubar {
+  background-color: black;
+  border: 1px solid white;
+  color: white;
+  font-family: monospace;
+  padding-left: 4px;
+}
+canvas#arena {
+  background-color: black;
+  border: 1px solid white;
+}
+div#logo_panel {
+  position: absolute;
+  display: flex;
+  align-items: center;
+}
+span#logo_text {
+  color: white;
+  font-family: monospace;
+  font-size: 18pt;
+}
